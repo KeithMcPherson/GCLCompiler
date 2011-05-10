@@ -1,0 +1,307 @@
+Compiled on: Mon May 09 19:37:56 EDT 2011
+module test11_6 { bounds check twoDimensions
+$        LDA     R15, V1
+$        LDA     R14, C1
+$        LD      R13, #16000
+-- test of array bounds check (2 dimension ) }
+private
+ integer i,j;
+ constant max = 2;
+ constant mlo = 1;
+ typedefinition integer range [0..mlo] zero_mlo;
+ integer array [zero_mlo][zero_mlo] a;
+begin
+ i := 0;
+$        LD      R0, +4(R14)
+$        STO     R0, +0(R15)
+ do i <= max -> read a[i][0]; i := i+1; od; { data 1 2 3 }
+$    LABEL J1
+$        LD      R1, +0(R15)
+$        LD      R0, #1
+$        IC      R1, +6(R14)
+$        JLE     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J2
+$        LDA     R0, +4(R15)
+$        LD      R1, +0(R15)
+$        TRNG    R1, +0(R14)
+$        IS      R1, #0
+$        IM      R1, #4
+$        IA      R0, R1
+$        LDA     R1, *R0
+$        LD      R2, +8(R14)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        RDI     *R1
+$        LD      R2, +0(R15)
+$        IA      R2, +10(R14)
+$        STO     R2, +0(R15)
+$        JMP     J1
+$    LABEL J2
+ a[0][1] := a[0][0];
+$        LDA     R2, +4(R15)
+$        LD      R3, +12(R14)
+$        TRNG    R3, +0(R14)
+$        IS      R3, #0
+$        IM      R3, #4
+$        IA      R2, R3
+$        LDA     R3, *R2
+$        LD      R4, +14(R14)
+$        TRNG    R4, +0(R14)
+$        IS      R4, #0
+$        IM      R4, #2
+$        IA      R3, R4
+$        LDA     R4, +4(R15)
+$        LD      R5, +16(R14)
+$        TRNG    R5, +0(R14)
+$        IS      R5, #0
+$        IM      R5, #4
+$        IA      R4, R5
+$        LDA     R5, *R4
+$        LD      R6, +18(R14)
+$        TRNG    R6, +0(R14)
+$        IS      R6, #0
+$        IM      R6, #2
+$        IA      R5, R6
+$        LD      R6, *R5
+$        PUSH    R13, 64
+$        POP     R13, 32
+$        STO     R5, *R3
+ i := 1;
+$        LD      R3, +20(R14)
+$        STO     R3, +0(R15)
+ do i <= max -> 
+$    LABEL J3
+$        LD      R4, +0(R15)
+$        LD      R3, #1
+$        IC      R4, +22(R14)
+$        JLE     &4
+$        LD      R3, #0
+$        IC      R3, #1
+$        JNE     J4
+	i := i+1;
+$        LD      R3, +0(R15)
+$        IA      R3, +24(R14)
+$        STO     R3, +0(R15)
+	a[i][1] := a[i-1][1] + a[i][0] ; 
+$        LDA     R3, +4(R15)
+$        LD      R4, +0(R15)
+$        TRNG    R4, +0(R14)
+$        IS      R4, #0
+$        IM      R4, #4
+$        IA      R3, R4
+$        LDA     R4, *R3
+$        LD      R5, +26(R14)
+$        TRNG    R5, +0(R14)
+$        IS      R5, #0
+$        IM      R5, #2
+$        IA      R4, R5
+$        LD      R5, +0(R15)
+$        IS      R5, +28(R14)
+$        LDA     R6, +4(R15)
+$        LD      R7, R5
+$        TRNG    R7, +0(R14)
+$        IS      R7, #0
+$        IM      R7, #4
+$        IA      R6, R7
+$        LDA     R7, *R6
+$        LD      R8, +30(R14)
+$        TRNG    R8, +0(R14)
+$        IS      R8, #0
+$        IM      R8, #2
+$        IA      R7, R8
+$        LDA     R8, +4(R15)
+$        LD      R9, +0(R15)
+$        TRNG    R9, +0(R14)
+$        IS      R9, #0
+$        IM      R9, #4
+$        IA      R8, R9
+$        LDA     R9, *R8
+$        LD      R10, +32(R14)
+$        TRNG    R10, +0(R14)
+$        IS      R10, #0
+$        IM      R10, #2
+$        IA      R9, R10
+$        LD      R10, *R7
+$        IA      R10, *R9
+$        STO     R10, *R4
+ od;
+$        JMP     J3
+$    LABEL J4
+ i := 0;
+$        LD      R4, +34(R14)
+$        STO     R4, +0(R15)
+ do i <= max -> 
+$    LABEL J5
+$        LD      R5, +0(R15)
+$        LD      R4, #1
+$        IC      R5, +36(R14)
+$        JLE     &4
+$        LD      R4, #0
+$        IC      R4, #1
+$        JNE     J6
+	i := i+1;
+$        LD      R4, +0(R15)
+$        IA      R4, +38(R14)
+$        STO     R4, +0(R15)
+	a[i][2]:= a[i][0] * a[i][1]; 
+$        LDA     R4, +4(R15)
+$        LD      R5, +0(R15)
+$        TRNG    R5, +0(R14)
+$        IS      R5, #0
+$        IM      R5, #4
+$        IA      R4, R5
+$        LDA     R7, *R4
+$        LD      R8, +40(R14)
+$        TRNG    R8, +0(R14)
+$        IS      R8, #0
+$        IM      R8, #2
+$        IA      R7, R8
+$        LDA     R8, +4(R15)
+$        LD      R9, +0(R15)
+$        TRNG    R9, +0(R14)
+$        IS      R9, #0
+$        IM      R9, #4
+$        IA      R8, R9
+$        LDA     R9, *R8
+$        LD      R10, +42(R14)
+$        TRNG    R10, +0(R14)
+$        IS      R10, #0
+$        IM      R10, #2
+$        IA      R9, R10
+$        LDA     R10, +4(R15)
+$        LD      R11, +0(R15)
+$        TRNG    R11, +0(R14)
+$        IS      R11, #0
+$        IM      R11, #4
+$        IA      R10, R11
+$        LDA     R11, *R10
+$        LD      R12, +44(R14)
+$        TRNG    R12, +0(R14)
+$        IS      R12, #0
+$        IM      R12, #2
+$        IA      R11, R12
+$        LD      R5, *R9
+$        IM      R5, *R11
+$        STO     R5, *R7
+ od;
+$        JMP     J5
+$    LABEL J6
+ i := 0;
+$        LD      R5, +46(R14)
+$        STO     R5, +0(R15)
+ j := 0;
+$        LD      R5, +48(R14)
+$        STO     R5, +2(R15)
+do i <= max & j <= max ->
+$    LABEL J7
+$        LD      R7, +0(R15)
+$        LD      R5, #1
+$        IC      R7, +50(R14)
+$        JLE     &4
+$        LD      R5, #0
+$        LD      R8, +2(R15)
+$        LD      R7, #1
+$        IC      R8, +52(R14)
+$        JLE     &4
+$        LD      R7, #0
+$        BA      R5, R7
+$        IC      R5, #1
+$        JNE     J8
+	write a[i][j]; j := j+1;
+$        LDA     R7, +4(R15)
+$        LD      R8, +0(R15)
+$        TRNG    R8, +0(R14)
+$        IS      R8, #0
+$        IM      R8, #4
+$        IA      R7, R8
+$        LDA     R8, *R7
+$        LD      R9, +2(R15)
+$        TRNG    R9, +0(R14)
+$        IS      R9, #0
+$        IM      R9, #2
+$        IA      R8, R9
+$        WRI     *R8
+$        WRNL    
+$        LD      R5, +2(R15)
+$        IA      R5, +54(R14)
+$        STO     R5, +2(R15)
+	if j > max -> 
+$        LD      R8, +2(R15)
+$        LD      R5, #1
+$        IC      R8, +56(R14)
+$        JGT     &4
+$        LD      R5, #0
+$        IC      R5, #1
+$        JNE     J10
+		i := i+1;
+$        LD      R5, +0(R15)
+$        IA      R5, +58(R14)
+$        STO     R5, +0(R15)
+		j := 0;
+$        LD      R5, +60(R14)
+$        STO     R5, +2(R15)
+	 [] j <= max -> skip;
+$        JMP     J9
+$    LABEL J10
+$        LD      R8, +2(R15)
+$        LD      R5, #1
+$        IC      R8, +62(R14)
+$        JLE     &4
+$        LD      R5, #0
+$        IC      R5, #1
+$        JNE     J11
+	fi;
+$        JMP     J9
+$    LABEL J11
+$        HALT    
+$    LABEL J9
+od;
+$        JMP     J7
+$    LABEL J8
+ { output, if you don't catch the out of bounds
+  error in the compiler then you get one
+  run time error}
+ end.
+$        HALT    
+$    LABEL C1
+$        INT      0
+$        INT      1
+$        INT      0
+$        INT      2
+$        INT      0
+$        INT      1
+$        INT      0
+$        INT      1
+$        INT      0
+$        INT      0
+$        INT      1
+$        INT      2
+$        INT      1
+$        INT      1
+$        INT      1
+$        INT      1
+$        INT      0
+$        INT      0
+$        INT      2
+$        INT      1
+$        INT      2
+$        INT      0
+$        INT      1
+$        INT      0
+$        INT      0
+$        INT      2
+$        INT      2
+$        INT      1
+$        INT      2
+$        INT      1
+$        INT      0
+$        INT      2
+$    LABEL V1
+$        SKIP     12
+  <end of compilation of ..\tests\test11_6>.  There were no errors detected.
+  Allocated Registers: 0 1 2 3 4 6 7 13 14 15 
+

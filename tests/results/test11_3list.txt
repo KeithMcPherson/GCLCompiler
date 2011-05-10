@@ -1,0 +1,120 @@
+Compiled on: Mon May 09 19:37:56 EDT 2011
+module test11_3 { semantic arrays
+$        LDA     R15, V1
+$        LDA     R14, C1
+$        LD      R13, #16000
+-- semantic test of arrays (1 dimension )
+-- instructions:
+--	first run as is, get error on array declaration line
+--	next change siz to 4. get run time bound error }
+private
+ constant siz = -4;
+ integer i;
+ typedefinition integer range [0..siz] zero_four; { error}
+ integer array [zero_four] a,b; 
+begin
+ i := 0;
+$        LD      R0, +4(R14)
+$        STO     R0, +0(R15)
+ do i <= 5 -> read a[i]; i := i+1; od;
+$    LABEL J1
+$        LD      R1, +0(R15)
+$        LD      R0, #1
+$        IC      R1, +6(R14)
+$        JLE     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J2
+$        LDA     R0, +2(R15)
+$        LD      R1, +0(R15)
+$        TRNG    R1, +0(R14)
+$        IS      R1, #0
+$        IM      R1, #2
+$        IA      R0, R1
+$        RDI     *R0
+$        LD      R1, +0(R15)
+$        IA      R1, +8(R14)
+$        STO     R1, +0(R15)
+$        JMP     J1
+$    LABEL J2
+ i := 0;
+$        LD      R1, +10(R14)
+$        STO     R1, +0(R15)
+ do i <= 5 -> i := i+1; b[i] := a[6-i]; od;
+$    LABEL J3
+$        LD      R2, +0(R15)
+$        LD      R1, #1
+$        IC      R2, +12(R14)
+$        JLE     &4
+$        LD      R1, #0
+$        IC      R1, #1
+$        JNE     J4
+$        LD      R1, +0(R15)
+$        IA      R1, +14(R14)
+$        STO     R1, +0(R15)
+$        LDA     R1, -4(R15)
+$        LD      R2, +0(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        LD      R2, +16(R14)
+$        IS      R2, +0(R15)
+$        LDA     R3, +2(R15)
+$        LD      R4, R2
+$        TRNG    R4, +0(R14)
+$        IS      R4, #0
+$        IM      R4, #2
+$        IA      R3, R4
+$        LD      R4, *R3
+$        PUSH    R13, 16
+$        POP     R13, 8
+$        STO     R3, *R1
+$        JMP     J3
+$    LABEL J4
+ i := 0;
+$        LD      R1, +18(R14)
+$        STO     R1, +0(R15)
+ do i <= 5 -> write b[i]; i:= i+1; od;
+$    LABEL J5
+$        LD      R2, +0(R15)
+$        LD      R1, #1
+$        IC      R2, +20(R14)
+$        JLE     &4
+$        LD      R1, #0
+$        IC      R1, #1
+$        JNE     J6
+$        LDA     R1, -4(R15)
+$        LD      R2, +0(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        WRI     *R1
+$        WRNL    
+$        LD      R1, +0(R15)
+$        IA      R1, +22(R14)
+$        STO     R1, +0(R15)
+$        JMP     J5
+$    LABEL J6
+ end. { one error}
+ 
+$        HALT    
+$    LABEL C1
+$        INT      0
+$        INT      -4
+$        INT      0
+$        INT      5
+$        INT      1
+$        INT      0
+$        INT      5
+$        INT      1
+$        INT      6
+$        INT      0
+$        INT      5
+$        INT      1
+$    LABEL V1
+$        SKIP     -10
+  <end of compilation of ..\tests\test11_3>.  There were no errors detected.
+  Allocated Registers: 0 13 14 15 
+

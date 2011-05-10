@@ -1,0 +1,69 @@
+{
+-- This is a test of nested recursive procedure
+-- calls and tuple access with the @ operator
+-- The coding is purposly awkward to illustrate codegen. 
+It should be correct, however.
+}
+$c+
+module test19 {Simple tuple access}
+private
+  integer i, result;
+
+	tuple [ integer result, { the ultimate result }
+	  procedure factorial(value integer n),
+	  procedure val(reference integer valx)
+	] fac;
+	
+  	procedure fac@factorial
+  		typedefinition tuple [integer valu, 
+  		procedure val(reference integer valx) ] mult;
+  		
+  		tuple [ integer m1, integer m2, {two numbers to be multiplied }
+  		  mult m,
+  		  procedure fact(value integer pre, n),
+  		  procedure times()
+  		] compute;
+  		
+  		procedure compute@times
+  		begin
+  			this@m@valu := this@m1 * this@m2; 
+  		end;
+  		
+	    
+	    procedure mult@val
+	    begin
+	    	valx := this@valu;
+	    end;
+
+	    procedure compute@fact
+	    integer temp;
+	    begin
+		if n # 0 -> 
+			this := [n, pre, [0]];
+			this!times();           {<----- check -------}
+			this@m!val(temp);    
+			this!fact(temp, n - 1);  
+		[] n = 0 -> 
+			fac@result := pre;          {<----- check ----}
+		fi;
+	    end;
+
+    begin  { body of factorial}
+    	compute!fact(1,n);
+  	end;
+  	
+  	procedure fac@val
+  	begin
+  		valx := this@result;
+  	end;
+
+begin { module body}
+    write  "The first 5 factorials are (in descending order):";
+    i := 5;	
+    do i > 0 ->	
+    	fac!factorial(i);
+    	fac!val(result);
+        write "factorial(", i, ") = ", result;
+	i := i - 1;
+    od;
+end.

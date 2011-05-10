@@ -1,0 +1,9 @@
+This is a test of strings.
+ You can quote or double quote strings,
+and you can put several (6)
+on a line.  Colons ':' are special.
+
+To embed single 'quotes', use the other kind.
+Ditto for "double quotes".
+You can even quote a quote ( '"')
+but it isn't pretty.

@@ -1,0 +1,609 @@
+
+© 2011, Joseph Bergin
+
+GCL--THE GUARDED COMMAND LANGUAGE (VERSION 14): 
+
+Joseph Bergin
+
+The programming language GCL is a Pascal-like language with guarded commands and parallel assignment.  The 
+language has tuples for encapsulation and procedures for abstraction.  It was developed from a language 
+originally designed by Edsger Dijkstra.  It also has elements of the obliq language of Luca Cardeli. 
+Some of its techniques are similar to those of object-oriented languages, though the resolution here is 
+static, not dynamic. 
+
+Keywords 	
+
+	These words may not be redefined.
+
+	array begin Boolean constant do end false fi forall if integer llarof module od private 
+	procedure range read reference return skip this true tuple typedefinition value write 
+
+Other symbols 
+
+	.   =   :=  { }  ,   ;   (   ) []  [   ]   ->  #   < > <=  >=  &   
+	|   ~   +   -   *   /   \  .. @  !
+
+	Comments are introduced with the symbol { and extend to the corresponding }. Comments may be nested. 
+	Comments begin anywhere with -- and extend to the end of that line.
+
+Identifiers 
+
+User defined identifiers consist of Letters, digits and underscore characters with the restriction that they must 
+begin with a letter, they may not contain white space, and they may not contain sequences of more than one 
+underscore.  Therefore m__f is not legal. 
+
+Qualified Identifiers
+
+Identifiers may be qualified with the name of a module.  A qualified identifier has the form
+
+identifier.identifier
+
+where the first identifier is the name of a module and the second is the name of something defined within 
+that module at the global level.  
+
+Numbers
+
+A number is a sequence of digits 0...9.  It does not have a sign. It represents an integer value.
+
+Programs 
+
+A program is a sequence of modules.  Each module is a definition part followed by an optional block followed 
+by a period.  
+
+<module> -> 
+	module identifier 
+		<definitionPart> 
+	[ private
+		<block> ] .  
+
+The definition part of a module represents the interface that the module presents to other modules that 
+follow in the sequence: its names are exported from the module.   
+
+A block consists of a definition part followed by a statement part: 
+
+<block> -> 
+		<definitionPart> 
+	begin 
+		<statementPart> 
+	end 
+
+The names (identifiers) introduced in the definition part of the block are local to that block. Such names 
+are visible within any contained blocks unless a new definition is given within that inner block. A block 
+describes operations (computations) on named entities called objects.  An object is either a constant, a 
+variable, a tuple, or a procedure.   Names defined within a block or module must be unique within that block 
+or module.  They may, however, be redefined in blocks contained within that block or module.  Note: A name 
+declared in the exported part of a module may not be redefined in the private, global, part of that same module. 
+NOTE: The word object is not used in the same way that it is used in Object-Oriented Programming. 
+
+Declarations: 
+
+The definition part of a block is a sequence of (zero or more) definitions, each terminated by a semicolon.  
+
+	<definitionPart> -> D1;D2;...Dn; 
+
+A constant definition introduces the name of a single integer or Boolean constant.  For example: 
+
+	constant size = 100;
+	constant done = false;
+
+A variable definition introduces the names of variables of the same type; for example, 
+
+	Boolean done,found; 
+	integer x,y,z; 
+	tuple [integer first, integer second] pair;
+
+The simple types of GCL are integer and Boolean.  Integer represents a fixed range of the ordinary integer 
+numbers (usually -32768...32767).  The Boolean values are true and false.  The words integer, Boolean, true, 
+and false are keywords in the language, they are not identifiers, and may not be redefined.  Boolean type is 
+not compatible in any way with integer type.  Integer is compatible with integer and with integer ranges. 
+Boolean is compatible with Boolean and with Boolean ranges.  
+
+The variable definition
+
+	integer range [3..9] i,j ;
+
+introduces range variables i and j that may take on integer values  between 3 and 9 (inclusive). Range 
+variables are compatible if they have compatible base types, here integer. Ranges are also automatically 
+compatible with their base types.  Nevertheless, a range variable should never obtain a value outside its 
+allowable range.  Range types with  integer base types may be read and written.  The basetype of a range 
+can also be Boolean since Boolean values can be compared with the < operator. Note that false < true.  
+For example
+
+	Boolean range [false..true] bools;
+
+Assume we have made the declarations:
+
+	constant size = 100;
+	typedefinition integer range[1..size] Subs;
+	
+Then the variable definition 
+
+	integer array [Subs] a,b;
+
+introduces the names a and b as arrays of 100 integers each.  The allowable subscripts of a and b are 1...100 
+in this case.  Array elements may be of any type.  Subs is called the subscript type of this array and integer 
+is the component type of the array. The definitions
+
+	typedefinition integer range [1..5] One_five;
+	typedefinition integer range [1..10] One_ten;
+	Boolean array[One_ten][One_five] twodim
+
+introduces an array of ten elements, each of which is an array of five Boolean values.  Said another way, 
+this is a two dimensional array of Booleans, with ten rows and five columns.  Arrays may have any number of 
+subscripts, but they may have only integers or Booleans (ranges) for subscripts.  Given the above declaration 
+twodim[3] is an array of 5 Booleans and twodim[3][1] is the first element of twodim[3].  The name in brackets 
+in an array declaration must, of course, be the name of a range type defined in a previous  typedefinition. 
+The identifier to the left of the word array in an array definition is an arbitrary type name. This type is 
+called the component type of the array. 
+
+A type definition looks like the keyword typedefinition followed by a type specifier and then an identifier.  
+For example
+
+	typedefinition integer Size;
+
+declares Size to be a type identical to integer type.  Similarly
+
+	typedefinition integer array[one_ten] Element;
+
+declares the identifier Element to be an array type with 10 integer cells. And
+
+	typedefinition tuple [integer x, integer y, procedure sum(reference integer result)] Intpair;
+
+declares that Intpair represents a tuple type with two integer components and one method. 
+
+If a tuple is visible, its methods may be called. The methods of a tuple type must have distinct names. 
+
+Two type expressions represent the same type if they represent identical type structures.  The names that 
+may be given to types are a programmer convenience only.  They do not create new types. We say that types 
+of the same structure are "compatible". 
+
+A procedure declaration introduces the name, formal parameters and parameter mechanisms of a procedure, 
+which may be called to produce an effect. Procedure declarations occur only within tuple type declarations 
+and represent the methods of variables of that tuple type. 
+
+tuple [..., procedure compute(value integer n;  value Boolean greater; reference integer result),...]
+
+Here, compute has three parameters, two value parameters and a single reference parameter. 
+
+A procedure definition gives the block that defines the procedure's action.  for example 
+
+	procedure tup@compute
+	begin
+		 if  greater -> result := n; 
+		[] ~greater -> result := -n;  
+		fi; 
+	end;
+	
+	Here tup represents either a tuple type (defined in a type definition) or a tuple valued variable. 
+	Note that the parameters do not appear in the definition, only in the prior declaration. 
+	The definition must appear in the same definition part as the declaration. 
+	
+	Procedures (methods) are components of tuples. Within a single tuple they must have distinct names.
+
+Several parameter declarations are separated by semicolons.  Each parameter declaration may define several 
+parameters just as a variable declaration may define several variables.  The parameters may be passed by value 
+or reference. All names declared within a function body (parameters and locals) must be distinct.  Any type 
+may be passed as a parameter, including arrays and tuples. 
+
+A procedure declaration consists of its name, parameter definitions, and their passing mechanisms;
+  for example 
+
+	procedure compute(value integer n;  value Boolean greater;  reference integer result) 
+
+A declared procedure must eventually be defined in the same definition part in which it was declared 
+(and not, for example, within another block contained within that block).  A  previously declared procedure 
+is defined by giving its tuple, its name and its block, without repeating its parameter definitions; 
+for example, 
+
+tuple[... procedure fac(value integer n;  reference integer result) ... ] aTuple 
+	.  .  .  
+	procedure aTuple@fac 
+	begin
+		if n <= 1 -> result :=  1;
+		[] n >   1 -> aTuple!fac(n-1, result); result := n * result;
+		fi;
+	end; 
+
+It is an error to give more than one definition of a declared procedure. Note that if you define a procedure 
+using a tuple variable (rather than a tuple type), it defines the procedure for all tuples of that type. 
+In other words, the procedure definition is associated with the type in any case. Using a variable name 
+to define procedures is just a convenience that helps when you have anonymous tuple types. 
+
+Statements: 
+
+The statement part of a block is a sequence of (one or more) statements followed by semicolons: 
+
+	S1;S2;...Sn; 
+
+The empty statement is denoted by the keyword skip.  Nothing is done by skip.  
+
+The read statement inputs one or more integers and assigns them to variables; for example, 
+
+	read i, a[i]; 
+
+A write statement outputs on or more integer expressions and/or string constants; for example, 
+
+	write "The answer is: ", x, " and its size is: ", i; 
+
+The operands of a read statement must be of type integer or a range type with base type integer.  The operands 
+of a write statement may be integers,  or ranges with integer base type, or they may be string constants.  
+
+String constants are delimited by either double quote marks or by single quote marks (apostrophes).  The 
+left and right string delimiters must be of the same kind.  A string delimited by double quotes may contain 
+apostrophes and conversely.  The quote marks surrounding a string are not output by the write statement.  
+The following are legal strings 
+
+	'These are the times' 
+	"that try men's souls" 
+	
+Strings may not cross line boundaries (may not contain end line characters). Neither may they contain null 
+characters otherwise any character is permitted (including non-printing characters).  
+
+An assignment statement consists of a variable access list followed by an expression list; for example 
+
+	n, m := n+1, n*m;
+
+Each variable in the variable access list must have a compatible type with the  corresponding expression.  
+All assignments are carried out in parallel. 
+
+Tuples and arrays may be assigned as well as subarrays.  For example,  using the declarations given above, 
+
+	twodim[4] := twodim[1]; 
+
+is legal, and copies the entire subarray twodim[1,1..5] into the subarray twodim[4,1..5]
+
+The assignment statement is executed in the following way:  First, the variable accesses are evaluated to 
+obtain addresses.  Second, the expressions are evaluated to obtain values. Third, the values are assigned 
+to the addresses. Logically, no value may be assigned before all are evaluated.  Note that
+
+	x, y := y, x;
+
+is a valid way to write a value swap in gcl.  
+
+The name of the language comes from the form of the if and do statements.  
+
+The if statement takes the form 
+ if B1 -> SP1 [] B2 -> SP2 [] ...[] Bn -> SPn fi  
+where the Bs are Boolean expressions and the SPs are statement lists.  For example, 
+
+	if a < b -> min := a; 
+	[] a >= b -> min := b; 
+	fi;
+
+This is equivalent to the Java statement: if (a<b) min = a; else min = b;  
+
+The logical negation operator in GCL is the tilde, ~, so the above is equivalent to, 
+
+	if a < b -> min := a; 
+	[] ~(a < b) -> min := b; 
+	fi;
+
+The forms B -> SP are called guarded commands, where the Boolean expression B is the guard and SP is a 
+statement part; for example,   a < b -> min := a; 
+
+The execution of the if statement proceeds by determining if any of the guards is true.  If any of them 
+are true then one of the true guards will be chosen arbitrarily and the corresponding statement part will 
+be executed.  This will terminate the execution of the if and the computation will continue with any 
+statement that follows.  However, it is an error if none of the guards are true and the entire computation 
+will be halted in an error state and a message is printed.  
+
+According to this rule the first example in this section is equivalent to the following (notice that both 
+guards may be true simultaneously) 
+
+	if a <= b -> min := a; 
+	[] a >= b -> min := b; 
+	fi; 
+
+A do statement also consists of guarded commands: 
+  do B1 -> SP1 [] B2 -> SP2 [] ...[] Bn -> SPn od  For example 
+
+	do i <= size -> read A[i]; i := i+1; od; 
+
+If one or more of the guards is true then one of the true guards will be chosen arbitrarily and the 
+corresponding statement part will be executed, after which the do statement will be re-executed.  
+The do statement will terminate only when all guards are false.  
+
+Note that guarded command lists in if and do statements contain at least one guarded command. Note that the 
+if statement of gcl can have many clauses, but there is no "default" clause. Every command has a guard.
+
+A forall statement iterates over all values of a range variable in the order of values defined by the range. 
+
+	integer range [1..10] x;
+	... 
+	forall x -> write x; llarof;
+
+The control variable (here x) must be a range variable (i.e. a variable with a range type).  This statement  
+executes its statement part once for each value of the range variable from smallest to largest.   It is 
+not possible to iterate over a portion of the range with forall. Instead use a do  statement with an 
+integer (or Boolean) control variable to achieve this. 
+
+The return statement consists of the keyword return. It is only legal within the block of a procedure.  
+When executed the procedure immediately terminates.  Every procedure has an implicit return statement as 
+its last statement. 
+
+The procedure call statement consists of the selector of the procedure to be called and argument expressions 
+matching the parameters of the procedure. A selector of a procedure is a tuple expression followed by "!" 
+followed by the name of the procedure which must be a method of that tuple. Everything  up to the "!" is 
+called the prefix. 
+
+Reference parameters must be matched by variable access expressions. If a procedure has no parameters the 
+empty parentheses are still present in the procedure call statement. 
+
+Some examples of a call statement follows.
+
+	poly!compute ( x + 5, x <= y, result);
+	this!try();    { The method try of this tuple}
+	this@second!doIt(t); { The doIt method of a nested tuple.}
+
+A procedure call activates the block of the corresponding procedure after matching the values of the value 
+arguments with the names of the formal value parameters and the addresses of the reference arguments with 
+the corresponding reference parameters. 
+
+There is always a selector prefix in a procedure call. The prefix must designate a tuple value.  The method 
+must be a method of that tuple's type. 
+
+Expressions:
+
+The relational operators are =, #, <, <=, >, >=.  Operators = and #  apply to any type (including arrays 
+and tuples), though the operands must be compatible.  The last four  apply only to integers and Booleans.  
+
+The arithmetic operators are +, -, *, /, \, with the last indicating the integer remainder.  Operator - 
+is also used as the unary negation op.  Operators +  may be used as a unary operator as well, with the usual 
+meanings. The operands must be compatible with integer 
+
+The boolean operators are &, |, ~, indicating and, or and not respectively.  These are always evaluated 
+completely.  Note that ~ is a unary prefix operator. The other two are binary infix operators. The operands 
+must be compatible with Boolean.
+
+All binary operators are left associative.  The precedences of the operators fall into the classes below, 
+in order of increasing precedence.  
+
+Or operator |,
+And operator &,  
+Relational operators = # < <= > >=,  
+Adding operators + -,  
+Multiplying operators * / \,  
+Unary operators ~  -  +, 
+
+The grammar given at the end of the document reflects this precedence.  
+
+The variable definition
+
+	tuple [integer x, Boolean b, integer y, procedure sum(reference integer)] z;
+	
+introduces a tuple variable z whose (tuple) type has three components and one method.  Tuple variables are 
+assignable.  A value like [3, y < 3, 5 + y] (assuming y has type integer)  is a tuple value compatible with z.  
+A tuple may have any number of components and any number of methods. The components and the methods must have 
+distinct names. Tuples are compatible if their corresponding component types are compatible. Note that the 
+names of components are not part of the type of the tuple. 
+
+The components of tuples are available using the @ operator. 
+ 
+For example:
+
+	this@first 
+	z@size;
+	
+represent the contents of the "first" and "size" components of the respective tuples. Every tuple method 
+knows its own tuple with the reserved word this. 
+
+Fields of tuples may be  assigned to as in:
+
+	this@first := false;
+	z@size := 3;
+	
+When tuples are nested, it is sometimes necessary to access a component of a nested tuple. This is achieved 
+with multiple uses of the @ operator using syntax such as
+
+	someValue@second@size
+
+which means  select the "second" component of someValue and then the "size" component of that. It is only 
+available if nesting is sufficiently deep, of course. 
+
+Note that a tuple defined within a method is considered to be implicitly contained within the tuple of that 
+method.  
+
+One can similarly call a method of a nested tuple with 
+
+	value@second@size!compute(x,y);
+	 
+
+Tuples are compatible provided that they have the same number of (type) components and that the corresponding 
+components are themselves compatible. Note that tuples with different methods may be compatible. (Perhaps this 
+is a flaw in the language.) 
+
+A GCL example.  
+
+{ Linear search } 
+module search  
+
+	constant size = 10;  
+	typedefinition integer range [1..size] Sizer;
+	typedefinition integer array [Sizer] Elements;
+	typedefinition tuple [ 
+		Elements elements,
+		procedure load(),
+		procedure search 
+		(value integer target; reference Boolean found; reference integer where)
+		] Searchable;
+		
+	
+	procedure Searchable@load
+		Sizer i;
+	begin
+		forall i ->
+			read this@elements[i];
+		llarof;
+	end;
+
+	procedure Searchable@search 
+		integer m; 
+		integer i; 
+	begin 
+		i, found := 1, false;
+		do i <= size -> 
+			if this@elements[i] = target -> 
+					found, where, i := true, i, size+1; 
+			[]  this@elements[i] # target -> 
+					i := i+1; 
+			fi; 
+		od; 
+	end;  
+	
+private 	
+	integer x;
+	Boolean found;
+	integer where;
+	Searchable a;
+	
+begin 
+  { test search  }
+	a!load(); 
+	read x;  
+	do x#0 -> a!search(x, found, where); 
+		if found -> write x, ' can be found at ', where;  
+		[] ~found -> write x, ' not found'; 
+		fi; 
+		read x; 
+	od;
+ end.  
+
+
+In a program consisting of more than one module, the second and subsequent modules may obtain access to objects 
+exported from earlier modules by preceding the name of the object with the name of the module; for example 
+
+module first 
+	constant size = 100; 
+	procedure search...   
+private
+	begin 
+	  ...   
+	 end.  
+...
+module second  begin 
+ ...  	first.size ...  
+	 first.search...
+...
+end.  
+
+The names declared within the module blocks are local to the modules and are not exported.  Other modules have no 
+access to them.  If a name has been exported and not subsequently hidden by the redefinition of the same name in 
+a new module, then access to the name may also be obtained directly without prefixing it with the module name.  
+
+The blocks of the modules are executed in order of appearance in the program.  Note that the private part of a 
+module is optional.  
+
+Notes.  
+
+Capital letters and small letters are considered different.  
+
+Comments may be inserted into the source of a program by enclosing them with the comment indicators: { and }.  
+Comments may be nested.  A comment can appear at any place at which any token is legal. Comments are equivalent 
+to spaces and are ignored. 
+
+Another form of comment begins with adjacent dash characters -- and extends to the end of the current line. 
+
+Each declaration and each statement is terminated by a semicolon.  
+
+The skip statement may be used to simulate the effect of a Pascal or C if-then statement (without an else part).  
+The following are equivalent: 
+
+	Pascal: if a < b then write a; 
+
+	GCL if a < b -> write a; [] ~(a < b) -> skip; fi; 
+
+The following is almost certainly an error and is not equivalent to the above: 
+
+	GCL if a < b -> write a; fi; 
+	
+Note that the following is also not equivalent and dangerous. 
+
+	GCL if a < b -> write a; [] true -> skip; fi; 
+
+
+Procedure definitions may be nested since a tuple may be declared within a procedure's block and may itself 
+have procedures.  They define nested name scopes identical to Pascal.  A name is visible in a block in which 
+it is declared and in any blocks contained within it, but not to surrounding blocks.  
+
+While all names declared within a block must be distinct, it is possible, as in Pascal, to redeclare any name 
+that was declared in a containing block.  The new declaration is valid for the duration of the block in which 
+it is declared.  Outside the block the original declaration  is valid.  
+
+Two variables that have the same structure are considered to have the same type for purposes of assignment and 
+equality comparisons.  Arrays have the same structure if they have compatible component types and also the 
+subscript types must be essentially identical (compatible and with identical low bounds and identical high bounds). 
+
+The components of a tuple may be of any type, including other tuple types or array types. The types need names, 
+however, to define the tuple.  
+
+All parameters are passed by value or by reference.  Arrays and tuples are copied when used as value parameters 
+as are all other types.    
+
+An EBNF grammar for GCL  (This version is not LL(1) though the language is, and the tools require it.)
+<program>   		::=	<module> {<module>}  
+<module>    		::=	"module" "identifier" <definitionPart> 
+						[ "private"  <block> ] "."  
+<block>     		::=	<definitionPart> "begin" <statementPart> "end"  
+<definitionPart> 	::=	{<definition> ";"}  
+<definition>   	 	::=	<constantDef> | <variableDef> 
+						| <typedefinition> | <procedureDef> 
+<constantDef>  	 	::=	"constant" "identifier" "=" <constant> 
+<variableDef>   	::=	<type> <identifierList>  
+<type>				::=	<typeSymbol> [ <arraytype> | <rangetype> ] | <tupletype> 
+<typeSymbol>   		::= "integer" | "Boolean"  | <qualifiedIdent>
+<tupletype>			::=	"tuple" "[" ( <justProcs> | <fieldsAndProcs> ) "]"
+<justProcs>			::=	<procedureDecl> { "," < procedureDecl> }
+<fieldsAndProcs>	::=	<typeSymbol> "identifier" <moreFieldsAndProcs>
+<moreFieldsAndProcs>::=	[ "," ( <typeSymbol> "identifier" <moreFieldsAndProcs> 
+						  | <justProcs> ) 
+						] 
+<procedureDecl> 	::=	"procedure" "identifier" <paramPart>
+<paramPart> 		::=	"(" [ <paramDef> {  ";" <paramDef> } ] ")" 
+<paramDef> 	 		::=	( "value" | "reference") <variableDef> 
+<arraytype>			::=	"array" "[" <qualifiedIdent> "]" 
+						{"[" <qualifiedIdent> "]"}
+<rangetype>			::=	"range" "[" <constant> ".." <constant>  "]"				
+<identifierList>	::=	"identifier" {"," "identifier"} 
+<typedefinition>	::=	"typedefinition" <type> "identifier" 
+<procedureDef>  	::=	"procedure" "identifier" "@" "identifier"  <block>  
+<statementPart> 	::=	statement ";" { <statement> ";"}  
+<statement> 		::=	<emptyStatement> | <readStatement> | <writeStatement> 
+						| <assignStatement> | <returnStatement> 
+						| <callStatement>
+						| <ifStatement> | <doStatement> | <forStatement>
+<emptyStatement>    ::=	"skip"  
+<readStatement>     ::=	"read" <variableAccessList> 
+<variableAccessList>::=	<variableAccess> {"," <variableAccess> } 
+<writeStatement>	::=	"write" <writeItem> {"," <writeItem> }  
+<writeItem>     	::=	"stringconstant" | <expression>  
+<expressionList>    ::=	<expression> { "," <expression> }  
+<assignStatement>   ::=	<variableAccessList> ":=" <expressionList>  
+<callStatement>		::=	<variableAccess> "!" "identifier" <argumentList>  
+<argumentList>		::=	"(" [ <expressionList>] ")" 
+<ifStatement>       ::=	"if" <guardedCommandList> "fi"  
+<guardedCommandList>::= <guardedCommand> {"[]" <guardedCommand>}  
+<guardedCommand>	::=	<expression> "->" <statementPart>  
+<doStatement>       ::=	"do" <guardedCommandList> "od" 
+<forStatement>		::=	"forall" <variableAccess> "->" <statementPart> "llarof"
+<returnStatement>	::=	"return" 
+<expression>		::=	<andExpression> {"|" <andExpression> }
+<andExpression>		::=	<relationalExpression> {"&" <relationalExpression> }
+<relationalExpression>::=	<simpleExpression> [<relationalOperator> 
+						<simpleExpression>] 
+<relationalOperator>::=	"<" | "=" | ">" | "<=" | ">=" | "#" 
+<simpleExpression>	::=	[ "+" | "-" ] <term> { <addOperator> <term>} 
+<term>				::=	<factor> {<multiplyOperator> <factor>}  
+<factor>			::=	<variableAccess> | "number" | <booleanConstant> 
+						| "[" <expressionList> "]" 
+						| "(" <expression> ")" | "~" <factor> 
+<addOperator> 		::=	"+" | "-"  
+<multiplyOperator>  ::=	"*" | "/" | "\" 
+<qualifiedIdent>	::=	"identifier" [ "." "identifier ]
+<variableAccess>	::=	<qualifiedIdent> <subsAndCompons> 
+						| "this" ["@" "identifier" <subsAndCompons> ]
+< subsAndCompons >	::=	{  "[" <expression> "]" | "@" "identifier" }
+<constant>			::=	<expression>
+<booleanConstant>   ::=	"true" | "false" 
+
+Notice that some constructs seemingly legal according to this grammar are actually illegal due to the semantics 
+of GCL.  The comment has not been included in the grammar (it is a Lexical consideration).  

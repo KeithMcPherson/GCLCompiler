@@ -1,0 +1,111 @@
+Compiled on: Mon May 09 19:37:52 EDT 2011
+module test0
+$        LDA     R15, V1
+$        LDA     R14, C1
+$        LD      R13, #16000
+private
+ integer a,b,x;
+ tuple [integer first, integer second] pair;
+ begin
+$s+
+
+------ Symbol Table with 5 entries. ------ 
+
+private variable entry: ID = b semantic: VariableExpression: level(1) offset(2) direct, with type integer type.
+private variable entry: ID = pair semantic: VariableExpression: level(1) offset(6) direct, with type tupleType:[integer type. : first, integer type. : second, ] with size: 4
+private variable entry: ID = x semantic: VariableExpression: level(1) offset(4) direct, with type integer type.
+private variable entry: ID = a semantic: VariableExpression: level(1) offset(0) direct, with type integer type.
+Scope change
+public module entry: ID = test0 semantic: Unknown semantic item. 
+
+------ Symbol Table End ------
+
+ read b; { use 2 as input value}
+$        RDI     +2(R15)
+ x, a := 1, b + x;
+$        LD      R0, +2(R15)
+$        IA      R0, +4(R15)
+$        STO     R0, +0(R15)
+$        LD      R0, +0(R14)
+$        STO     R0, +4(R15)
+ pair := [a, b + x];
+$        LD      R0, +2(R15)
+$        IA      R0, +4(R15)
+$        LD      R1, +0(R15)
+$        STO     R1, +10(R15)
+$        STO     R0, +12(R15)
+$        IS      R13, #4
+$        LDA     R0, +10(R15)
+$        LD      R1, #4
+$        BKT     R0, *R13
+$        LD      R0, R13
+$        LD      R1, #4
+$        BKT     R0, +6(R15)
+$        IA      R13, #4
+ if b = 2 ->	a, b := 1, 1;
+$        LD      R1, +2(R15)
+$        LD      R0, #1
+$        IC      R1, +2(R14)
+$        JEQ     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J2
+$        LD      R0, +4(R14)
+$        STO     R0, +2(R15)
+$        LD      R0, +6(R14)
+$        STO     R0, +0(R15)
+ [] b = 100 ->	a, b := 6, 100 / a;
+$        JMP     J1
+$    LABEL J2
+$        LD      R1, +2(R15)
+$        LD      R0, #1
+$        IC      R1, +8(R14)
+$        JEQ     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J3
+$        LD      R0, +10(R14)
+$        ID      R0, +0(R15)
+$        STO     R0, +2(R15)
+$        LD      R0, +12(R14)
+$        STO     R0, +0(R15)
+ [] b # 2  -> skip;
+$        JMP     J1
+$    LABEL J3
+$        LD      R1, +2(R15)
+$        LD      R0, #1
+$        IC      R1, +14(R14)
+$        JNE     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J4
+ fi;
+$        JMP     J1
+$    LABEL J4
+$        HALT    
+$    LABEL J1
+ write a, b, x, b*x ; { 1111}
+$        WRI     +0(R15)
+$        WRI     +2(R15)
+$        WRI     +4(R15)
+$        LD      R0, +2(R15)
+$        IM      R0, +4(R15)
+$        WRI     R0
+$        WRNL    
+ end.
+  
+$        HALT    
+$    LABEL C1
+$        INT      1
+$        INT      2
+$        INT      1
+$        INT      1
+$        INT      100
+$        INT      100
+$        INT      6
+$        INT      2
+$    LABEL V1
+$        SKIP     14
+  <end of compilation of ..\tests\test0.fix>.  There were no errors detected.
+  Allocated Registers: 13 14 15 
+

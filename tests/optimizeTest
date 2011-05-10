@@ -1,0 +1,19 @@
+-- test of optimization
+$c+$o-$p-
+module testing
+
+private
+integer i;
+tuple [ procedure foo(reference integer x) ] tup;
+
+procedure tup@foo
+integer m, n;
+begin
+	x := m + n;
+end;
+
+begin
+	i := 1;
+	i := i + 1;
+	tup!foo(i);
+end.

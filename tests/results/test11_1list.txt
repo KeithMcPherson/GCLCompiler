@@ -1,0 +1,88 @@
+Compiled on: Mon May 09 19:37:55 EDT 2011
+module test11_1
+$        LDA     R15, V1
+$        LDA     R14, C1
+$        LD      R13, #16000
+{ test of arrays (1 dimension )}
+private
+ typedefinition Boolean range [false..true] bools;
+ integer array [bools] a, b;
+ bools j;
+ begin
+ forall j -> read a[j];  llarof; { use 1 2}
+$        LD      R0, #0
+$        STO     R0, +8(R15)
+$    LABEL F1
+$        LDA     R0, +0(R15)
+$        LD      R1, +8(R15)
+$        TRNG    R1, +0(R14)
+$        IS      R1, #0
+$        IM      R1, #2
+$        IA      R0, R1
+$        RDI     *R0
+$        LD      R1, +8(R15)
+$        IC      R1, #1
+$        JEQ     F2
+$        IA      R1, #1
+$        STO     R1, +8(R15)
+$        JMP     F1
+$    LABEL F2
+ forall j -> b[j] := a[~j]; llarof;
+$        LD      R1, #0
+$        STO     R1, +8(R15)
+$    LABEL F3
+$        LDA     R1, +4(R15)
+$        LD      R2, +8(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        LD      R2, #1
+$        IS      R2, +8(R15)
+$        LDA     R3, +0(R15)
+$        LD      R4, R2
+$        TRNG    R4, +0(R14)
+$        IS      R4, #0
+$        IM      R4, #2
+$        IA      R3, R4
+$        LD      R4, *R3
+$        PUSH    R13, 16
+$        POP     R13, 8
+$        STO     R3, *R1
+$        LD      R1, +8(R15)
+$        IC      R1, #1
+$        JEQ     F4
+$        IA      R1, #1
+$        STO     R1, +8(R15)
+$        JMP     F3
+$    LABEL F4
+ forall j ->  write b[j]; llarof;  {output: 2 1}
+$        LD      R1, #0
+$        STO     R1, +8(R15)
+$    LABEL F5
+$        LDA     R1, +4(R15)
+$        LD      R2, +8(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        WRI     *R1
+$        WRNL    
+$        LD      R1, +8(R15)
+$        IC      R1, #1
+$        JEQ     F6
+$        IA      R1, #1
+$        STO     R1, +8(R15)
+$        JMP     F5
+$    LABEL F6
+ end.
+ 
+$        HALT    
+$    LABEL C1
+$        INT      0
+$        INT      1
+$    LABEL V1
+$        SKIP     10
+  <end of compilation of ..\tests\test11_1>.  There were no errors detected.
+  Allocated Registers: 0 13 14 15 
+

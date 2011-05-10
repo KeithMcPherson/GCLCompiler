@@ -1,0 +1,36 @@
+This is how to use autoruntests.sh (or .bat) to run all of your tests at once. 
+
+The autoruntests.sh file assumes a certain setup. If your setup is not the same you may be able to 
+edit the file to make it work, or you can alter the setup. 
+
+It is written for unix (including macosx) If you use autoruntests.bat instead. The file is run from 
+the command line (a shell in unix and a command window in windows.)
+
+The setup has this folder hierarchy
+ProJect Folder
+	bin 
+	src
+	tests
+
+Both the bin folder and the src folder have a package (gcl) folder. Note that I put all tests into a folder. 
+
+ Also (important), The sam3 and macc3 tools are in the project folder (but not a subfolder)
+
+On Windows use autoruntests.bat. 
+
+Next, install the batch file as an external tool under Eclipse so that you don't need the shell/command window:
+
+Select Run/External Tools/External Tools Configurations...
+In the dialog give it a name (runAll). Fill in the Location by Browse Workspace to 
+${workspace_loc:/GCLSkeletons/tests/autoruntests.sh}
+Fill in Working Directory by Browse Workspace to:
+${workspace_loc:/GCLSkeletons/bin}
+Now Apply and either close or run. 
+
+Note that everything in this file except for the tests that the skeleton's can handle (test0).
+
+NOTE: You can also use this as you go, before you finish the compiler to make sure that you haven't 
+broken old code when you write new code. Just uncomment the sections that you are working with. 
+If you leave the old ones uncommented, then you will know if you break something you did earlier. 
+
+On unix if you want to run this from a shell you must first make it executable with chmod, of course. 

@@ -1,0 +1,91 @@
+Compiled on: Mon May 09 19:37:58 EDT 2011
+module test14_1 { factorial
+$        LDA     R15, V1
+$        LDA     R14, C1
+$        LD      R13, #16000
+ test of recursive procedures with no locals or parameters in  gcl }
+private
+ integer inArg, { input argument}
+	 result,    { return result}
+	 oldArg;    { local to nFac}
+	 
+ typedefinition tuple [procedure nFac()] factorial;
+ 
+ factorial fac;
+ 
+ procedure factorial@nFac
+ 	begin
+	   if 	inArg = 0 -> result := 1;
+$        LD      R1, +0(R15)
+$        LD      R0, #1
+$        IC      R1, +0(R14)
+$        JEQ     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J2
+$        LD      R0, +2(R14)
+$        STO     R0, +2(R15)
+	   [] 	inArg > 0 -> 
+$        JMP     J1
+$    LABEL J2
+$        LD      R1, +0(R15)
+$        LD      R0, #1
+$        IC      R1, +4(R14)
+$        JGT     &4
+$        LD      R0, #0
+$        IC      R0, #1
+$        JNE     J3
+	   	inArg, oldArg := inArg - 1, inArg;
+$        LD      R0, +0(R15)
+$        IS      R0, +6(R14)
+$        LD      R1, +0(R15)
+$        PUSH    R13, 2
+$        POP     R13, 2
+$        STO     R1, +4(R15)
+$        STO     R0, +0(R15)
+	   	fac!nFac(); { recurse }
+	   	oldArg, result, inArg := oldArg +1, oldArg*result, oldArg;
+$        LD      R0, +4(R15)
+$        IA      R0, +8(R14)
+$        LD      R1, +4(R15)
+$        IM      R1, +2(R15)
+$        LD      R2, +4(R15)
+$        PUSH    R13, 4
+$        POP     R13, 4
+$        STO     R2, +0(R15)
+$        STO     R1, +2(R15)
+$        STO     R0, +4(R15)
+	   fi;
+$        JMP     J1
+$    LABEL J3
+$        HALT    
+$    LABEL J1
+	end;
+	
+begin 
+	oldArg := 0;
+$        LD      R0, +10(R14)
+$        STO     R0, +4(R15)
+	read inArg ;
+$        RDI     +0(R15)
+	fac!nFac();
+	write inArg,' factorial is ', result;
+$        WRI     +0(R15)
+$        WRST    +12(R14)
+$        WRI     +2(R15)
+$        WRNL    
+end.
+$        HALT    
+$    LABEL C1
+$        INT      0
+$        INT      1
+$        INT      0
+$        INT      1
+$        INT      1
+$        INT      0
+$        STRING   " factorial is "
+$    LABEL V1
+$        SKIP     23
+  <end of compilation of ..\tests\test14_1>.  There were no errors detected.
+  Allocated Registers: 13 14 15 
+

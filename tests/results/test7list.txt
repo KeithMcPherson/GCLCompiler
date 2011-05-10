@@ -1,0 +1,75 @@
+Compiled on: Mon May 09 19:37:54 EDT 2011
+module test7 { strings}
+$        LDA     R15, V1
+$        LDA     R14, C1
+$        LD      R13, #16000
+private
+integer x;
+begin
+x := 6;
+$        LD      R0, +0(R14)
+$        STO     R0, +0(R15)
+write 'This is a test of strings.';
+$        WRST    +2(R14)
+$        WRNL    
+write " You can quote or double quote strings,";
+$        WRST    +30(R14)
+$        WRNL    
+write "and", " you ", 'can ', "put " , "several (", x,")";
+$        WRST    +70(R14)
+$        WRST    +74(R14)
+$        WRST    +80(R14)
+$        WRST    +86(R14)
+$        WRST    +92(R14)
+$        WRI     +0(R15)
+$        WRST    +102(R14)
+$        WRNL    
+write "on a line.  ", "Colons ':' are special.";
+$        WRST    +104(R14)
+$        WRST    +118(R14)
+$        WRNL    
+write "";
+$        WRST    +142(R14)
+$        WRNL    
+write "To embed single 'quotes', use the other kind.";
+$        WRST    +144(R14)
+$        WRNL    
+write 'Ditto for "double quotes".';
+$        WRST    +190(R14)
+$        WRNL    
+write "You can even quote a quote ( '",'"',"'",")";
+$        WRST    +218(R14)
+$        WRST    +250(R14)
+$        WRST    +252(R14)
+$        WRST    +254(R14)
+$        WRNL    
+write "but it isn't pretty.";
+$        WRST    +256(R14)
+$        WRNL    
+end.
+$        HALT    
+$    LABEL C1
+$        INT      6
+$        STRING   "This is a test of strings."
+$        STRING   " You can quote or double quote strings,"
+$        STRING   "and"
+$        STRING   " you "
+$        STRING   "can "
+$        STRING   "put "
+$        STRING   "several ("
+$        STRING   ")"
+$        STRING   "on a line.  "
+$        STRING   "Colons :':::' are special."
+$        STRING   ""
+$        STRING   "To embed single :'quotes:', use the other kind."
+$        STRING   "Ditto for :"double quotes:"."
+$        STRING   "You can even quote a quote ( :'"
+$        STRING   ":""
+$        STRING   ":'"
+$        STRING   ")"
+$        STRING   "but it isn:'t pretty."
+$    LABEL V1
+$        SKIP     278
+  <end of compilation of ..\tests\test7>.  There were no errors detected.
+  Allocated Registers: 13 14 15 
+

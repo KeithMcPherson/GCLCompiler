@@ -1,0 +1,38 @@
+$c+$o+
+module testOptimizations
+{ test of various optimizations -- Run after 9_2}
+private
+integer range[1..10] x;
+integer i, sum;
+begin
+sum := 0;
+i := 0;
+forall x -> 
+	i := x; 
+	sum := i + sum;
+	write i; 
+llarof;
+write x; { 1 2 3 4 5 5}
+write sum;
+
+sum := 0;
+i := 0;
+forall x -> 
+	i, sum := x, i + sum;
+	write x; 
+llarof;
+write x; {output: 1 2 3 4 5 5}
+write sum;
+write "Various optimizations";
+
+write sum*2, ' ', sum*4, ' ', sum*8;
+
+x := 1;
+x := x + 1;
+write x; -- 2
+x := x + x;
+write x; -- 4
+x := x * 2;
+write x; -- 8
+
+end.

@@ -1,0 +1,20 @@
+$c+$o+
+module testScope
+ integer i;
+ tuple [procedure addone()] adder;
+
+ procedure adder@addone 
+ integer i; 
+ begin  
+    i := 10;
+ 	testScope.i := testScope.i+1; { note i is a global here.}
+ end; 
+ 
+private
+begin
+  i := 0;
+  write 'i = ', i, ' (should be 0)';
+   adder!addone();
+  write 'i = ', i, ' (should be 1)';
+   write "All done!" ;
+end.

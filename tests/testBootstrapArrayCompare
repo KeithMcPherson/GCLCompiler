@@ -1,0 +1,28 @@
+$c+
+module testBootstrap
+{ test of block compare bootstrap (1 dimension )}
+private
+ constant size = 5;
+ integer i;
+ typedefinition integer range [1..size] one_five;
+ integer array [one_five] a, b;
+ one_five j;
+ Boolean equal;
+ begin
+ -- get a's
+ i := 1;
+ do i <= size -> read a[i]; i := i+1; od; { use 1 2 3 4 5}
+ -- get b's
+ i := 1;
+ do i <= size -> read b[i]; i := i+1; od; { use 1 2 3 4 5}
+ 
+ -- block compare
+ equal := true;
+ forall j ->
+ 	if a[j] = b[j] | ~ equal -> skip; [] a[j] # b[j] -> equal := false; fi;
+ llarof;
+ -- equal := ~ equal;
+ 
+ if equal -> write "true"; [] ~equal -> write "false"; fi;
+ end.
+ 
