@@ -1119,15 +1119,17 @@ class Procedure extends SemanticItem {
 	private Procedure parentProcedure;
 	private SymbolTable scope;
 	private Identifier name;
-	
+	private int label;
 	private boolean defined;
+	private int localSize = 22;
 	
 	int size = 1;
-	public Procedure(Procedure parentProcedure, Identifier name, SymbolTable scope){
+	public Procedure(Procedure parentProcedure, Identifier name, SymbolTable scope, Codegen codegen){
 		this.parentProcedure = parentProcedure;
 		this.name = name;
 		this.scope = scope;
 		defined = false;
+		label = codegen.getLabel();
 	}
 	
 	public boolean alreadyDefined(){
@@ -1150,12 +1152,30 @@ class Procedure extends SemanticItem {
 		return this.scope;
 	}
 	
-	public void genLink(){
-		
+	public void genLink(Codegen codegen){
+		defined = true;
+		codegen.genLabel('P', label);
+		codegen.gen2Address(Codegen.STO, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +4));
+		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +2));
+		codegen.gen2Address(Codegen.STO, Codegen.FRAME_POINTER , new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
+		codegen.gen2Address(Codegen.LDA, Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
+		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, localSize);
+		//KEITH - Maybe need to only use registers that are in use?
+		for(int i = 0; i <= Codegen.LAST_GENERAL_REGISTER; i++){
+			codegen.gen2Address(Codegen.STO, i, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, 2*i));
+		}
+			
 	}
 	
-	public void genUnlink(){
-		
+	public void genUnlink(Codegen codegen){
+		codegen.genLabel('U', label);
+		for(int i = 0; i <= Codegen.LAST_GENERAL_REGISTER; i++){
+			codegen.gen2Address(Codegen.LD, i, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, 2*i));
+		}
+		codegen.gen2Address(Codegen.IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, localSize);
+		codegen.gen2Address(Codegen.LD,Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
+		codegen.gen2Address(Codegen.LD,Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +4));
+		codegen.gen1Address(Codegen.JMP, Codegen.IREG, Codegen.STATIC_POINTER, 0);
 	}
 }
 
@@ -1976,17 +1996,18 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 
 	public Procedure declareProcedure(SymbolTable scope, Identifier id){
 		SymbolTable newScope = scope.openScope(true);
-		currentProcedure = new Procedure(currentProcedure, id, newScope);
-		currentLevel.increment();
+		currentProcedure = new Procedure(currentProcedure, id, newScope, codegen);
+		currentLevel().increment();
+		System.out.println(currentLevel().currentLevel);
 		return currentProcedure;
 	}
 	
 	public void endDeclareProcedure(){
-		currentLevel.decrement();
+		currentLevel().decrement();
 		currentProcedure = currentProcedure.getParentProcedure();
 	}
 	
-	public SymbolTable defineProcedure(Identifier procName, SemanticItem tupleObject){
+	public Procedure defineProcedure(Identifier procName, SemanticItem tupleObject){
 		Procedure proc = null;
 		TupleType procsTuple = null;
 		
@@ -2009,23 +2030,22 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	
 		currentProcedure = proc;
 		currentLevel().increment();
-			
-		return proc.getScope();
+		
+		return proc;
 	}
 	
 	public void endDefineProcedure(Procedure proc){
-		proc.genUnlink();
+		proc.genUnlink(codegen);
 		proc.getScope().closeScope();
 		currentProcedure = proc.getParentProcedure();
-		currentLevel.decrement();
+		currentLevel().decrement();
 	}
 	
 	void doLink(){
 		if(currentLevel().isGlobal()){
 			codegen.genLabel('M', currentModule.getLabel());
 		} else {
-			currentProcedure.genLink();
-			System.out.println("DSFSDFDSFSDFSDFSDFSDFDSFSDFDS");
+			currentProcedure.genLink(codegen);
 		}
 	}
 	

@@ -16,7 +16,7 @@ interface CodegenConstants { // Addressing mode names in SAM2
 
 	// REGISTERS in SAM2
 	public static final int MAX_REG = 15;
-	public static final int LAST_GENERAL_REGISTER = 12; // will change
+	public static final int LAST_GENERAL_REGISTER = 10; // will change
 
 	public static final int INT_SIZE = 2; // Size of an integer and a register
 
@@ -34,6 +34,8 @@ interface CodegenConstants { // Addressing mode names in SAM2
 	public static final boolean INDIRECT = false; // Register has a pointer
 
 	// Register names -- more later
+	public static final int STATIC_POINTER = 11;
+	public static final int FRAME_POINTER = 12;
 	public static final int STACK_POINTER = 13;
 	public static final int CONSTANT_BASE = 14;
 	public static final int VARIABLE_BASE = 15;

@@ -2,25 +2,41 @@
      LDA     R14, C1
      LD      R13, #16000
      JMP     M1
- LABEL M1
+ LABEL P2
+     STO     R11, +4(R13)
+     LD      R11, +2(R13)
+     STO     R12, +0(R13)
+     LDA     R12, +0(R13)
+     IS      R13, #22
+     STO     R0, +0(R13)
+     STO     R1, +2(R13)
+     STO     R2, +4(R13)
+     STO     R3, +6(R13)
+     STO     R4, +8(R13)
+     STO     R5, +10(R13)
+     STO     R6, +12(R13)
+     STO     R7, +14(R13)
+     STO     R8, +16(R13)
+     STO     R9, +18(R13)
+     STO     R10, +20(R13)
      LD      R1, +0(R15)
      LD      R0, #1
      IC      R1, +0(R14)
      JEQ     &4
      LD      R0, #0
      IC      R0, #1
-     JNE     J3
+     JNE     J4
      LD      R0, +2(R14)
      STO     R0, +2(R15)
-     JMP     J2
- LABEL J3
+     JMP     J3
+ LABEL J4
      LD      R1, +0(R15)
      LD      R0, #1
      IC      R1, +4(R14)
      JGT     &4
      LD      R0, #0
      IC      R0, #1
-     JNE     J4
+     JNE     J5
      LD      R0, +0(R15)
      IS      R0, +6(R14)
      LD      R1, +0(R15)
@@ -38,10 +54,26 @@
      STO     R2, +0(R15)
      STO     R1, +2(R15)
      STO     R0, +4(R15)
-     JMP     J2
- LABEL J4
+     JMP     J3
+ LABEL J5
      HALT    
- LABEL J2
+ LABEL J3
+ LABEL U2
+     LD      R0, +0(R13)
+     LD      R1, +2(R13)
+     LD      R2, +4(R13)
+     LD      R3, +6(R13)
+     LD      R4, +8(R13)
+     LD      R5, +10(R13)
+     LD      R6, +12(R13)
+     LD      R7, +14(R13)
+     LD      R8, +16(R13)
+     LD      R9, +18(R13)
+     LD      R10, +20(R13)
+     IA      R13, #22
+     LD      R12, +0(R13)
+     LD      R11, +4(R13)
+     JMP     *R11
  LABEL M1
      LD      R0, +10(R14)
      STO     R0, +4(R15)

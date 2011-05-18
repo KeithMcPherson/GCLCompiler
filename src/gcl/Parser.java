@@ -256,14 +256,15 @@ public class Parser {
 	}
 
 	void procedureDefinition(SymbolTable scope) {
-		Identifier tupleID; Identifier procID; 
+		Identifier tupleID; Identifier procID; Procedure proc; 
 		Expect(19);
 		Expect(1);
 		tupleID = new Identifier(currentToken().spelling()); 
 		Expect(25);
 		Expect(1);
-		procID = new Identifier(currentToken().spelling()); 
+		procID = new Identifier(currentToken().spelling()); proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); 
 		block(scope);
+		semantic.endDefineProcedure(proc); 
 	}
 
 	TypeDescriptor  type(SymbolTable scope) {
@@ -410,7 +411,7 @@ public class Parser {
 		Identifier id;
 		Expect(19);
 		Expect(1);
-		id = new Identifier(currentToken().spelling());  proc = semantic.declareProcedure(scope, id); 
+		id = new Identifier(currentToken().spelling());  proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); 
 		paramPart(scope);
 		semantic.endDeclareProcedure(); 
 		return proc;

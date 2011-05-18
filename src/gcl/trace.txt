@@ -320,7 +320,7 @@ Cross reference list:
 
 57 terminals
 113 symbols
-357 nodes
+358 nodes
 11 sets
 Symbol Table:
 ------------
@@ -396,19 +396,19 @@ Symbol Table:
   3 block          nt   true     18 false    57 fixedToken
   4 statementPar   nt   true     28 false    63 fixedToken
   5 definition     nt   true     37 false    67 fixedToken
-  6 statement      nt   true    170 false   196 fixedToken
+  6 statement      nt   true    171 false   196 fixedToken
   7 variableDefi   nt   true     43 false    74 fixedToken
   8 constantDefi   nt   true     50 false    87 fixedToken
   9 typeDefiniti   nt   true     76 false   112 fixedToken
  10 procedureDef   nt   true    142 false   175 fixedToken
  11 type           nt   true     65 false    98 fixedToken
  12 constant       nt   true     56 false    94 fixedToken
- 13 expression     nt   true    240 false   255 fixedToken
+ 13 expression     nt   true    241 false   255 fixedToken
  14 typeSymbol     nt   true     71 false   102 fixedToken
- 15 arrayType      nt   true    149 false   180 fixedToken
- 16 rangeType      nt   true    161 false   187 fixedToken
+ 15 arrayType      nt   true    150 false   180 fixedToken
+ 16 rangeType      nt   true    162 false   187 fixedToken
  17 tupleType      nt   true     81 false   118 fixedToken
- 18 qualifiedIde   nt   true    338 false   342 fixedToken
+ 18 qualifiedIde   nt   true    339 false   342 fixedToken
  19 justProcs      nt   true     89 false   124 fixedToken
  20 fieldsAndPro   nt   true     95 false   130 fixedToken
  21 procedureDec   nt   true    109 false   142 fixedToken
@@ -418,27 +418,27 @@ Symbol Table:
  25 callStatemen   nt   true    126 false   158 fixedToken
  26 argumentList   nt   true    129 false   163 fixedToken
  27 assignOrCall   nt   true    137 false   170 fixedToken
- 28 variableAcce   nt   true    344 false   350 fixedToken
- 29 assignStatem   nt   true    202 false   220 fixedToken
- 30 emptyStateme   nt   false   182 false   202 fixedToken
- 31 readStatemen   nt   true    183 false   204 fixedToken
- 32 writeStateme   nt   true    190 false   209 fixedToken
- 33 ifStatement    nt   true    215 false   230 fixedToken
- 34 doStatement    nt   true    220 false   235 fixedToken
- 35 forStatement   nt   true    224 false   240 fixedToken
- 36 writeItem      nt   true    200 false   214 fixedToken
- 37 guardedComma   nt   true    231 false   246 fixedToken
- 38 guardedComma   nt   true    235 false   250 fixedToken
- 39 andExpr        nt   true    245 false   263 fixedToken
- 40 relationalEx   nt   true    250 false   271 fixedToken
- 41 simpleExpr     nt   true    261 false   279 fixedToken
- 42 relationalOp   nt   false   309 false   322 fixedToken
- 43 term           nt   true    267 false   290 fixedToken
- 44 addOperator    nt   false   327 false   331 fixedToken
- 45 factor         nt   true    276 false   296 fixedToken
- 46 multiplyOper   nt   false   333 false   336 fixedToken
- 47 booleanConst   nt   false   303 false   317 fixedToken
- 48 subsAndCompo   nt   true    356 true    356 fixedToken
+ 28 variableAcce   nt   true    345 false   350 fixedToken
+ 29 assignStatem   nt   true    203 false   220 fixedToken
+ 30 emptyStateme   nt   false   183 false   202 fixedToken
+ 31 readStatemen   nt   true    184 false   204 fixedToken
+ 32 writeStateme   nt   true    191 false   209 fixedToken
+ 33 ifStatement    nt   true    216 false   230 fixedToken
+ 34 doStatement    nt   true    221 false   235 fixedToken
+ 35 forStatement   nt   true    225 false   240 fixedToken
+ 36 writeItem      nt   true    201 false   214 fixedToken
+ 37 guardedComma   nt   true    232 false   246 fixedToken
+ 38 guardedComma   nt   true    236 false   250 fixedToken
+ 39 andExpr        nt   true    246 false   263 fixedToken
+ 40 relationalEx   nt   true    251 false   271 fixedToken
+ 41 simpleExpr     nt   true    262 false   279 fixedToken
+ 42 relationalOp   nt   false   310 false   322 fixedToken
+ 43 term           nt   true    268 false   290 fixedToken
+ 44 addOperator    nt   false   328 false   331 fixedToken
+ 45 factor         nt   true    277 false   296 fixedToken
+ 46 multiplyOper   nt   false   334 false   336 fixedToken
+ 47 booleanConst   nt   false   304 false   317 fixedToken
+ 48 subsAndCompo   nt   true    357 true    356 fixedToken
 
 Literal Tokens:
 --------------

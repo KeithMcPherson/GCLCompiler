@@ -141,7 +141,7 @@ moreFieldsAndProcs<^carrier, carrier, scope> | [justProcs<^carrier, carrier, sco
 /*----------------------------------------------------------*/    
 procedureDeclaration<^Procedure proc, SymbolTable scope> (. Identifier id;.)
 =
-"procedure" identifier (. id = new Identifier(currentToken().spelling());  proc = semantic.declareProcedure(scope, id); .) 
+"procedure" identifier (. id = new Identifier(currentToken().spelling());  proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); .) 
 paramPart<scope> (. semantic.endDeclareProcedure(); .).
 	
 /*----------------------------------------------------------*/    
@@ -172,9 +172,9 @@ assignOrCallStatement<SymbolTable scope> (. Expression exp; .)
 variableAccessEtc<^exp, scope> (assignStatement<scope, exp> | callStatement<scope>).
 
  /*----------------------------------------------------------*/    
-procedureDefinition<SymbolTable scope> (. Identifier tupleID; Identifier procID; .)
+procedureDefinition<SymbolTable scope> (. Identifier tupleID; Identifier procID; Procedure proc; .)
 =
-"procedure" identifier (. tupleID = new Identifier(currentToken().spelling()); .) "@" identifier (. procID = new Identifier(currentToken().spelling()); .) block<scope>.
+"procedure" identifier (. tupleID = new Identifier(currentToken().spelling()); .) "@" identifier (. procID = new Identifier(currentToken().spelling()); proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); .) block<scope> (. semantic.endDefineProcedure(proc); .).
 
  /*----------------------------------------------------------*/    
 arrayType<^ArrayType result, TypeDescriptor baseType, SymbolTable scope>  (. .)
