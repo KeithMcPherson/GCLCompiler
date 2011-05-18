@@ -1,9 +1,10 @@
-Compiled on: Mon May 09 19:37:58 EDT 2011
+Compiled on: Tue May 17 17:18:02 EDT 2011
 module test13_1
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
 private
+$        JMP     M1
 { test of array and tuple component extraction }
 	 integer a,b,x;
 	  tuple [integer first, integer second] pair;
@@ -15,6 +16,7 @@ private
 	 
  begin
 	 read b; { Use 2 as input value. }
+$    LABEL M1
 $        RDI     +2(R15)
 	 x := 1;
 $        LD      R0, +4(R14)
@@ -50,22 +52,22 @@ $        IC      R1, +10(R14)
 $        JEQ     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J2
+$        JNE     J3
 $        LD      R0, +12(R14)
 $        STO     R0, +0(R15)
 	 		b := 1;
 $        LD      R0, +14(R14)
 $        STO     R0, +2(R15)
 	 [] b = 100 ->	a := 6;
-$        JMP     J1
-$    LABEL J2
+$        JMP     J2
+$    LABEL J3
 $        LD      R1, +2(R15)
 $        LD      R0, #1
 $        IC      R1, +16(R14)
 $        JEQ     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J3
+$        JNE     J4
 $        LD      R0, +18(R14)
 $        STO     R0, +0(R15)
 			b := 100 / a;
@@ -73,20 +75,20 @@ $        LD      R0, +20(R14)
 $        ID      R0, +0(R15)
 $        STO     R0, +2(R15)
 	 [] b # 2  -> skip;
-$        JMP     J1
-$    LABEL J3
+$        JMP     J2
+$    LABEL J4
 $        LD      R1, +2(R15)
 $        LD      R0, #1
 $        IC      R1, +22(R14)
 $        JNE     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J4
+$        JNE     J5
 	 fi;
-$        JMP     J1
-$    LABEL J4
+$        JMP     J2
+$    LABEL J5
 $        HALT    
-$    LABEL J1
+$    LABEL J2
 	 write a, b, x, b*x ; {1111}
 $        WRI     +0(R15)
 $        WRI     +2(R15)

@@ -1,10 +1,11 @@
-Compiled on: Mon May 09 19:37:58 EDT 2011
+Compiled on: Tue May 17 17:18:02 EDT 2011
 module test14_1 { factorial
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
  test of recursive procedures with no locals or parameters in  gcl }
 private
+$        JMP     M1
  integer inArg, { input argument}
 	 result,    { return result}
 	 oldArg;    { local to nFac}
@@ -16,25 +17,26 @@ private
  procedure factorial@nFac
  	begin
 	   if 	inArg = 0 -> result := 1;
+$    LABEL M1
 $        LD      R1, +0(R15)
 $        LD      R0, #1
 $        IC      R1, +0(R14)
 $        JEQ     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J2
+$        JNE     J3
 $        LD      R0, +2(R14)
 $        STO     R0, +2(R15)
 	   [] 	inArg > 0 -> 
-$        JMP     J1
-$    LABEL J2
+$        JMP     J2
+$    LABEL J3
 $        LD      R1, +0(R15)
 $        LD      R0, #1
 $        IC      R1, +4(R14)
 $        JGT     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J3
+$        JNE     J4
 	   	inArg, oldArg := inArg - 1, inArg;
 $        LD      R0, +0(R15)
 $        IS      R0, +6(R14)
@@ -56,14 +58,15 @@ $        STO     R2, +0(R15)
 $        STO     R1, +2(R15)
 $        STO     R0, +4(R15)
 	   fi;
-$        JMP     J1
-$    LABEL J3
+$        JMP     J2
+$    LABEL J4
 $        HALT    
-$    LABEL J1
+$    LABEL J2
 	end;
 	
 begin 
 	oldArg := 0;
+$    LABEL M1
 $        LD      R0, +10(R14)
 $        STO     R0, +4(R15)
 	read inArg ;

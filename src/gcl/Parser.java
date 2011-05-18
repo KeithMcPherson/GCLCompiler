@@ -158,6 +158,7 @@ public class Parser {
 		definitionPart(scope);
 		while (!(la.kind == 0 || la.kind == 7)) {SynErr(60); Get();}
 		Expect(7);
+		semantic.doLink(); 
 		statementPart(scope);
 		Expect(8);
 	}

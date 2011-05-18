@@ -56,7 +56,7 @@ module<SymbolTable scope> (. Identifier id; .)
 /*----------------------------------------------------------*/
 block<SymbolTable scope>
 =
-     definitionPart<scope> SYNC "begin"  statementPart<scope> "end".
+     definitionPart<scope> SYNC "begin" (. semantic.doLink(); .) statementPart<scope> "end".
 /*----------------------------------------------------------*/
 definitionPart<SymbolTable scope>   =    {SYNC definition<scope> WEAK ";" }.
 /*----------------------------------------------------------*/
@@ -124,7 +124,7 @@ tupleType<^TupleType result, SymbolTable scope> (. result = null; TypeList carri
 justProcs<^TypeList carrier, TypeList currentCarrier, SymbolTable scope> 
 (. Procedure proc; carrier = currentCarrier; .)
 =
-procedureDeclaration<^proc, scope> (. carrier.enterProc(proc); .) { "," procedureDeclaration<^proc, scope> (. carrier.enterProc(proc); .) }.
+procedureDeclaration<^proc, scope> (. carrier.enterProc(proc); .) { "," procedureDeclaration<^proc, scope> (. carrier.enterProc(proc); .)}.
 
 /*----------------------------------------------------------*/
 fieldsAndProcs<^TypeList carrier, TypeList currentCarrier, SymbolTable scope>  (. TypeDescriptor type; Identifier id; carrier = currentCarrier; .)

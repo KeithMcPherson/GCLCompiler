@@ -1,4 +1,4 @@
-Compiled on: Mon May 09 19:37:56 EDT 2011
+Compiled on: Tue May 17 17:18:00 EDT 2011
 module test11_3 { semantic arrays
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -8,23 +8,25 @@ $        LD      R13, #16000
 --	first run as is, get error on array declaration line
 --	next change siz to 4. get run time bound error }
 private
+$        JMP     M1
  constant siz = -4;
  integer i;
  typedefinition integer range [0..siz] zero_four; { error}
  integer array [zero_four] a,b; 
 begin
  i := 0;
+$    LABEL M1
 $        LD      R0, +4(R14)
 $        STO     R0, +0(R15)
  do i <= 5 -> read a[i]; i := i+1; od;
-$    LABEL J1
+$    LABEL J2
 $        LD      R1, +0(R15)
 $        LD      R0, #1
 $        IC      R1, +6(R14)
 $        JLE     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J2
+$        JNE     J3
 $        LDA     R0, +2(R15)
 $        LD      R1, +0(R15)
 $        TRNG    R1, +0(R14)
@@ -35,20 +37,20 @@ $        RDI     *R0
 $        LD      R1, +0(R15)
 $        IA      R1, +8(R14)
 $        STO     R1, +0(R15)
-$        JMP     J1
-$    LABEL J2
+$        JMP     J2
+$    LABEL J3
  i := 0;
 $        LD      R1, +10(R14)
 $        STO     R1, +0(R15)
  do i <= 5 -> i := i+1; b[i] := a[6-i]; od;
-$    LABEL J3
+$    LABEL J4
 $        LD      R2, +0(R15)
 $        LD      R1, #1
 $        IC      R2, +12(R14)
 $        JLE     &4
 $        LD      R1, #0
 $        IC      R1, #1
-$        JNE     J4
+$        JNE     J5
 $        LD      R1, +0(R15)
 $        IA      R1, +14(R14)
 $        STO     R1, +0(R15)
@@ -70,20 +72,20 @@ $        LD      R4, *R3
 $        PUSH    R13, 16
 $        POP     R13, 8
 $        STO     R3, *R1
-$        JMP     J3
-$    LABEL J4
+$        JMP     J4
+$    LABEL J5
  i := 0;
 $        LD      R1, +18(R14)
 $        STO     R1, +0(R15)
  do i <= 5 -> write b[i]; i:= i+1; od;
-$    LABEL J5
+$    LABEL J6
 $        LD      R2, +0(R15)
 $        LD      R1, #1
 $        IC      R2, +20(R14)
 $        JLE     &4
 $        LD      R1, #0
 $        IC      R1, #1
-$        JNE     J6
+$        JNE     J7
 $        LDA     R1, -4(R15)
 $        LD      R2, +0(R15)
 $        TRNG    R2, +0(R14)
@@ -95,8 +97,8 @@ $        WRNL
 $        LD      R1, +0(R15)
 $        IA      R1, +22(R14)
 $        STO     R1, +0(R15)
-$        JMP     J5
-$    LABEL J6
+$        JMP     J6
+$    LABEL J7
  end. { one error}
  
 $        HALT    

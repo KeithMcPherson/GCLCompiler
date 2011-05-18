@@ -1,10 +1,11 @@
-Compiled on: Mon May 09 19:37:56 EDT 2011
+Compiled on: Tue May 17 17:18:01 EDT 2011
 module test11_5 { twoDimensions with assignment
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
 -- test of arrays (2 dimension )}
 private
+$        JMP     M1
  integer i,j;
  constant max = 3;
  constant mlo = 2;
@@ -13,17 +14,18 @@ private
  twodim a, b;
  begin
  i := 0;
+$    LABEL M1
 $        LD      R0, +4(R14)
 $        STO     R0, +0(R15)
  do i < max -> read a[0][i]; i := i+1; od; { use data 1 2 3}
-$    LABEL J1
+$    LABEL J2
 $        LD      R1, +0(R15)
 $        LD      R0, #1
 $        IC      R1, +6(R14)
 $        JLT     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J2
+$        JNE     J3
 $        LDA     R0, +4(R15)
 $        LD      R1, +8(R14)
 $        TRNG    R1, +0(R14)
@@ -40,8 +42,8 @@ $        RDI     *R1
 $        LD      R2, +0(R15)
 $        IA      R2, +10(R14)
 $        STO     R2, +0(R15)
-$        JMP     J1
-$    LABEL J2
+$        JMP     J2
+$    LABEL J3
  a[1] := a[0]; { array assignment}
 $        LDA     R2, +4(R15)
 $        LD      R3, +12(R14)
@@ -100,7 +102,7 @@ $        STO     R2, +0(R15)
 $        LD      R2, +22(R14)
 $        STO     R2, +2(R15)
 do i < max & j < max ->
-$    LABEL J3
+$    LABEL J4
 $        LD      R3, +0(R15)
 $        LD      R2, #1
 $        IC      R3, +24(R14)
@@ -113,7 +115,7 @@ $        JLT     &4
 $        LD      R3, #0
 $        BA      R2, R3
 $        IC      R2, #1
-$        JNE     J4
+$        JNE     J5
 	write b[i][j]; j := j+1;
 $        LDA     R2, +22(R15)
 $        LD      R3, +0(R15)
@@ -139,7 +141,7 @@ $        IC      R4, +30(R14)
 $        JGE     &4
 $        LD      R3, #0
 $        IC      R3, #1
-$        JNE     J6
+$        JNE     J7
 		i := i+1;
 $        LD      R3, +0(R15)
 $        IA      R3, +32(R14)
@@ -148,23 +150,23 @@ $        STO     R3, +0(R15)
 $        LD      R3, +34(R14)
 $        STO     R3, +2(R15)
 	 [] j < max -> skip;
-$        JMP     J5
-$    LABEL J6
+$        JMP     J6
+$    LABEL J7
 $        LD      R4, +2(R15)
 $        LD      R3, #1
 $        IC      R4, +36(R14)
 $        JLT     &4
 $        LD      R3, #0
 $        IC      R3, #1
-$        JNE     J7
+$        JNE     J8
 	fi;
-$        JMP     J5
-$    LABEL J7
+$        JMP     J6
+$    LABEL J8
 $        HALT    
-$    LABEL J5
+$    LABEL J6
 od;
-$        JMP     J3
-$    LABEL J4
+$        JMP     J4
+$    LABEL J5
  { output
   1  2  3  1  2  3  1  2  3}
  end.

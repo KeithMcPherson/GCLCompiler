@@ -1,18 +1,20 @@
-Compiled on: Mon May 09 19:37:55 EDT 2011
+Compiled on: Tue May 17 17:18:00 EDT 2011
 module test11_1
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
 { test of arrays (1 dimension )}
 private
+$        JMP     M1
  typedefinition Boolean range [false..true] bools;
  integer array [bools] a, b;
  bools j;
  begin
  forall j -> read a[j];  llarof; { use 1 2}
+$    LABEL M1
 $        LD      R0, #0
 $        STO     R0, +8(R15)
-$    LABEL F1
+$    LABEL F2
 $        LDA     R0, +0(R15)
 $        LD      R1, +8(R15)
 $        TRNG    R1, +0(R14)
@@ -22,15 +24,15 @@ $        IA      R0, R1
 $        RDI     *R0
 $        LD      R1, +8(R15)
 $        IC      R1, #1
-$        JEQ     F2
+$        JEQ     F3
 $        IA      R1, #1
 $        STO     R1, +8(R15)
-$        JMP     F1
-$    LABEL F2
+$        JMP     F2
+$    LABEL F3
  forall j -> b[j] := a[~j]; llarof;
 $        LD      R1, #0
 $        STO     R1, +8(R15)
-$    LABEL F3
+$    LABEL F4
 $        LDA     R1, +4(R15)
 $        LD      R2, +8(R15)
 $        TRNG    R2, +0(R14)
@@ -51,15 +53,15 @@ $        POP     R13, 8
 $        STO     R3, *R1
 $        LD      R1, +8(R15)
 $        IC      R1, #1
-$        JEQ     F4
+$        JEQ     F5
 $        IA      R1, #1
 $        STO     R1, +8(R15)
-$        JMP     F3
-$    LABEL F4
+$        JMP     F4
+$    LABEL F5
  forall j ->  write b[j]; llarof;  {output: 2 1}
 $        LD      R1, #0
 $        STO     R1, +8(R15)
-$    LABEL F5
+$    LABEL F6
 $        LDA     R1, +4(R15)
 $        LD      R2, +8(R15)
 $        TRNG    R2, +0(R14)
@@ -70,11 +72,11 @@ $        WRI     *R1
 $        WRNL    
 $        LD      R1, +8(R15)
 $        IC      R1, #1
-$        JEQ     F6
+$        JEQ     F7
 $        IA      R1, #1
 $        STO     R1, +8(R15)
-$        JMP     F5
-$    LABEL F6
+$        JMP     F6
+$    LABEL F7
  end.
  
 $        HALT    

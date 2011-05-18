@@ -617,9 +617,21 @@ class GCRecord extends SemanticItem // For guarded command statements if and do.
 }
 
 class ModuleRecord extends SemanticItem {
-	public ModuleRecord(SymbolTable scope, Identifier id){
+	
+	private SymbolTable scope;
+	private Identifier moduleId;
+	private Codegen codegen;
+	private int label;
+	
+	public ModuleRecord(SymbolTable scope, Identifier id, Codegen codegen){
 		this.scope = scope;
 		this.moduleId = id;
+		this.codegen = codegen;
+		this.label = this.codegen.getLabel();
+	}
+	
+	public int getLabel(){
+		return label;
 	}
 	
 	public void setPrivateScope(SymbolTable scope){
@@ -633,9 +645,7 @@ class ModuleRecord extends SemanticItem {
 	public Identifier getID(){
 		return moduleId;
 	}
-	
-	private SymbolTable scope;
-	private Identifier moduleId;
+
 }
 
 // --------------------- Types ---------------------------------
@@ -847,9 +857,9 @@ class TypeList extends SemanticItem {
 		size += aType.size();
 	} // TODO check that the names are distinct.
 	
-	public void enterProc(final Procedure method, final Identifier name) {
+	public void enterProc(final Procedure method) {
 		methods.add(method);
-		methodNames.add(name);
+		methodNames.add(method.getName());
 		size += method.size();
 	} // TODO check that the names are distinct.
 
@@ -1005,6 +1015,10 @@ class TupleType extends TypeDescriptor { // mutable
 			return temp.type();
 	}
 	
+	public Procedure getProcedure(final Identifier procName) {
+		return (Procedure) methods.lookupIdentifier(procName).semanticRecord();
+	}
+	
 	public int getInset(Identifier id){
 		return fields.get(id).inset();
 	}
@@ -1102,10 +1116,22 @@ class ArrayType extends TypeDescriptor { // mutable
 }
 
 class Procedure extends SemanticItem {
-	Procedure parentProcedure;
+	private Procedure parentProcedure;
+	private SymbolTable scope;
+	private Identifier name;
+	
+	private boolean defined;
+	
 	int size = 1;
-	public Procedure(Procedure parentProcedure){
+	public Procedure(Procedure parentProcedure, Identifier name, SymbolTable scope){
 		this.parentProcedure = parentProcedure;
+		this.name = name;
+		this.scope = scope;
+		defined = false;
+	}
+	
+	public boolean alreadyDefined(){
+		return defined;
 	}
 	
 	public int size(){
@@ -1114,6 +1140,22 @@ class Procedure extends SemanticItem {
 	
 	public Procedure getParentProcedure(){
 		return this.parentProcedure;
+	}
+	
+	public Identifier getName(){
+		return this.name;
+	}
+	
+	public SymbolTable getScope() {
+		return this.scope;
+	}
+	
+	public void genLink(){
+		
+	}
+	
+	public void genUnlink(){
+		
 	}
 }
 
@@ -1154,6 +1196,8 @@ abstract class GCLError {
 	"ERROR -> TupleType required. ");
 	static final GCLError FIELD_NOT_FOUND = new Value(13,
 	"ERROR -> Tuple field not found. ");
+	static final GCLError PROCEDURE_REQUIRED = new Value(14,
+	"ERROR -> Procedure Required. ");
 
 	// The following are compiler errors. Repair them.
 	static final GCLError ILLEGAL_LOAD = new Value(91,
@@ -1921,7 +1965,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 	
 	public void declareModule(final SymbolTable scope, final Identifier id) {
-		currentModule = new ModuleRecord(scope, id);
+		currentModule = new ModuleRecord(scope, id, codegen);
+		codegen.genJumpLabel(JMP, 'M', currentModule.getLabel());
 		scope.newEntry("module", id, currentModule, currentModule);
 	}
 	
@@ -1929,11 +1974,11 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		currentModule.setPrivateScope(scope);
 	}
 
-	public SymbolTable declareProcedure(SymbolTable scope, Identifier id){
-		currentLevel.increment();
+	public Procedure declareProcedure(SymbolTable scope, Identifier id){
 		SymbolTable newScope = scope.openScope(true);
-		currentProcedure = new Procedure(currentProcedure);
-		return newScope;
+		currentProcedure = new Procedure(currentProcedure, id, newScope);
+		currentLevel.increment();
+		return currentProcedure;
 	}
 	
 	public void endDeclareProcedure(){
@@ -1949,9 +1994,39 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			procsTuple = ((TupleType) tupleObject);
 			} else {
 			err.semanticError(GCLError.TYPE_REQUIRED, "TupleType required");
-			}
-		proc = (Procedure) procsTuple.getType(procName);
-		return proc.getScope;
+		}
+		
+		proc = procsTuple.getProcedure(procName);
+		
+		if(proc == null){
+			err.semanticError(GCLError.PROCEDURE_REQUIRED);
+			return null;
+		}
+		if(proc.alreadyDefined()){
+			err.semanticError(GCLError.ALREADY_DEFINED, "This procedure has already been defined for this tuple.");
+			return null;
+		}
+	
+		currentProcedure = proc;
+		currentLevel().increment();
+			
+		return proc.getScope();
+	}
+	
+	public void endDefineProcedure(Procedure proc){
+		proc.genUnlink();
+		proc.getScope().closeScope();
+		currentProcedure = proc.getParentProcedure();
+		currentLevel.decrement();
+	}
+	
+	void doLink(){
+		if(currentLevel().isGlobal()){
+			codegen.genLabel('M', currentModule.getLabel());
+		} else {
+			currentProcedure.genLink();
+			System.out.println("DSFSDFDSFSDFSDFSDFSDFDSFSDFDS");
+		}
 	}
 	
 	public Expression subscriptAction(Expression array, Expression subscript){

@@ -1,12 +1,14 @@
-Compiled on: Mon May 09 19:37:54 EDT 2011
+Compiled on: Tue May 17 17:17:58 EDT 2011
 module test7 { strings}
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
 private
+$        JMP     M1
 integer x;
 begin
 x := 6;
+$    LABEL M1
 $        LD      R0, +0(R14)
 $        STO     R0, +0(R15)
 write 'This is a test of strings.';

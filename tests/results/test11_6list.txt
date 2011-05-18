@@ -1,10 +1,11 @@
-Compiled on: Mon May 09 19:37:56 EDT 2011
+Compiled on: Tue May 17 17:18:01 EDT 2011
 module test11_6 { bounds check twoDimensions
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
 -- test of array bounds check (2 dimension ) }
 private
+$        JMP     M1
  integer i,j;
  constant max = 2;
  constant mlo = 1;
@@ -12,17 +13,18 @@ private
  integer array [zero_mlo][zero_mlo] a;
 begin
  i := 0;
+$    LABEL M1
 $        LD      R0, +4(R14)
 $        STO     R0, +0(R15)
  do i <= max -> read a[i][0]; i := i+1; od; { data 1 2 3 }
-$    LABEL J1
+$    LABEL J2
 $        LD      R1, +0(R15)
 $        LD      R0, #1
 $        IC      R1, +6(R14)
 $        JLE     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J2
+$        JNE     J3
 $        LDA     R0, +4(R15)
 $        LD      R1, +0(R15)
 $        TRNG    R1, +0(R14)
@@ -39,8 +41,8 @@ $        RDI     *R1
 $        LD      R2, +0(R15)
 $        IA      R2, +10(R14)
 $        STO     R2, +0(R15)
-$        JMP     J1
-$    LABEL J2
+$        JMP     J2
+$    LABEL J3
  a[0][1] := a[0][0];
 $        LDA     R2, +4(R15)
 $        LD      R3, +12(R14)
@@ -74,14 +76,14 @@ $        STO     R5, *R3
 $        LD      R3, +20(R14)
 $        STO     R3, +0(R15)
  do i <= max -> 
-$    LABEL J3
+$    LABEL J4
 $        LD      R4, +0(R15)
 $        LD      R3, #1
 $        IC      R4, +22(R14)
 $        JLE     &4
 $        LD      R3, #0
 $        IC      R3, #1
-$        JNE     J4
+$        JNE     J5
 	i := i+1;
 $        LD      R3, +0(R15)
 $        IA      R3, +24(R14)
@@ -129,20 +131,20 @@ $        LD      R10, *R7
 $        IA      R10, *R9
 $        STO     R10, *R4
  od;
-$        JMP     J3
-$    LABEL J4
+$        JMP     J4
+$    LABEL J5
  i := 0;
 $        LD      R4, +34(R14)
 $        STO     R4, +0(R15)
  do i <= max -> 
-$    LABEL J5
+$    LABEL J6
 $        LD      R5, +0(R15)
 $        LD      R4, #1
 $        IC      R5, +36(R14)
 $        JLE     &4
 $        LD      R4, #0
 $        IC      R4, #1
-$        JNE     J6
+$        JNE     J7
 	i := i+1;
 $        LD      R4, +0(R15)
 $        IA      R4, +38(R14)
@@ -188,8 +190,8 @@ $        LD      R5, *R9
 $        IM      R5, *R11
 $        STO     R5, *R7
  od;
-$        JMP     J5
-$    LABEL J6
+$        JMP     J6
+$    LABEL J7
  i := 0;
 $        LD      R5, +46(R14)
 $        STO     R5, +0(R15)
@@ -197,7 +199,7 @@ $        STO     R5, +0(R15)
 $        LD      R5, +48(R14)
 $        STO     R5, +2(R15)
 do i <= max & j <= max ->
-$    LABEL J7
+$    LABEL J8
 $        LD      R7, +0(R15)
 $        LD      R5, #1
 $        IC      R7, +50(R14)
@@ -210,7 +212,7 @@ $        JLE     &4
 $        LD      R7, #0
 $        BA      R5, R7
 $        IC      R5, #1
-$        JNE     J8
+$        JNE     J9
 	write a[i][j]; j := j+1;
 $        LDA     R7, +4(R15)
 $        LD      R8, +0(R15)
@@ -236,7 +238,7 @@ $        IC      R8, +56(R14)
 $        JGT     &4
 $        LD      R5, #0
 $        IC      R5, #1
-$        JNE     J10
+$        JNE     J11
 		i := i+1;
 $        LD      R5, +0(R15)
 $        IA      R5, +58(R14)
@@ -245,23 +247,23 @@ $        STO     R5, +0(R15)
 $        LD      R5, +60(R14)
 $        STO     R5, +2(R15)
 	 [] j <= max -> skip;
-$        JMP     J9
-$    LABEL J10
+$        JMP     J10
+$    LABEL J11
 $        LD      R8, +2(R15)
 $        LD      R5, #1
 $        IC      R8, +62(R14)
 $        JLE     &4
 $        LD      R5, #0
 $        IC      R5, #1
-$        JNE     J11
+$        JNE     J12
 	fi;
-$        JMP     J9
-$    LABEL J11
+$        JMP     J10
+$    LABEL J12
 $        HALT    
-$    LABEL J9
+$    LABEL J10
 od;
-$        JMP     J7
-$    LABEL J8
+$        JMP     J8
+$    LABEL J9
  { output, if you don't catch the out of bounds
   error in the compiler then you get one
   run time error}

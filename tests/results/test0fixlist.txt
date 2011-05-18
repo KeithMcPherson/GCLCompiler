@@ -1,9 +1,10 @@
-Compiled on: Mon May 09 19:37:52 EDT 2011
+Compiled on: Tue May 17 17:17:57 EDT 2011
 module test0
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
 private
+$        JMP     M1
  integer a,b,x;
  tuple [integer first, integer second] pair;
  begin
@@ -21,6 +22,7 @@ public module entry: ID = test0 semantic: Unknown semantic item.
 ------ Symbol Table End ------
 
  read b; { use 2 as input value}
+$    LABEL M1
 $        RDI     +2(R15)
  x, a := 1, b + x;
 $        LD      R0, +2(R15)
@@ -49,41 +51,41 @@ $        IC      R1, +2(R14)
 $        JEQ     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J2
+$        JNE     J3
 $        LD      R0, +4(R14)
 $        STO     R0, +2(R15)
 $        LD      R0, +6(R14)
 $        STO     R0, +0(R15)
  [] b = 100 ->	a, b := 6, 100 / a;
-$        JMP     J1
-$    LABEL J2
+$        JMP     J2
+$    LABEL J3
 $        LD      R1, +2(R15)
 $        LD      R0, #1
 $        IC      R1, +8(R14)
 $        JEQ     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J3
+$        JNE     J4
 $        LD      R0, +10(R14)
 $        ID      R0, +0(R15)
 $        STO     R0, +2(R15)
 $        LD      R0, +12(R14)
 $        STO     R0, +0(R15)
  [] b # 2  -> skip;
-$        JMP     J1
-$    LABEL J3
+$        JMP     J2
+$    LABEL J4
 $        LD      R1, +2(R15)
 $        LD      R0, #1
 $        IC      R1, +14(R14)
 $        JNE     &4
 $        LD      R0, #0
 $        IC      R0, #1
-$        JNE     J4
+$        JNE     J5
  fi;
-$        JMP     J1
-$    LABEL J4
+$        JMP     J2
+$    LABEL J5
 $        HALT    
-$    LABEL J1
+$    LABEL J2
  write a, b, x, b*x ; { 1111}
 $        WRI     +0(R15)
 $        WRI     +2(R15)

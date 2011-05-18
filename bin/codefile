@@ -1,24 +1,26 @@
      LDA     R15, V1
      LDA     R14, C1
      LD      R13, #16000
+     JMP     M1
+ LABEL M1
      LD      R1, +0(R15)
      LD      R0, #1
      IC      R1, +0(R14)
      JEQ     &4
      LD      R0, #0
      IC      R0, #1
-     JNE     J2
+     JNE     J3
      LD      R0, +2(R14)
      STO     R0, +2(R15)
-     JMP     J1
- LABEL J2
+     JMP     J2
+ LABEL J3
      LD      R1, +0(R15)
      LD      R0, #1
      IC      R1, +4(R14)
      JGT     &4
      LD      R0, #0
      IC      R0, #1
-     JNE     J3
+     JNE     J4
      LD      R0, +0(R15)
      IS      R0, +6(R14)
      LD      R1, +0(R15)
@@ -36,10 +38,11 @@
      STO     R2, +0(R15)
      STO     R1, +2(R15)
      STO     R0, +4(R15)
-     JMP     J1
- LABEL J3
+     JMP     J2
+ LABEL J4
      HALT    
- LABEL J1
+ LABEL J2
+ LABEL M1
      LD      R0, +10(R14)
      STO     R0, +4(R15)
      RDI     +0(R15)
