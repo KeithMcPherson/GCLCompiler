@@ -1016,6 +1016,7 @@ class TupleType extends TypeDescriptor { // mutable
 	}
 	
 	public Procedure getProcedure(final Identifier procName) {
+		System.out.println(methods.size());
 		return (Procedure) methods.lookupIdentifier(procName).semanticRecord();
 	}
 	
@@ -1985,9 +1986,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 	
 	public void declareModule(final SymbolTable scope, final Identifier id) {
-		currentModule = new ModuleRecord(scope, id, codegen);
-		codegen.genJumpLabel(JMP, 'M', currentModule.getLabel());
-		scope.newEntry("module", id, currentModule, currentModule);
+		ModuleRecord tempModule = new ModuleRecord(scope, id, codegen);
+		codegen.genJumpLabel(JMP, 'M', tempModule.getLabel());
+		scope.newEntry("module", id, tempModule, currentModule);
+		currentModule = tempModule;
 	}
 	
 	public void declarePrivateScope(final SymbolTable scope) {
@@ -1998,7 +2000,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		SymbolTable newScope = scope.openScope(true);
 		currentProcedure = new Procedure(currentProcedure, id, newScope, codegen);
 		currentLevel().increment();
-		System.out.println(currentLevel().currentLevel);
 		return currentProcedure;
 	}
 	
@@ -2010,6 +2011,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	public Procedure defineProcedure(Identifier procName, SemanticItem tupleObject){
 		Procedure proc = null;
 		TupleType procsTuple = null;
+		
+		if(tupleObject instanceof Expression) {
+			tupleObject = ((Expression)tupleObject).type();
+		}
 		
 		if(tupleObject instanceof TupleType) {
 			procsTuple = ((TupleType) tupleObject);
