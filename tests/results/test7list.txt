@@ -1,4 +1,4 @@
-Compiled on: Mon May 23 15:13:51 EDT 2011
+Compiled on: Mon May 23 17:08:02 EDT 2011
 module test7 { strings}
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -73,7 +73,7 @@ $        STRING   ":'"
 $        STRING   ")"
 $        STRING   "but it isn:'t pretty."
 $    LABEL V1
-$        SKIP     278
+$        SKIP     2
   <end of compilation of ..\tests\test7>.  There were no errors detected.
   Allocated Registers: 11 12 13 14 15 
 

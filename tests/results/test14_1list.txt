@@ -1,4 +1,4 @@
-Compiled on: Mon May 23 15:13:55 EDT 2011
+Compiled on: Mon May 23 17:08:06 EDT 2011
 module test14_1 { factorial
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -114,7 +114,7 @@ $        INT      1
 $        INT      0
 $        STRING   " factorial is "
 $    LABEL V1
-$        SKIP     30
+$        SKIP     6
   <end of compilation of ..\tests\test14_1>.  There were no errors detected.
   Allocated Registers: 11 12 13 14 15 
 

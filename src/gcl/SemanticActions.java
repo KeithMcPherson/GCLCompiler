@@ -860,7 +860,6 @@ class TypeList extends SemanticItem {
 	public void enterProc(final Procedure method) {
 		methods.add(method);
 		methodNames.add(method.getName());
-		size += method.size();
 	} // TODO check that the names are distinct.
 
 	/**
@@ -958,7 +957,6 @@ class TupleType extends TypeDescriptor { // mutable
 			Procedure t = m.next();
 			Identifier id = n2.next();
 			methods.newEntry("Procedure", id, t, this);
-			inset += t.size();
 		}
 	}
 
@@ -1679,7 +1677,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		if (message instanceof GeneralError) {
 			return;
 			}
-			codegen.reserveGlobalAddress(message.size());
+			//KEITH - This probably should be commented out
+			//codegen.reserveGlobalAddress(message.size());
 			Codegen.Location stringLocation = codegen.buildOperands(message);
 			codegen.gen1Address(WRST, stringLocation);
 	}

@@ -86,4 +86,4 @@
      INT      0
      STRING   " factorial is "
  LABEL V1
-     SKIP     30
+     SKIP     6
