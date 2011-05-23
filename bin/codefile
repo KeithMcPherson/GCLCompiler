@@ -1,24 +1,15 @@
      LDA     R15, V1
      LDA     R14, C1
      LD      R13, #16000
+     LD      R12, R13
+     LD      R11, R13
      JMP     M1
  LABEL P2
-     STO     R11, +4(R13)
-     LD      R11, +2(R13)
      STO     R12, +0(R13)
      LDA     R12, +0(R13)
-     IS      R13, #22
-     STO     R0, +0(R13)
-     STO     R1, +2(R13)
-     STO     R2, +4(R13)
-     STO     R3, +6(R13)
-     STO     R4, +8(R13)
-     STO     R5, +10(R13)
-     STO     R6, +12(R13)
-     STO     R7, +14(R13)
-     STO     R8, +16(R13)
-     STO     R9, +18(R13)
-     STO     R10, +20(R13)
+     STO     R11, +4(R12)
+     LD      R11, +2(R12)
+     PUSH    R13, 2047
      LD      R1, +0(R15)
      LD      R0, #1
      IC      R1, +0(R14)
@@ -45,12 +36,12 @@
      STO     R1, +4(R15)
      STO     R0, +0(R15)
      LDA     R0, +6(R15)
-     IS      R13, #1
+     IS      R13, #8
      STO     R0, +6(R13)
-     STO     R12, +2(R13)
+     STO     R11, +2(R13)
      JSR     R11, P2
-     STO     R12, +2(R12)
-     IA      R13, #1
+     LD      R11, +2(R12)
+     IA      R13, #8
      LD      R0, +4(R15)
      IA      R0, +8(R14)
      LD      R1, +4(R15)
@@ -66,32 +57,21 @@
      HALT    
  LABEL J3
  LABEL U2
-     LD      R0, +0(R13)
-     LD      R1, +2(R13)
-     LD      R2, +4(R13)
-     LD      R3, +6(R13)
-     LD      R4, +8(R13)
-     LD      R5, +10(R13)
-     LD      R6, +12(R13)
-     LD      R7, +14(R13)
-     LD      R8, +16(R13)
-     LD      R9, +18(R13)
-     LD      R10, +20(R13)
-     IA      R13, #22
-     LD      R12, +0(R13)
-     LD      R11, +4(R13)
+     POP     R13, 2047
+     LD      R11, +4(R12)
+     LD      R12, +0(R12)
      JMP     *R11
  LABEL M1
      LD      R0, +10(R14)
      STO     R0, +4(R15)
      RDI     +0(R15)
      LDA     R0, +6(R15)
-     IS      R13, #1
+     IS      R13, #8
      STO     R0, +6(R13)
      STO     R12, +2(R13)
      JSR     R11, P2
-     STO     R12, +2(R12)
-     IA      R13, #1
+     LD      R11, +2(R12)
+     IA      R13, #8
      WRI     +0(R15)
      WRST    +12(R14)
      WRI     +2(R15)
@@ -106,4 +86,4 @@
      INT      0
      STRING   " factorial is "
  LABEL V1
-     SKIP     23
+     SKIP     30

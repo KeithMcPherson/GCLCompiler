@@ -1,8 +1,10 @@
-Compiled on: Mon May 23 10:31:26 EDT 2011
+Compiled on: Mon May 23 15:13:54 EDT 2011
 module test11_9 { NONSQUARE twoDimensions with assignment
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
+$        LD      R12, R13
+$        LD      R11, R13
 -- test of arrays (2 dimension )}
 private
 $        JMP     M1
@@ -220,5 +222,5 @@ $        INT      3
 $    LABEL V1
 $        SKIP     52
   <end of compilation of ..\tests\test11_9>.  There were no errors detected.
-  Allocated Registers: 0 1 2 13 14 15 
+  Allocated Registers: 0 1 2 11 12 13 14 15 
 

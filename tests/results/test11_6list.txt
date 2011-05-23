@@ -1,8 +1,10 @@
-Compiled on: Mon May 23 10:31:25 EDT 2011
+Compiled on: Mon May 23 15:13:53 EDT 2011
 module test11_6 { bounds check twoDimensions
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
+$        LD      R12, R13
+$        LD      R11, R13
 -- test of array bounds check (2 dimension ) }
 private
 $        JMP     M1
@@ -174,87 +176,91 @@ $        TRNG    R10, +0(R14)
 $        IS      R10, #0
 $        IM      R10, #2
 $        IA      R9, R10
-$        LDA     R10, +4(R15)
-$        LD      R11, +0(R15)
-$        TRNG    R11, +0(R14)
-$        IS      R11, #0
-$        IM      R11, #4
-$        IA      R10, R11
-$        LDA     R11, *R10
-$        LD      R12, +44(R14)
-$        TRNG    R12, +0(R14)
-$        IS      R12, #0
-$        IM      R12, #2
-$        IA      R11, R12
-$        LD      R5, *R9
-$        IM      R5, *R11
-$        STO     R5, *R7
+At -- line 22 col 26: error 94
+COMPILER ERROR -> There is no available register. 
+
+$        HALT    
+$        LDA     R0, +4(R15)
+$        LD      R1, +0(R15)
+$        TRNG    R1, +0(R14)
+$        IS      R1, #0
+$        IM      R1, #4
+$        IA      R0, R1
+$        LDA     R1, *R0
+$        LD      R2, +44(R14)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        LD      R2, *R9
+$        IM      R2, *R1
+$        STO     R2, *R7
  od;
 $        JMP     J6
 $    LABEL J7
  i := 0;
-$        LD      R5, +46(R14)
-$        STO     R5, +0(R15)
+$        LD      R1, +46(R14)
+$        STO     R1, +0(R15)
  j := 0;
-$        LD      R5, +48(R14)
-$        STO     R5, +2(R15)
+$        LD      R1, +48(R14)
+$        STO     R1, +2(R15)
 do i <= max & j <= max ->
 $    LABEL J8
-$        LD      R7, +0(R15)
-$        LD      R5, #1
-$        IC      R7, +50(R14)
+$        LD      R2, +0(R15)
+$        LD      R1, #1
+$        IC      R2, +50(R14)
 $        JLE     &4
-$        LD      R5, #0
-$        LD      R8, +2(R15)
-$        LD      R7, #1
-$        IC      R8, +52(R14)
+$        LD      R1, #0
+$        LD      R3, +2(R15)
+$        LD      R2, #1
+$        IC      R3, +52(R14)
 $        JLE     &4
-$        LD      R7, #0
-$        BA      R5, R7
-$        IC      R5, #1
+$        LD      R2, #0
+$        BA      R1, R2
+$        IC      R1, #1
 $        JNE     J9
 	write a[i][j]; j := j+1;
-$        LDA     R7, +4(R15)
-$        LD      R8, +0(R15)
-$        TRNG    R8, +0(R14)
-$        IS      R8, #0
-$        IM      R8, #4
-$        IA      R7, R8
-$        LDA     R8, *R7
-$        LD      R9, +2(R15)
-$        TRNG    R9, +0(R14)
-$        IS      R9, #0
-$        IM      R9, #2
-$        IA      R8, R9
-$        WRI     *R8
+$        LDA     R1, +4(R15)
+$        LD      R2, +0(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #4
+$        IA      R1, R2
+$        LDA     R2, *R1
+$        LD      R3, +2(R15)
+$        TRNG    R3, +0(R14)
+$        IS      R3, #0
+$        IM      R3, #2
+$        IA      R2, R3
+$        WRI     *R2
 $        WRNL    
-$        LD      R5, +2(R15)
-$        IA      R5, +54(R14)
-$        STO     R5, +2(R15)
+$        LD      R2, +2(R15)
+$        IA      R2, +54(R14)
+$        STO     R2, +2(R15)
 	if j > max -> 
-$        LD      R8, +2(R15)
-$        LD      R5, #1
-$        IC      R8, +56(R14)
+$        LD      R3, +2(R15)
+$        LD      R2, #1
+$        IC      R3, +56(R14)
 $        JGT     &4
-$        LD      R5, #0
-$        IC      R5, #1
+$        LD      R2, #0
+$        IC      R2, #1
 $        JNE     J11
 		i := i+1;
-$        LD      R5, +0(R15)
-$        IA      R5, +58(R14)
-$        STO     R5, +0(R15)
+$        LD      R2, +0(R15)
+$        IA      R2, +58(R14)
+$        STO     R2, +0(R15)
 		j := 0;
-$        LD      R5, +60(R14)
-$        STO     R5, +2(R15)
+$        LD      R2, +60(R14)
+$        STO     R2, +2(R15)
 	 [] j <= max -> skip;
 $        JMP     J10
 $    LABEL J11
-$        LD      R8, +2(R15)
-$        LD      R5, #1
-$        IC      R8, +62(R14)
+$        LD      R3, +2(R15)
+$        LD      R2, #1
+$        IC      R3, +62(R14)
 $        JLE     &4
-$        LD      R5, #0
-$        IC      R5, #1
+$        LD      R2, #0
+$        IC      R2, #1
 $        JNE     J12
 	fi;
 $        JMP     J10
@@ -304,6 +310,7 @@ $        INT      0
 $        INT      2
 $    LABEL V1
 $        SKIP     12
-  <end of compilation of ..\tests\test11_6>.  There were no errors detected.
-  Allocated Registers: 0 1 2 3 4 6 7 13 14 15 
+  <end of compilation of ..\tests\test11_6>.  There was 1 error detected.
+  Allocated Registers: 0 1 6 11 12 13 14 15 
 
+$        HALT    

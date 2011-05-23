@@ -1,8 +1,10 @@
-Compiled on: Mon May 23 10:31:26 EDT 2011
+Compiled on: Mon May 23 15:13:55 EDT 2011
 module test13
 $        LDA     R15, V1
 $        LDA     R14, C1
 $        LD      R13, #16000
+$        LD      R12, R13
+$        LD      R11, R13
 private
 $        JMP     M1
 { test of tuple component extraction }
@@ -125,6 +127,6 @@ $        INT      1
 $    LABEL V1
 $        SKIP     14
   <end of compilation of ..\tests\test13>.  There was 1 error detected.
-  Allocated Registers: 13 14 15 
+  Allocated Registers: 11 12 13 14 15 
 
 $        HALT    

@@ -1016,7 +1016,6 @@ class TupleType extends TypeDescriptor { // mutable
 	}
 	
 	public Procedure getProcedure(final Identifier procName) {
-		System.out.println(methods.size());
 		return (Procedure) methods.lookupIdentifier(procName).semanticRecord();
 	}
 	
@@ -1122,16 +1121,25 @@ class Procedure extends SemanticItem {
 	private Identifier name;
 	private int label;
 	private boolean defined;
-	private int localSize = 22;
-	
-	int size = 1;
+	private int level;
+	int size = 8;
 	public Procedure(Procedure parentProcedure, Identifier name, SymbolTable scope, Codegen codegen){
 		this.parentProcedure = parentProcedure;
 		this.name = name;
 		this.scope = scope;
 		defined = false;
 		label = codegen.getLabel();
+		//KEITH - these level settings are probably wrong.
+		if(parentProcedure == null){
+				level = CodegenConstants.GLOBAL_LEVEL;
+			}else{
+				level = parentProcedure.semanticLevel();
+			}
 	}
+	
+	public int semanticLevel(){
+		return this.level;
+		}
 	
 	public boolean alreadyDefined(){
 		return defined;
@@ -1158,26 +1166,20 @@ class Procedure extends SemanticItem {
 	public void genLink(Codegen codegen){
 		defined = true;
 		codegen.genLabel('P', label);
-		codegen.gen2Address(Codegen.STO, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +4));
-		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +2));
 		codegen.gen2Address(Codegen.STO, Codegen.FRAME_POINTER , new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
 		codegen.gen2Address(Codegen.LDA, Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
-		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, localSize);
-		//KEITH - Maybe need to only use registers that are in use?
-		for(int i = 0; i <= Codegen.LAST_GENERAL_REGISTER; i++){
-			codegen.gen2Address(Codegen.STO, i, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, 2*i));
-		}
+		codegen.gen2Address(Codegen.STO, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
+		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
+		codegen.genPushPopToStack(Codegen.PUSH);
+
 			
 	}
 	
 	public void genUnlink(Codegen codegen){
 		codegen.genLabel('U', label);
-		for(int i = 0; i <= Codegen.LAST_GENERAL_REGISTER; i++){
-			codegen.gen2Address(Codegen.LD, i, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, 2*i));
-		}
-		codegen.gen2Address(Codegen.IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, localSize);
-		codegen.gen2Address(Codegen.LD,Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
-		codegen.gen2Address(Codegen.LD,Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +4));
+		codegen.genPushPopToStack(Codegen.POP);
+		codegen.gen2Address(Codegen.LD,Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
+		codegen.gen2Address(Codegen.LD,Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +0));
 		codegen.gen1Address(Codegen.JMP, Codegen.IREG, Codegen.STATIC_POINTER, 0);
 	}
 }
@@ -1999,9 +2001,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 
 	public Procedure declareProcedure(SymbolTable scope, Identifier id){
+		//KEITH - again with the levels
+		currentLevel().increment();
 		SymbolTable newScope = scope.openScope(true);
 		currentProcedure = new Procedure(currentProcedure, id, newScope, codegen);
-		currentLevel().increment();
 		return currentProcedure;
 	}
 	
@@ -2013,7 +2016,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	public Procedure defineProcedure(Identifier procName, SemanticItem tupleObject){
 		Procedure proc = null;
 		TupleType procsTuple = null;
-		
+
+
 		if(tupleObject instanceof Expression) {
 			tupleObject = ((Expression)tupleObject).type();
 		}
@@ -2034,9 +2038,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			err.semanticError(GCLError.ALREADY_DEFINED, "This procedure has already been defined for this tuple.");
 			return null;
 		}
-	
-		currentProcedure = proc;
+		
+		//KEITH - make sure you know where to mess with the level
 		currentLevel().increment();
+		currentProcedure = proc;
 		
 		return proc;
 	}
@@ -2063,17 +2068,18 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		tuple = (TupleType)tupleExpression.type();
 
 		Procedure procedure = tuple.getProcedure(procedureName);
-		if(procedure != null){ //maybe create a ErrorProcedure object
+		if(procedure != null){ 
 
-				int thisRegister = codegen.loadAddress(tupleExpression); //grab this
+				int thisRegister = codegen.loadAddress(tupleExpression);
 				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, procedure.size());
 				codegen.gen2Address(STO, thisRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +6));
 				codegen.freeTemp(DREG, thisRegister);
 
-				//pointer chasing to store what should be the STATIC_POINTER into the frame we're creating at +2(STACK_POINTER)
-				int diff = procedure.semanticLevel() - currentLevel().value();
+				System.out.println("proc level: " + procedure.semanticLevel());
+				System.out.println("current level: " + currentLevel().value());
+				int diff = currentLevel().value() - procedure.semanticLevel();
 				Codegen.Location persistedStaticInNewFrame = new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +2);
-				if(diff <= 0){
+				if(diff <= 0){ 
 					codegen.gen2Address(STO,Codegen.FRAME_POINTER, persistedStaticInNewFrame);
 				}else if(diff == 1){
 					codegen.gen2Address(STO,Codegen.STATIC_POINTER, persistedStaticInNewFrame);
@@ -2087,9 +2093,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 				}
 
 				//procedure.call(arguments);
-
 				codegen.genJumpSubroutine(Codegen.STATIC_POINTER, procedure.getLabel());
-				codegen.gen2Address(STO, Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
+				codegen.gen2Address(LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
 				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, procedure.size());
 		}
 		}
