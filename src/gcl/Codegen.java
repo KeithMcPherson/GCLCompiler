@@ -391,6 +391,10 @@ public class Codegen implements Mnemonic, CodegenConstants {
 		writeFiles(opcode.samCodeString() + prefix + offset);
 	}
 
+	public void genJumpSubroutine(int staticPointer, int label) {
+		writeFiles(JSR.samCodeString() + 'R' + staticPointer + ", P" + label);
+	}
+	
 	/**
 	 * Generate a label
 	 * 

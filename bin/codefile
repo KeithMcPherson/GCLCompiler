@@ -44,6 +44,13 @@
      POP     R13, 2
      STO     R1, +4(R15)
      STO     R0, +0(R15)
+     LDA     R0, +6(R15)
+     IS      R13, #1
+     STO     R0, +6(R13)
+     STO     R12, +2(R13)
+     JSR     R11, P2
+     STO     R12, +2(R12)
+     IA      R13, #1
      LD      R0, +4(R15)
      IA      R0, +8(R14)
      LD      R1, +4(R15)
@@ -78,6 +85,13 @@
      LD      R0, +10(R14)
      STO     R0, +4(R15)
      RDI     +0(R15)
+     LDA     R0, +6(R15)
+     IS      R13, #1
+     STO     R0, +6(R13)
+     STO     R12, +2(R13)
+     JSR     R11, P2
+     STO     R12, +2(R12)
+     IA      R13, #1
      WRI     +0(R15)
      WRST    +12(R14)
      WRI     +2(R15)

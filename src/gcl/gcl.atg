@@ -155,9 +155,10 @@ paramDefinition<SymbolTable scope>
 ("value" | "reference") variableDefinition<scope, ParameterKind.NOT_PARAM> .
  
  /*----------------------------------------------------------*/    
-callStatement<SymbolTable scope> (. Expression exp; .)
+callStatement<Expression tupleExpression, SymbolTable scope> (. Expression exp; Identifier procID; .)
 =
-"!" identifier argumentList<scope> .
+"!" identifier (. procID = new Identifier(currentToken().spelling()); .)
+argumentList<scope> (. semantic.callProcedure(tupleExpression, procID); .).
 
  /*----------------------------------------------------------*/    
 argumentList<SymbolTable scope>
@@ -169,7 +170,7 @@ argumentList<SymbolTable scope>
  /*----------------------------------------------------------*/    
 assignOrCallStatement<SymbolTable scope> (. Expression exp; .)
 =
-variableAccessEtc<^exp, scope> (assignStatement<scope, exp> | callStatement<scope>).
+variableAccessEtc<^exp, scope> (assignStatement<scope, exp> | callStatement<exp, scope>).
 
  /*----------------------------------------------------------*/    
 procedureDefinition<SymbolTable scope> (. Identifier tupleID; Identifier procID; Procedure proc; .)

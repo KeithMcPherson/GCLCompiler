@@ -1,4 +1,4 @@
-Compiled on: Sun May 22 13:39:57 EDT 2011
+Compiled on: Mon May 23 10:31:27 EDT 2011
 module test14_1 { factorial
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -62,6 +62,13 @@ $        POP     R13, 2
 $        STO     R1, +4(R15)
 $        STO     R0, +0(R15)
 	   	fac!nFac(); { recurse }
+$        LDA     R0, +6(R15)
+$        IS      R13, #1
+$        STO     R0, +6(R13)
+$        STO     R12, +2(R13)
+$        JSR     R11, P2
+$        STO     R12, +2(R12)
+$        IA      R13, #1
 	   	oldArg, result, inArg := oldArg +1, oldArg*result, oldArg;
 $        LD      R0, +4(R15)
 $        IA      R0, +8(R14)
@@ -104,6 +111,13 @@ $        STO     R0, +4(R15)
 	read inArg ;
 $        RDI     +0(R15)
 	fac!nFac();
+$        LDA     R0, +6(R15)
+$        IS      R13, #1
+$        STO     R0, +6(R13)
+$        STO     R12, +2(R13)
+$        JSR     R11, P2
+$        STO     R12, +2(R12)
+$        IA      R13, #1
 	write inArg,' factorial is ', result;
 $        WRI     +0(R15)
 $        WRST    +12(R14)

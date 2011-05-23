@@ -1152,7 +1152,9 @@ class Procedure extends SemanticItem {
 	public SymbolTable getScope() {
 		return this.scope;
 	}
-	
+	public int getLabel() {
+		return this.label;
+	}
 	public void genLink(Codegen codegen){
 		defined = true;
 		codegen.genLabel('P', label);
@@ -2051,6 +2053,45 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			codegen.genLabel('M', currentModule.getLabel());
 		} else {
 			currentProcedure.genLink(codegen);
+		}
+	}
+	
+
+	void callProcedure(Expression tupleExpression, Identifier procedureName){
+	TupleType tuple = null;
+	if(tupleExpression.type() instanceof TupleType){
+		tuple = (TupleType)tupleExpression.type();
+
+		Procedure procedure = tuple.getProcedure(procedureName);
+		if(procedure != null){ //maybe create a ErrorProcedure object
+
+				int thisRegister = codegen.loadAddress(tupleExpression); //grab this
+				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, procedure.size());
+				codegen.gen2Address(STO, thisRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +6));
+				codegen.freeTemp(DREG, thisRegister);
+
+				//pointer chasing to store what should be the STATIC_POINTER into the frame we're creating at +2(STACK_POINTER)
+				int diff = procedure.semanticLevel() - currentLevel().value();
+				Codegen.Location persistedStaticInNewFrame = new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +2);
+				if(diff <= 0){
+					codegen.gen2Address(STO,Codegen.FRAME_POINTER, persistedStaticInNewFrame);
+				}else if(diff == 1){
+					codegen.gen2Address(STO,Codegen.STATIC_POINTER, persistedStaticInNewFrame);
+				}else if(diff > 1){
+					for(int i = 0; i < diff-1; i++){
+						codegen.gen2Address(LD,Codegen.STATIC_POINTER, new Codegen.Location(INDXD, Codegen.STATIC_POINTER, +2));
+					}
+					codegen.gen2Address(STO,Codegen.STATIC_POINTER, persistedStaticInNewFrame);
+				}else{
+					//err.semanticError(GCLError.UNHANDLED_CASE, "Corrupt leveling scheme.");
+				}
+
+				//procedure.call(arguments);
+
+				codegen.genJumpSubroutine(Codegen.STATIC_POINTER, procedure.getLabel());
+				codegen.gen2Address(STO, Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
+				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, procedure.size());
+		}
 		}
 	}
 	

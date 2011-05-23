@@ -211,116 +211,116 @@ Cross reference list:
 --------------------
 
   "!"           160
-  "#"           325
-  "&"           267
-  "("           150  165  302
-  ")"           150  167  302
-  "*"           338
-  "+"           282  333
-  ","            81  127  138  166  207  211  224  227  308
-  "-"           283  334
-  "->"          242  252
-  "."            55  345
-  ".."          190
-  "/"           339
-  ":="          225
+  "#"           326
+  "&"           268
+  "("           150  166  303
+  ")"           150  168  303
+  "*"           339
+  "+"           283  334
+  ","            81  127  138  167  208  212  225  228  309
+  "-"           284  335
+  "->"          243  253
+  "."            55  346
+  ".."          191
+  "/"           340
+  ":="          226
   ";"            61   65   65  150
-  "<"           326
-  "<="          327
-  "="            91  324
-  ">"           328
-  ">="          329
-  "@"           177  359
+  "<"           327
+  "<="          328
+  "="            91  325
+  ">"           329
+  ">="          330
+  "@"           178  360
   "Boolean"     106
-  "["           120  183  184  189  306  359
-  "[]"          248
-  "\\"          340
-  "]"           120  183  184  191  311  359
-  "array"       183
+  "["           120  184  185  190  307  360
+  "[]"          249
+  "\\"          341
+  "]"           120  184  185  192  312  360
+  "array"       184
   "begin"        59
   "constant"     90
-  "do"          237
+  "do"          238
   "end"          59
-  "false"       320
-  "fi"          233
-  "forall"      242
-  "if"          232
+  "false"       321
+  "fi"          234
+  "forall"      243
+  "if"          233
   "integer"     105
-  "llarof"      244
+  "llarof"      245
   "module"       54
-  "od"          238
+  "od"          239
   "private"      55
-  "procedure"   144  177
-  "range"       189
-  "read"        206
+  "procedure"   144  178
+  "range"       190
+  "read"        207
   "reference"   155
-  "skip"        202
-  "true"        319
+  "skip"        203
+  "true"        320
   "tuple"       120
   "typedefinit  115
   "value"       155
-  "write"       211
-  "|"           259
-  "~"           313
-  addOperator  -331  286
-  andExpr      -263  258  259
-  argumentList -163  160
-  arrayType    -180  100
-  assignOrCall -170  199
-  assignStatem -220  172
-  block         -57   55  177
-  booleanConst -317  312
-  callStatemen -158  172
-  constant      -94   91  189  190
+  "write"       212
+  "|"           260
+  "~"           314
+  addOperator  -332  287
+  andExpr      -264  259  260
+  argumentList -164  161
+  arrayType    -181  100
+  assignOrCall -171  200
+  assignStatem -221  173
+  block         -57   55  178
+  booleanConst -318  313
+  callStatemen -158  173
+  constant      -94   91  190  191
   constantDefi  -87   70
   definition    -67   61
   definitionPa  -61   54   59
-  doStatement  -235  199
-  emptyStateme -202  198
-  expression   -255   96  166  166  217  226  227  252  302  306  308  359
-  factor       -296  293  293  313
+  doStatement  -236  200
+  emptyStateme -203  199
+  expression   -256   96  167  167  218  227  228  253  303  307  309  360
+  factor       -297  294  294  314
   fieldsAndPro -130  120
-  forStatement -240  199
+  forStatement -241  200
   gcl           -46
-  guardedComma -250  248  248
-  guardedComma -246  232  237
-  identifier     54   77   81   90  115  132  138  144  160  177  177  344  345
-                359
-  ifStatement  -230  199
+  guardedComma -251  249  249
+  guardedComma -247  233  238
+  identifier     54   77   81   90  115  132  138  144  160  178  178  345  346
+                360
+  ifStatement  -231  200
   justProcs    -124  120  139
   module        -53   49   50
   moreFieldsAn -136  133  139
-  multiplyOper -336  293
-  numeral       299
+  multiplyOper -337  294
+  numeral       300
   paramDefinit -153  150  150
   paramPart    -148  145
   procedureDec -142  127  127
-  procedureDef -175   72
-  qualifiedIde -342  107  353
-  rangeType    -187  100
-  readStatemen -204  198
-  relationalEx -271  266  267
-  relationalOp -322  275
-  simpleExpr   -279  274  275
-  statement    -196   65   65
-  statementPar  -63   59  243  253
-  stringConsta  218
-  subsAndCompo -356  354
-  term         -290  282  283  286
+  procedureDef -176   72
+  qualifiedIde -343  107  354
+  rangeType    -188  100
+  readStatemen -205  199
+  relationalEx -272  267  268
+  relationalOp -323  276
+  simpleExpr   -280  275  276
+  statement    -197   65   65
+  statementPar  -63   59  244  254
+  stringConsta  219
+  subsAndCompo -357  355
+  term         -291  283  284  287
   tupleType    -118  100
   type          -98   77  115
   typeDefiniti -112   71
-  typeSymbol   -102  100  132  138  183  184
-  variableAcce -350  172  206  207  224  242  298
+  typeSymbol   -102  100  132  138  184  185
+  variableAcce -351  173  207  208  225  243  299
   variableDefi  -74   69  155
-  writeItem    -214  211  211
-  writeStateme -209  198
+  writeItem    -215  212  212
+  writeStateme -210  199
 
 
 
 57 terminals
 113 symbols
-358 nodes
+360 nodes
 11 sets
 Symbol Table:
 ------------
@@ -351,37 +351,37 @@ Symbol Table:
  22 "value"        t    false               155 litToken
  23 "reference"    t    false               155 litToken
  24 "!"            t    false               160 fixedToken
- 25 "@"            t    false               177 fixedToken
- 26 "array"        t    false               183 litToken
- 27 "range"        t    false               189 litToken
- 28 ".."           t    false               190 fixedToken
- 29 "skip"         t    false               202 litToken
- 30 "read"         t    false               206 litToken
- 31 "write"        t    false               211 litToken
- 32 ":="           t    false               225 fixedToken
- 33 "if"           t    false               232 litToken
- 34 "fi"           t    false               233 litToken
- 35 "do"           t    false               237 litToken
- 36 "od"           t    false               238 litToken
- 37 "forall"       t    false               242 litToken
- 38 "->"           t    false               242 fixedToken
- 39 "llarof"       t    false               244 litToken
- 40 "[]"           t    false               248 fixedToken
- 41 "|"            t    false               259 fixedToken
- 42 "&"            t    false               267 fixedToken
- 43 "+"            t    false               282 fixedToken
- 44 "-"            t    false               283 fixedToken
- 45 "~"            t    false               313 fixedToken
- 46 "true"         t    false               319 litToken
- 47 "false"        t    false               320 litToken
- 48 "#"            t    false               325 fixedToken
- 49 "<"            t    false               326 fixedToken
- 50 "<="           t    false               327 fixedToken
- 51 ">"            t    false               328 fixedToken
- 52 ">="           t    false               329 fixedToken
- 53 "*"            t    false               338 fixedToken
- 54 "/"            t    false               339 fixedToken
- 55 "\\"           t    false               340 fixedToken
+ 25 "@"            t    false               178 fixedToken
+ 26 "array"        t    false               184 litToken
+ 27 "range"        t    false               190 litToken
+ 28 ".."           t    false               191 fixedToken
+ 29 "skip"         t    false               203 litToken
+ 30 "read"         t    false               207 litToken
+ 31 "write"        t    false               212 litToken
+ 32 ":="           t    false               226 fixedToken
+ 33 "if"           t    false               233 litToken
+ 34 "fi"           t    false               234 litToken
+ 35 "do"           t    false               238 litToken
+ 36 "od"           t    false               239 litToken
+ 37 "forall"       t    false               243 litToken
+ 38 "->"           t    false               243 fixedToken
+ 39 "llarof"       t    false               245 litToken
+ 40 "[]"           t    false               249 fixedToken
+ 41 "|"            t    false               260 fixedToken
+ 42 "&"            t    false               268 fixedToken
+ 43 "+"            t    false               283 fixedToken
+ 44 "-"            t    false               284 fixedToken
+ 45 "~"            t    false               314 fixedToken
+ 46 "true"         t    false               320 litToken
+ 47 "false"        t    false               321 litToken
+ 48 "#"            t    false               326 fixedToken
+ 49 "<"            t    false               327 fixedToken
+ 50 "<="           t    false               328 fixedToken
+ 51 ">"            t    false               329 fixedToken
+ 52 ">="           t    false               330 fixedToken
+ 53 "*"            t    false               339 fixedToken
+ 54 "/"            t    false               340 fixedToken
+ 55 "\\"           t    false               341 fixedToken
  56 ???            t    false                 0 fixedToken
  57 option1        pr   false                27 fixedToken
  58 option3        pr   false                29 fixedToken
@@ -396,19 +396,19 @@ Symbol Table:
   3 block          nt   true     18 false    57 fixedToken
   4 statementPar   nt   true     28 false    63 fixedToken
   5 definition     nt   true     37 false    67 fixedToken
-  6 statement      nt   true    171 false   196 fixedToken
+  6 statement      nt   true    173 false   197 fixedToken
   7 variableDefi   nt   true     43 false    74 fixedToken
   8 constantDefi   nt   true     50 false    87 fixedToken
   9 typeDefiniti   nt   true     76 false   112 fixedToken
- 10 procedureDef   nt   true    142 false   175 fixedToken
+ 10 procedureDef   nt   true    144 false   176 fixedToken
  11 type           nt   true     65 false    98 fixedToken
  12 constant       nt   true     56 false    94 fixedToken
- 13 expression     nt   true    241 false   255 fixedToken
+ 13 expression     nt   true    243 false   256 fixedToken
  14 typeSymbol     nt   true     71 false   102 fixedToken
- 15 arrayType      nt   true    150 false   180 fixedToken
- 16 rangeType      nt   true    162 false   187 fixedToken
+ 15 arrayType      nt   true    152 false   181 fixedToken
+ 16 rangeType      nt   true    164 false   188 fixedToken
  17 tupleType      nt   true     81 false   118 fixedToken
- 18 qualifiedIde   nt   true    339 false   342 fixedToken
+ 18 qualifiedIde   nt   true    341 false   343 fixedToken
  19 justProcs      nt   true     89 false   124 fixedToken
  20 fieldsAndPro   nt   true     95 false   130 fixedToken
  21 procedureDec   nt   true    109 false   142 fixedToken
@@ -416,29 +416,29 @@ Symbol Table:
  23 paramPart      nt   true    114 false   148 fixedToken
  24 paramDefinit   nt   true    123 false   153 fixedToken
  25 callStatemen   nt   true    126 false   158 fixedToken
- 26 argumentList   nt   true    129 false   163 fixedToken
- 27 assignOrCall   nt   true    137 false   170 fixedToken
- 28 variableAcce   nt   true    345 false   350 fixedToken
- 29 assignStatem   nt   true    203 false   220 fixedToken
- 30 emptyStateme   nt   false   183 false   202 fixedToken
- 31 readStatemen   nt   true    184 false   204 fixedToken
- 32 writeStateme   nt   true    191 false   209 fixedToken
- 33 ifStatement    nt   true    216 false   230 fixedToken
- 34 doStatement    nt   true    221 false   235 fixedToken
- 35 forStatement   nt   true    225 false   240 fixedToken
- 36 writeItem      nt   true    201 false   214 fixedToken
- 37 guardedComma   nt   true    232 false   246 fixedToken
- 38 guardedComma   nt   true    236 false   250 fixedToken
- 39 andExpr        nt   true    246 false   263 fixedToken
- 40 relationalEx   nt   true    251 false   271 fixedToken
- 41 simpleExpr     nt   true    262 false   279 fixedToken
- 42 relationalOp   nt   false   310 false   322 fixedToken
- 43 term           nt   true    268 false   290 fixedToken
- 44 addOperator    nt   false   328 false   331 fixedToken
- 45 factor         nt   true    277 false   296 fixedToken
- 46 multiplyOper   nt   false   334 false   336 fixedToken
- 47 booleanConst   nt   false   304 false   317 fixedToken
- 48 subsAndCompo   nt   true    357 true    356 fixedToken
+ 26 argumentList   nt   true    131 false   164 fixedToken
+ 27 assignOrCall   nt   true    139 false   171 fixedToken
+ 28 variableAcce   nt   true    347 false   351 fixedToken
+ 29 assignStatem   nt   true    205 false   221 fixedToken
+ 30 emptyStateme   nt   false   185 false   203 fixedToken
+ 31 readStatemen   nt   true    186 false   205 fixedToken
+ 32 writeStateme   nt   true    193 false   210 fixedToken
+ 33 ifStatement    nt   true    218 false   231 fixedToken
+ 34 doStatement    nt   true    223 false   236 fixedToken
+ 35 forStatement   nt   true    227 false   241 fixedToken
+ 36 writeItem      nt   true    203 false   215 fixedToken
+ 37 guardedComma   nt   true    234 false   247 fixedToken
+ 38 guardedComma   nt   true    238 false   251 fixedToken
+ 39 andExpr        nt   true    248 false   264 fixedToken
+ 40 relationalEx   nt   true    253 false   272 fixedToken
+ 41 simpleExpr     nt   true    264 false   280 fixedToken
+ 42 relationalOp   nt   false   312 false   323 fixedToken
+ 43 term           nt   true    270 false   291 fixedToken
+ 44 addOperator    nt   false   330 false   332 fixedToken
+ 45 factor         nt   true    279 false   297 fixedToken
+ 46 multiplyOper   nt   false   336 false   337 fixedToken
+ 47 booleanConst   nt   false   306 false   318 fixedToken
+ 48 subsAndCompo   nt   true    359 true    357 fixedToken
 
 Literal Tokens:
 --------------

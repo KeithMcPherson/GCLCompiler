@@ -457,11 +457,13 @@ public class Parser {
 		variableDefinition(scope, ParameterKind.NOT_PARAM);
 	}
 
-	void callStatement(SymbolTable scope) {
-		Expression exp; 
+	void callStatement(Expression tupleExpression, SymbolTable scope) {
+		Expression exp; Identifier procID; 
 		Expect(24);
 		Expect(1);
+		procID = new Identifier(currentToken().spelling()); 
 		argumentList(scope);
+		semantic.callProcedure(tupleExpression, procID); 
 	}
 
 	void argumentList(SymbolTable scope) {
@@ -483,7 +485,7 @@ public class Parser {
 		if (la.kind == 10 || la.kind == 32) {
 			assignStatement(scope, exp);
 		} else if (la.kind == 24) {
-			callStatement(scope);
+			callStatement(exp, scope);
 		} else SynErr(69);
 	}
 
