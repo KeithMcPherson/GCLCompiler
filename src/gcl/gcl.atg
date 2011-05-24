@@ -178,6 +178,11 @@ procedureDefinition<SymbolTable scope> (. Identifier tupleID; Identifier procID;
 "procedure" identifier (. tupleID = new Identifier(currentToken().spelling()); .) "@" identifier (. procID = new Identifier(currentToken().spelling()); proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); .) block<scope> (. semantic.endDefineProcedure(proc); .).
 
  /*----------------------------------------------------------*/    
+returnStatement<>
+=
+"return" (. semantic.doReturn(); .).
+
+ /*----------------------------------------------------------*/    
 arrayType<^ArrayType result, TypeDescriptor baseType, SymbolTable scope>  (. .)
 =	
 (. SemanticItem subscriptType; ArrayCarrier carrier = new ArrayCarrier();.)
@@ -198,6 +203,7 @@ statement<SymbolTable scope>
 =
 	emptyStatement | readStatement<scope>  | writeStatement<scope> 
 	| assignOrCallStatement<scope> | ifStatement<scope> | doStatement<scope> | forStatement<scope>
+	| returnStatement<>
 	.
 /*----------------------------------------------------------*/
 emptyStatement     = "skip".

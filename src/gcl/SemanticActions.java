@@ -1180,6 +1180,13 @@ class Procedure extends SemanticItem {
 		codegen.gen2Address(Codegen.LD,Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +0));
 		codegen.gen1Address(Codegen.JMP, Codegen.IREG, Codegen.STATIC_POINTER, 0);
 	}
+	
+	public VariableExpression reserveLocalAddress(TypeDescriptor type) {
+		this.size += type.size();
+		//KEITH - Make the following more meaningful
+		int offset = -1 * (this.size - 8);
+		return new VariableExpression(type, this.level, offset, true);
+		}
 }
 
 // --------------------- Semantic Error Values ----------------------------
@@ -1220,6 +1227,8 @@ abstract class GCLError {
 	static final GCLError FIELD_NOT_FOUND = new Value(13,
 	"ERROR -> Tuple field not found. ");
 	static final GCLError PROCEDURE_REQUIRED = new Value(14,
+	"ERROR -> Procedure Required. ");
+	static final GCLError INVALID_RETURN = new Value(15,
 	"ERROR -> Procedure Required. ");
 
 	// The following are compiler errors. Repair them.
@@ -2074,8 +2083,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 				codegen.gen2Address(STO, thisRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +6));
 				codegen.freeTemp(DREG, thisRegister);
 
-				System.out.println("proc level: " + procedure.semanticLevel());
-				System.out.println("current level: " + currentLevel().value());
 				int diff = currentLevel().value() - procedure.semanticLevel();
 				Codegen.Location persistedStaticInNewFrame = new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +2);
 				if(diff <= 0){ 
@@ -2098,6 +2105,15 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		}
 		}
 	}
+	
+	void doReturn(){
+		if(currentLevel().isGlobal()){
+			err.semanticError(GCLError.INVALID_RETURN, "returns cannot exist in a global level");
+		return;
+		}
+			int procedureLabel = currentProcedure.getLabel();
+			codegen.genJumpLabel(JMP, 'U', procedureLabel);
+		}
 	
 	public Expression subscriptAction(Expression array, Expression subscript){
 		//LDA R6, +60(R15)
@@ -2183,7 +2199,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 					addressOffset, DIRECT);
 		} else { // may be param or local in a proc
 			// more later -- for now throw an exception
-			throw new IllegalStateException("Missing code in declareVariable.");
+			expr =	currentProcedure.reserveLocalAddress(type);
+			//throw new IllegalStateException("Missing code in declareVariable.");
 		}
 		SymbolTable.Entry variable = scope.newEntry("variable", id, expr, currentModule);
 		CompilerOptions.message("Entering: " + variable);

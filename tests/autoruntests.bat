@@ -104,9 +104,9 @@ java -cp . gcl.GCLCompiler ..\tests\test14 ..\tests\results\test14list.txt
 java -cp . gcl.GCLCompiler ..\tests\test14_1 ..\tests\results\test14_1list.txt 
 ..\sam3-pc.exe
 ..\macc3-pc.exe  <..\tests\test14_1.dat >..\tests\results\test14_1.result
-::java -cp . gcl.GCLCompiler ..\tests\test15 ..\tests\results\test15list.txt 
-::..\sam3-pc.exe
-::..\macc3-pc.exe  <..\tests\test15.dat >..\tests\results\test15.result
+java -cp . gcl.GCLCompiler ..\tests\test15 ..\tests\results\test15list.txt 
+..\sam3-pc.exe
+..\macc3-pc.exe  <..\tests\test15.dat >..\tests\results\test15.result
 ::java -cp . gcl.GCLCompiler ..\tests\test16 ..\tests\results\test16list.txt 
 ::..\sam3-pc.exe
 ::..\macc3-pc.exe  >..\tests\results\test16.result
