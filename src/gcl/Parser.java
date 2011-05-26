@@ -418,7 +418,8 @@ public class Parser {
 		Identifier id;
 		Expect(19);
 		Expect(1);
-		id = new Identifier(currentToken().spelling());  proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); 
+		id = new Identifier(currentToken().spelling());  
+		proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); 
 		paramPart(scope);
 		semantic.endDeclareProcedure(); 
 		return proc;

@@ -141,7 +141,8 @@ moreFieldsAndProcs<^carrier, carrier, scope> | [justProcs<^carrier, carrier, sco
 /*----------------------------------------------------------*/    
 procedureDeclaration<^Procedure proc, SymbolTable scope> (. Identifier id;.)
 =
-"procedure" identifier (. id = new Identifier(currentToken().spelling());  proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); .) 
+"procedure" identifier (. id = new Identifier(currentToken().spelling());  
+                          proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); .) 
 paramPart<scope> (. semantic.endDeclareProcedure(); .).
 	
 /*----------------------------------------------------------*/    

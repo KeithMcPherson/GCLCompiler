@@ -1,4 +1,4 @@
-Compiled on: Thu May 26 11:45:28 EDT 2011
+Compiled on: Thu May 26 16:31:43 EDT 2011
 module test11_5 { twoDimensions with assignment
 $        LDA     R15, V1
 $        LDA     R14, C1

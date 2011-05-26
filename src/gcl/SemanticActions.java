@@ -1,6 +1,7 @@
 package gcl;
 
 import gcl.Codegen.ConstantLike;
+import gcl.SemanticActions.GCLErrorStream;
 
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -51,13 +52,13 @@ abstract class SemanticItem {
 	public SemanticItem(final int level) {
 		this.level = level;
 	}
-	
+
 	public TypeDescriptor expectType(final SemanticActions.GCLErrorStream err) {
 		if (this instanceof TypeDescriptor)
 			return (TypeDescriptor) this;
 		else
 			err.semanticError(GCLError.TYPE_REQUIRED);
-			return ErrorType.NO_TYPE;
+		return ErrorType.NO_TYPE;
 	}
 }
 
@@ -140,60 +141,72 @@ abstract class Operator extends SemanticItem implements Mnemonic {
  * immutable
  */
 abstract class RelationalOperator extends Operator {
-	public static final RelationalOperator EQUAL = new RelationalOperator("equal", JEQ){
+	public static final RelationalOperator EQUAL = new RelationalOperator(
+			"equal", JEQ) {
 		@Override
-		public ConstantExpression foldConstant(ConstantExpression left, ConstantExpression right){
-			if(left.value() == right.value())
+		public ConstantExpression foldConstant(ConstantExpression left,
+				ConstantExpression right) {
+			if (left.value() == right.value())
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
 		}
 	};
-	
-	public static final RelationalOperator NOT_EQUAL = new RelationalOperator("notequal", JNE){
-	@Override
-	public ConstantExpression foldConstant(ConstantExpression left, ConstantExpression right){
-		if(left.value() == right.value())
-			return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
-		else
-			return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
-	}
-};
 
-	public static final RelationalOperator LESS_THAN = new RelationalOperator("lessthan", JLT){
+	public static final RelationalOperator NOT_EQUAL = new RelationalOperator(
+			"notequal", JNE) {
 		@Override
-		public ConstantExpression foldConstant(ConstantExpression left, ConstantExpression right){
-			if(left.value() < right.value())
+		public ConstantExpression foldConstant(ConstantExpression left,
+				ConstantExpression right) {
+			if (left.value() == right.value())
+				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
+			else
+				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
+		}
+	};
+
+	public static final RelationalOperator LESS_THAN = new RelationalOperator(
+			"lessthan", JLT) {
+		@Override
+		public ConstantExpression foldConstant(ConstantExpression left,
+				ConstantExpression right) {
+			if (left.value() < right.value())
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
 		}
 	};
-	
-	public static final RelationalOperator LESS_THAN_EQUAL = new RelationalOperator("lessthanequal", JLE){
+
+	public static final RelationalOperator LESS_THAN_EQUAL = new RelationalOperator(
+			"lessthanequal", JLE) {
 		@Override
-		public ConstantExpression foldConstant(ConstantExpression left, ConstantExpression right){
-			if(left.value() <= right.value())
+		public ConstantExpression foldConstant(ConstantExpression left,
+				ConstantExpression right) {
+			if (left.value() <= right.value())
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
 		}
 	};
-	
-	public static final RelationalOperator GREATER_THAN = new RelationalOperator("greaterthan", JGT){
+
+	public static final RelationalOperator GREATER_THAN = new RelationalOperator(
+			"greaterthan", JGT) {
 		@Override
-		public ConstantExpression foldConstant(ConstantExpression left, ConstantExpression right){
-			if(left.value() > right.value())
+		public ConstantExpression foldConstant(ConstantExpression left,
+				ConstantExpression right) {
+			if (left.value() > right.value())
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
 		}
 	};
-	
-	public static final RelationalOperator GREATER_THAN_EQUAL = new RelationalOperator("greaterthanequal", JGE){
+
+	public static final RelationalOperator GREATER_THAN_EQUAL = new RelationalOperator(
+			"greaterthanequal", JGE) {
 		@Override
-		public ConstantExpression foldConstant(ConstantExpression left, ConstantExpression right){
-			if(left.value() >= right.value())
+		public ConstantExpression foldConstant(ConstantExpression left,
+				ConstantExpression right) {
+			if (left.value() >= right.value())
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
@@ -204,26 +217,25 @@ abstract class RelationalOperator extends Operator {
 		super(op, opcode);
 	}
 
-	
 }
 
 abstract class BooleanOperator extends Operator {
-	public static final BooleanOperator AND = new BooleanOperator("and", BA){
+	public static final BooleanOperator AND = new BooleanOperator("and", BA) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-			if(left.value() == 1 && right.value() == 1)
+			if (left.value() == 1 && right.value() == 1)
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
 		}
 	};
-	
-	public static final BooleanOperator OR = new BooleanOperator("or", BO){
+
+	public static final BooleanOperator OR = new BooleanOperator("or", BO) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-			if(left.value() == 1 || right.value() == 1)
+			if (left.value() == 1 || right.value() == 1)
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 1);
 			else
 				return new ConstantExpression(SemanticActions.BOOLEAN_TYPE, 0);
@@ -240,22 +252,23 @@ abstract class BooleanOperator extends Operator {
  * immutable
  */
 abstract class AddOperator extends Operator {
-	public static final AddOperator PLUS = new AddOperator("plus", IA){
+	public static final AddOperator PLUS = new AddOperator("plus", IA) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-				return new ConstantExpression(SemanticActions.INTEGER_TYPE, left.value() + right.value());
+			return new ConstantExpression(SemanticActions.INTEGER_TYPE,
+					left.value() + right.value());
 		}
 	};
-	
-	public static final AddOperator MINUS = new AddOperator("minus", IS){
+
+	public static final AddOperator MINUS = new AddOperator("minus", IS) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-				return new ConstantExpression(SemanticActions.INTEGER_TYPE, left.value() - right.value());
+			return new ConstantExpression(SemanticActions.INTEGER_TYPE,
+					left.value() - right.value());
 		}
 	};
-	
 
 	private AddOperator(final String op, final SamOp opcode) {
 		super(op, opcode);
@@ -268,32 +281,34 @@ abstract class AddOperator extends Operator {
  */
 abstract class MultiplyOperator extends Operator {
 	public static final MultiplyOperator TIMES = new MultiplyOperator("times",
-			IM){
+			IM) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-				return new ConstantExpression(SemanticActions.INTEGER_TYPE, left.value() * right.value());
+			return new ConstantExpression(SemanticActions.INTEGER_TYPE,
+					left.value() * right.value());
 		}
 	};
-	
+
 	public static final MultiplyOperator DIVIDE = new MultiplyOperator(
-			"divide", ID){
+			"divide", ID) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-				return new ConstantExpression(SemanticActions.INTEGER_TYPE, left.value() / right.value());
+			return new ConstantExpression(SemanticActions.INTEGER_TYPE,
+					left.value() / right.value());
 		}
 	};
-	
+
 	public static final MultiplyOperator MODULUS = new MultiplyOperator(
-			"modulus", ID){
+			"modulus", ID) {
 		@Override
 		public ConstantExpression foldConstant(ConstantExpression left,
 				ConstantExpression right) {
-				return new ConstantExpression(SemanticActions.INTEGER_TYPE, left.value() % right.value());
+			return new ConstantExpression(SemanticActions.INTEGER_TYPE,
+					left.value() % right.value());
 		}
 	};
-	
 
 	private MultiplyOperator(final String op, final SamOp opcode) {
 		super(op, opcode);
@@ -333,12 +348,13 @@ abstract class Expression extends SemanticItem implements Codegen.MaccSaveable {
 
 	private final TypeDescriptor type;
 
-	public ConstantExpression expectConstant(Expression expr, final SemanticActions.GCLErrorStream err) {
+	public ConstantExpression expectConstant(Expression expr,
+			final SemanticActions.GCLErrorStream err) {
 		if (expr instanceof ConstantExpression)
 			return (ConstantExpression) expr;
 		else
 			err.semanticError(GCLError.TYPE_REQUIRED);
-			return null;
+		return null;
 	}
 }
 
@@ -392,7 +408,6 @@ class ConstantExpression extends Expression implements CodegenConstants,
 		return value;
 	}
 }
-
 
 /**
  * Variable expressions such as x and y[3]. Variable here means storable.
@@ -619,32 +634,32 @@ class GCRecord extends SemanticItem // For guarded command statements if and do.
 }
 
 class ModuleRecord extends SemanticItem {
-	
+
 	private SymbolTable scope;
 	private Identifier moduleId;
 	private Codegen codegen;
 	private int label;
-	
-	public ModuleRecord(SymbolTable scope, Identifier id, Codegen codegen){
+
+	public ModuleRecord(SymbolTable scope, Identifier id, Codegen codegen) {
 		this.scope = scope;
 		this.moduleId = id;
 		this.codegen = codegen;
 		this.label = this.codegen.getLabel();
 	}
-	
-	public int getLabel(){
+
+	public int getLabel() {
 		return label;
 	}
-	
-	public void setPrivateScope(SymbolTable scope){
+
+	public void setPrivateScope(SymbolTable scope) {
 		this.scope = scope;
 	}
-	
-	public SymbolTable getScope(){
+
+	public SymbolTable getScope() {
 		return scope;
 	}
-	
-	public Identifier getID(){
+
+	public Identifier getID() {
 		return moduleId;
 	}
 
@@ -762,11 +777,12 @@ class BooleanType extends TypeDescriptor implements CodegenConstants {
 
 /** Integer type. Created at initialization. Singleton. Immutable. */
 class RangeType extends TypeDescriptor implements CodegenConstants {
-	public RangeType(TypeDescriptor baseType, int lowBound, int highBound, Codegen.Location lowBoundOffset) {
+	public RangeType(TypeDescriptor baseType, int lowBound, int highBound,
+			Codegen.Location lowBoundOffset) {
 		super(baseType.size());
 		this.lowBound = lowBound;
 		this.highBound = highBound;
-		this.baseType = baseType;	
+		this.baseType = baseType;
 		this.lowBoundOffset = lowBoundOffset;
 	}
 
@@ -774,27 +790,26 @@ class RangeType extends TypeDescriptor implements CodegenConstants {
 		return "Range type.";
 	}
 
-	public TypeDescriptor baseType()
-	{
+	public TypeDescriptor baseType() {
 		return baseType;
 	}
-	
+
 	public boolean isCompatible(final TypeDescriptor other) {
 		return other != null && other.baseType() == this.baseType;
 	}
-	
+
 	public int getLowBound() {
 		return this.lowBound;
 	}
-	
+
 	public int getHighBound() {
 		return this.highBound;
 	}
-	
+
 	public Codegen.Location getLowBoundOffset() {
 		return this.lowBoundOffset;
 	}
-	
+
 	private int lowBound;
 	private int highBound;
 	private TypeDescriptor baseType;
@@ -805,14 +820,14 @@ class RangeType extends TypeDescriptor implements CodegenConstants {
 class StringConstant extends SemanticItem implements ConstantLike {
 	private final String message;
 	private final int size;
-	
+
 	public StringConstant(String message) {
 		int size;
 		message = message.substring(1, message.length() - 1);
-		if (message.length() %2 == 0)
-			size = message.length() +2;
+		if (message.length() % 2 == 0)
+			size = message.length() + 2;
 		else {
-			size = message.length() +1 ;
+			size = message.length() + 1;
 		}
 		message = message.replace(":", "::");
 		message = message.replace("'", ":'");
@@ -821,12 +836,12 @@ class StringConstant extends SemanticItem implements ConstantLike {
 		this.size = size;
 		this.message = message;
 	}
-	
+
 	public int size() {
 		return this.size;
 	}
-	
-	public String samString(){
+
+	public String samString() {
 		return this.message;
 	}
 }
@@ -841,7 +856,8 @@ class TypeList extends SemanticItem {
 			2);
 	private final ArrayList<Identifier> names = new ArrayList<Identifier>(2);
 	private final ArrayList<Procedure> methods = new ArrayList<Procedure>(2);
-	private final ArrayList<Identifier> methodNames = new ArrayList<Identifier>(2);
+	private final ArrayList<Identifier> methodNames = new ArrayList<Identifier>(
+			2);
 	private int size = 0; // sum of the sizes of the types
 	private static int next = 0;
 
@@ -858,7 +874,7 @@ class TypeList extends SemanticItem {
 		names.add(name);
 		size += aType.size();
 	} // TODO check that the names are distinct.
-	
+
 	public void enterProc(final Procedure method) {
 		methods.add(method);
 		methodNames.add(method.getName());
@@ -902,7 +918,7 @@ class TypeList extends SemanticItem {
 	public Iterator<Identifier> methodNames() {
 		return methodNames.iterator();
 	}
-	
+
 	/**
 	 * An enumeration service for the methods in the list in order of insertion
 	 * 
@@ -980,14 +996,16 @@ class TupleType extends TypeDescriptor { // mutable
 		return names.size();
 	}
 
-	public Identifier getName(int offset){
+	public Identifier getName(int offset) {
 		return names.get(offset);
 	}
-	
-	public boolean isCompatible(TypeDescriptor other){
-		if (other.baseType() == this.baseType() &&  ((TupleType) other).fieldCount() == this.fieldCount()){
-			for (int i = 0; i < fieldCount(); i++){
-				if (!(((TupleType) other).getType(((TupleType) other).getName(i)) == this.getType(this.getName(i))))
+
+	public boolean isCompatible(TypeDescriptor other) {
+		if (other.baseType() == this.baseType()
+				&& ((TupleType) other).fieldCount() == this.fieldCount()) {
+			for (int i = 0; i < fieldCount(); i++) {
+				if (!(((TupleType) other).getType(((TupleType) other)
+						.getName(i)) == this.getType(this.getName(i))))
 					return false;
 			}
 			return true;
@@ -995,7 +1013,7 @@ class TupleType extends TypeDescriptor { // mutable
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Retrieve a named component type of the tuple. It might throw
 	 * NoSuchElementException if the argument is invalid.
@@ -1014,15 +1032,15 @@ class TupleType extends TypeDescriptor { // mutable
 		else
 			return temp.type();
 	}
-	
+
 	public Procedure getProcedure(final Identifier procName) {
 		return (Procedure) methods.lookupIdentifier(procName).semanticRecord();
 	}
-	
-	public int getInset(Identifier id){
+
+	public int getInset(Identifier id) {
 		return fields.get(id).inset();
 	}
-	
+
 	private class TupleField {
 		public TupleField(final int inset, final TypeDescriptor t) {
 			this.inset = inset;
@@ -1048,28 +1066,29 @@ class TupleType extends TypeDescriptor { // mutable
 }
 
 class ArrayCarrier extends SemanticItem {
-	
+
 	private ArrayList<TypeDescriptor> arrayCarrier = new ArrayList<TypeDescriptor>();
-	
+
 	public ArrayCarrier() {
-		
+
 	}
 
-	public void push(TypeDescriptor subscriptType, final SemanticActions.GCLErrorStream err) {
-		if (!(subscriptType instanceof RangeType)){
+	public void push(TypeDescriptor subscriptType,
+			final SemanticActions.GCLErrorStream err) {
+		if (!(subscriptType instanceof RangeType)) {
 			err.semanticError(GCLError.RANGE_REQUIRED);
 			return;
 		} else {
 			arrayCarrier.add(subscriptType);
 		}
 	}
-	
+
 	public TypeDescriptor pop() {
-		TypeDescriptor temp = arrayCarrier.get(arrayCarrier.size() -1);
-		arrayCarrier.remove(arrayCarrier.size() -1);
+		TypeDescriptor temp = arrayCarrier.get(arrayCarrier.size() - 1);
+		arrayCarrier.remove(arrayCarrier.size() - 1);
 		return temp;
 	}
-	
+
 	public int getSize() {
 		return arrayCarrier.size();
 	}
@@ -1080,14 +1099,18 @@ class ArrayType extends TypeDescriptor { // mutable
 	private TypeDescriptor componentType;
 	private TypeDescriptor subscriptType;
 
-	public ArrayType(final TypeDescriptor componentType, TypeDescriptor subscriptType, final SemanticActions.GCLErrorStream err) {
-		super(componentType.size() * ( ((RangeType) subscriptType).getHighBound() - ((RangeType) subscriptType).getLowBound() + 1));
+	public ArrayType(final TypeDescriptor componentType,
+			TypeDescriptor subscriptType,
+			final SemanticActions.GCLErrorStream err) {
+		super(componentType.size()
+				* (((RangeType) subscriptType).getHighBound()
+						- ((RangeType) subscriptType).getLowBound() + 1));
 		this.componentType = componentType;
-		if(subscriptType instanceof RangeType)
-		this.subscriptType = subscriptType;
+		if (subscriptType instanceof RangeType)
+			this.subscriptType = subscriptType;
 		else {
-		err.semanticError(GCLError.RANGE_REQUIRED);
-		this.subscriptType = ErrorType.NO_TYPE;
+			err.semanticError(GCLError.RANGE_REQUIRED);
+			this.subscriptType = ErrorType.NO_TYPE;
 		}
 	}
 
@@ -1097,19 +1120,20 @@ class ArrayType extends TypeDescriptor { // mutable
 		return result;
 	}
 
-	public boolean isCompatible(TypeDescriptor other){
-		return other.baseType() == this.baseType() && ((ArrayType)other).componentType == this.getComponentType();
+	public boolean isCompatible(TypeDescriptor other) {
+		return other.baseType() == this.baseType()
+				&& ((ArrayType) other).componentType == this.getComponentType();
 	}
-	
+
 	public SemanticItem getSubscriptType() {
 		return subscriptType;
 	}
-	
+
 	public TypeDescriptor getComponentType() {
 		return componentType;
 	}
-	
-	public TypeDescriptor getType() { 
+
+	public TypeDescriptor getType() {
 		return this;
 	}
 
@@ -1122,83 +1146,219 @@ class Procedure extends SemanticItem {
 	private int label;
 	private boolean defined;
 	private int level;
-	int size = 8;
-	public Procedure(Procedure parentProcedure, Identifier name, SymbolTable scope, Codegen codegen){
+	private int size = 8;
+	private ArrayList<Loader> params = new ArrayList<Loader>(2);
+
+	public Procedure(Procedure parentProcedure, Identifier name,
+			SymbolTable scope, Codegen codegen) {
 		this.parentProcedure = parentProcedure;
 		this.name = name;
 		this.scope = scope.openScope(true);
 		defined = false;
 		label = codegen.getLabel();
-		//KEITH - these level settings are probably wrong.
-		if(parentProcedure == null){
-				level = CodegenConstants.GLOBAL_LEVEL + 1;
-			}else{
-				level = parentProcedure.semanticLevel() + 1;
-			}
-	}
-	
-	public int semanticLevel(){
-		return this.level;
+		// KEITH - these level settings are probably wrong.
+		if (parentProcedure == null) {
+			level = CodegenConstants.GLOBAL_LEVEL + 1;
+		} else {
+			level = parentProcedure.semanticLevel() + 1;
 		}
-	
-	public boolean alreadyDefined(){
+	}
+
+	public int semanticLevel() {
+		return this.level;
+	}
+
+	public boolean alreadyDefined() {
 		return defined;
 	}
-	
-	public int size(){
+
+	public int size() {
 		return this.size;
 	}
-	
-	public Procedure getParentProcedure(){
+
+	public Procedure getParentProcedure() {
 		return this.parentProcedure;
 	}
-	
-	public Identifier getName(){
+
+	public Identifier getName() {
 		return this.name;
 	}
-	
+
 	public SymbolTable getScope() {
 		return this.scope;
 	}
+
 	public int getLabel() {
 		return this.label;
 	}
-	public void genLink(Codegen codegen){
+
+	public void genLink(Codegen codegen) {
 		defined = true;
 		codegen.genLabel('P', label);
-		codegen.gen2Address(Codegen.STO, Codegen.FRAME_POINTER , new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
-		codegen.gen2Address(Codegen.LDA, Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
-		codegen.gen2Address(Codegen.STO, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
-		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
-		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, this.size - 8);
+		codegen.gen2Address(Codegen.STO, Codegen.FRAME_POINTER,
+				new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
+		codegen.gen2Address(Codegen.LDA, Codegen.FRAME_POINTER,
+				new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
+		codegen.gen2Address(Codegen.STO, Codegen.STATIC_POINTER,
+				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
+		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER,
+				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
+		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED,
+				Codegen.UNUSED, this.size - 8);
 		codegen.genPushPopToStack(Codegen.PUSH);
 
-			
 	}
-	
-	public void genUnlink(Codegen codegen){
+
+	public void genUnlink(Codegen codegen) {
 		codegen.genLabel('U', label);
 		codegen.genPushPopToStack(Codegen.POP);
-		codegen.gen2Address(Codegen.IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, this.size - 8);
-		codegen.gen2Address(Codegen.LD,Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
-		codegen.gen2Address(Codegen.LD,Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +0));
-		codegen.gen1Address(Codegen.JMP, Codegen.IREG, Codegen.STATIC_POINTER, 0);
+		codegen.gen2Address(Codegen.IA, Codegen.STACK_POINTER, Codegen.IMMED,
+				Codegen.UNUSED, this.size - 8);
+		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER,
+				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
+		codegen.gen2Address(Codegen.LD, Codegen.FRAME_POINTER,
+				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +0));
+		codegen.gen1Address(Codegen.JMP, Codegen.IREG, Codegen.STATIC_POINTER,
+				0);
 	}
-	
+
 	public VariableExpression reserveLocalAddress(TypeDescriptor type) {
 		this.size += type.size();
-		//KEITH - Make the following more meaningful
+		// KEITH - Make the following more meaningful
 		int offset = -1 * (this.size() - 8);
-		return new VariableExpression(type, this.semanticLevel() , offset, Codegen.DIRECT);
-		}
+		return new VariableExpression(type, this.semanticLevel(), offset,
+				Codegen.DIRECT);
+	}
 
-	public VariableExpression reserveParameterAddress(TypeDescriptor type,
-			ParameterKind procParam) {
-		//TODO
-		return null;
+	public Expression reserveParameterAddress(TypeDescriptor type, ParameterKind paramKind, GCLErrorStream err) {
+		//KEITH - make the following more meaningful (initial frame size)
+		int offset = 8;
+		Loader paramLoader = null;
+		boolean direct = true;
+		if(paramKind == ParameterKind.REFERENCE_PARAM){
+			paramLoader = new ReferenceLoader(type, offset);
+			direct = false;
+		}
+		if(paramKind == ParameterKind.VALUE_PARAM){
+			if(type instanceof TupleType || type instanceof ArrayType){
+				paramLoader = new BlockLoader(type, offset);
+			}else{
+				paramLoader = new ValueLoader(type, offset);
+			}
+		} /*else{
+			GCLCompiler.err.semanticError(GCLError.UNHANDLED_CASE, "A parameter-type has incorrectly been handled.");
+			return new ErrorExpression("Compiler error dealing with parameter types.");
+		}*/
+		//KEITH - above probably not needed - below probably causes issues, combined with the other size effecting methods
+		size += paramLoader.size();
+		params.add(paramLoader);
+		return new VariableExpression(type, this.level, offset, direct);
 	}
 }
 
+abstract class Loader{
+	protected TypeDescriptor type;
+	protected int offset;
+	
+	public Loader(TypeDescriptor type, int offset){
+		this.type = type;
+		this.offset = offset;
+	}
+	
+	public boolean checkType(Expression param, GCLErrorStream err){
+		if(!type.isCompatible(param.type())){
+			 err.semanticError(GCLError.INCOMPATIBLE_TYPE, "Expected: "+type.toString()+ " Got: " + param.type());
+			return false;
+		}
+			return true;
+		}
+
+	public abstract void load(Expression param, Codegen codegen);
+	public abstract int size();
+	}
+/**
+ * loads simple types by value
+ *
+ */
+class ValueLoader extends Loader{
+public ValueLoader(TypeDescriptor type, int offset){
+super(type, offset);
+}
+
+@Override
+public int size() {
+return type.size();
+}
+
+@Override
+public void load(Expression parameter, Codegen codegen) {
+int valueRegister = codegen.loadRegister(parameter);
+codegen.gen2Address(Codegen.STO, valueRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
+codegen.freeTemp(Codegen.DREG, valueRegister);
+}
+}
+
+/**
+ * loads complex and simple types be reference
+ *
+ */
+class ReferenceLoader extends Loader{
+public ReferenceLoader(TypeDescriptor type, int offset){
+super(type, offset);
+}
+public boolean checkType(Expression potentialParameter, GCLErrorStream err){
+if(potentialParameter instanceof ConstantExpression){
+//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Constants cannot be passed by reference.");
+return false;
+}
+return super.checkType(potentialParameter, err);
+}
+@Override
+public int size() {
+return 2;
+}
+
+@Override
+public void load(Expression parameter, Codegen codegen) {
+int referenceRegister = codegen.loadAddress(parameter);
+codegen.gen2Address(Codegen.STO, referenceRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
+codegen.freeTemp(Codegen.DREG, referenceRegister);
+}
+}
+
+/**
+ * Loads complex types by value
+ */
+class BlockLoader extends Loader{
+public BlockLoader(TypeDescriptor type, int offset){
+super(type, offset);
+}
+
+@Override
+public int size() {
+return type.size();
+}
+
+@Override
+public void load(Expression parameter, Codegen codegen) {
+if(!(parameter instanceof VariableExpression)){
+if(!(parameter instanceof ErrorExpression)){
+//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Only variables can be passed by reference");
+}
+return;
+}
+
+int blockRegister = codegen.getTemp(2);
+int sizeRegister = blockRegister +1;
+Codegen.Location parameterLocation = codegen.buildOperands(parameter);
+codegen.gen2Address(Codegen.LD, blockRegister, parameterLocation);
+codegen.gen2Address(Codegen.LD, sizeRegister, Codegen.IMMED, Codegen.UNUSED, size());
+codegen.gen2Address(Codegen.BKT, blockRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
+codegen.freeTemp(Codegen.DREG, blockRegister);
+codegen.freeTemp(Codegen.DREG, sizeRegister);
+codegen.freeTemp(parameterLocation);
+}
+}
 // --------------------- Semantic Error Values ----------------------------
 
 /**
@@ -1227,19 +1387,21 @@ abstract class GCLError {
 	static final GCLError TOO_MANY_UNDERSCORES = new Value(8,
 			"ERROR -> Two or more underscores in a row. ");
 	static final GCLError OUT_OF_RANGE = new Value(9,
-	"ERROR -> Value is out of range. ");
+			"ERROR -> Value is out of range. ");
 	static final GCLError RANGE_REQUIRED = new Value(10,
-	"ERROR -> Range type required. ");
+			"ERROR -> Range type required. ");
 	static final GCLError MODULE_REQUIRED = new Value(11,
-	"ERROR -> Module required. ");
+			"ERROR -> Module required. ");
 	static final GCLError TUPLE_REQUIRED = new Value(12,
-	"ERROR -> TupleType required. ");
+			"ERROR -> TupleType required. ");
 	static final GCLError FIELD_NOT_FOUND = new Value(13,
-	"ERROR -> Tuple field not found. ");
+			"ERROR -> Tuple field not found. ");
 	static final GCLError PROCEDURE_REQUIRED = new Value(14,
-	"ERROR -> Procedure Required. ");
+			"ERROR -> Procedure Required. ");
 	static final GCLError INVALID_RETURN = new Value(15,
-	"ERROR -> Procedure Required. ");
+			"ERROR -> Procedure Required. ");
+	static final GCLError INCOMPATIBLE_TYPE = new Value(16,
+	"ERROR -> Incompatible types in a procedure's parameters ");
 
 	// The following are compiler errors. Repair them.
 	static final GCLError ILLEGAL_LOAD = new Value(91,
@@ -1257,7 +1419,7 @@ abstract class GCLError {
 	static final GCLError UNKNOWN_ENTRY = new Value(97,
 			"COMPILER ERROR -> An unknown entry was found. ");
 	static final GCLError INVALID_CASE = new Value(98,
-	"COMPILER ERROR -> Invalid case for array or tuple. ");
+			"COMPILER ERROR -> Invalid case for array or tuple. ");
 
 	// More of each kind of error as you go along building the language.
 
@@ -1293,7 +1455,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	static final IntegerType INTEGER_TYPE = IntegerType.INTEGER_TYPE;
 	static final BooleanType BOOLEAN_TYPE = BooleanType.BOOLEAN_TYPE;
 	static final TypeDescriptor NO_TYPE = ErrorType.NO_TYPE;
-	
+
 	private Procedure currentProcedure;
 	private ModuleRecord currentModule;
 	private SemanticLevel currentLevel = new SemanticLevel();
@@ -1340,7 +1502,9 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		if (entry == SymbolTable.NULL_ENTRY) {
 			return true;
 		}
-		if (!(entry.identifier().name() == currentModule.getScope().lookupIdentifierCurrentScope(entry.identifier()).identifier().name()))
+		if (!(entry.identifier().name() == currentModule.getScope()
+				.lookupIdentifierCurrentScope(entry.identifier()).identifier()
+				.name()))
 			return true;
 		return false; // more later
 	}
@@ -1477,11 +1641,12 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			codegen.genPopRegister(reg);
 			Codegen.Location destinationLocation = codegen
 					.buildOperands(destination);
-			
-			//if (destination.type() instanceof RangeType){
-			//		codegen.gen2Address(TRNG, reg, ((RangeType) destination.type()).getLowBoundOffset());
-			//	}
-			
+
+			// if (destination.type() instanceof RangeType){
+			// codegen.gen2Address(TRNG, reg, ((RangeType)
+			// destination.type()).getLowBoundOffset());
+			// }
+
 			codegen.gen2Address(STO, reg, destinationLocation);
 			codegen.freeTemp(DREG, reg);
 			codegen.freeTemp(destinationLocation);
@@ -1558,7 +1723,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			return symbol.semanticRecord();
 		}
 	}
-	
+
 	/***************************************************************************
 	 * Transform an identifier into the semantic item that it represents
 	 * 
@@ -1567,19 +1732,23 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 * @param ID
 	 *            and identifier of the module
 	 * @param module
-	 * 			  the identifier to be transformed
+	 *            the identifier to be transformed
 	 * @return the semantic item that the identifier represents.
 	 */
-	SemanticItem semanticValue(final SymbolTable scope, final Identifier moduleID, final Identifier id) {
-		SymbolTable.Entry module = currentModule.getScope().lookupIdentifier(moduleID);
+	SemanticItem semanticValue(final SymbolTable scope,
+			final Identifier moduleID, final Identifier id) {
+		SymbolTable.Entry module = currentModule.getScope().lookupIdentifier(
+				moduleID);
 		if (!(module.semanticRecord() instanceof ModuleRecord)) {
 			err.semanticError(GCLError.MODULE_REQUIRED);
 			return new SemanticError("Identifier expected to be a module");
 		}
-		if (((ModuleRecord) module.semanticRecord()).getID().name() == currentModule.getID().name())
+		if (((ModuleRecord) module.semanticRecord()).getID().name() == currentModule
+				.getID().name())
 			return semanticValue(scope, id);
-			
-		SymbolTable.Entry symbol = ((ModuleRecord) module.semanticRecord()).getScope().lookupIdentifier(id);
+
+		SymbolTable.Entry symbol = ((ModuleRecord) module.semanticRecord())
+				.getScope().lookupIdentifier(id);
 		if (symbol == SymbolTable.NULL_ENTRY) {
 			err.semanticError(GCLError.NAME_NOT_DEFINED);
 			return new SemanticError("Identifier not found in symbol table.");
@@ -1615,28 +1784,30 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		for (i = entries - 1; i >= 0; --i) {
 			Expression rightExpression = expressions.right(i);
 			Expression leftExpression = expressions.left(i);
-			
-			if (leftExpression.type() instanceof RangeType){
+
+			if (leftExpression.type() instanceof RangeType) {
 				if (rightExpression instanceof ConstantExpression)
-					if(((RangeType) leftExpression.type()).getLowBound() <= ((ConstantExpression) rightExpression).value() && ((RangeType) leftExpression.type()).getHighBound() >= ((ConstantExpression) rightExpression).value()) {
-					}
-					else {
+					if (((RangeType) leftExpression.type()).getLowBound() <= ((ConstantExpression) rightExpression)
+							.value()
+							&& ((RangeType) leftExpression.type())
+									.getHighBound() >= ((ConstantExpression) rightExpression)
+									.value()) {
+					} else {
 						err.semanticError(GCLError.OUT_OF_RANGE);
 						return;
 					}
-				else
-				{
+				else {
 					int reg = codegen.loadRegister(rightExpression);
-					codegen.gen2Address(TRNG, reg, ((RangeType) leftExpression.type()).getLowBoundOffset());
+					codegen.gen2Address(TRNG, reg, ((RangeType) leftExpression
+							.type()).getLowBoundOffset());
 				}
 			}
-			
+
 			if (rightExpression.needsToBePushed()) {
 				popExpression(leftExpression);
 			} else { // the item wasn't pushed, so normal copy
-					simpleMove(rightExpression, leftExpression);
+				simpleMove(rightExpression, leftExpression);
 
-				
 			}
 		}
 	}
@@ -1653,16 +1824,16 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			return;
 		}
 
-		
 		if (!expression.type().isCompatible(INTEGER_TYPE)) {
 			err.semanticError(GCLError.INTEGER_REQUIRED, "   while Reading");
 			return;
 		}
 		Codegen.Location expressionLocation = codegen.buildOperands(expression);
 		codegen.gen1Address(RDI, expressionLocation);
-		if (expression.type() instanceof RangeType){
-				int reg = codegen.loadRegister(expression);
-				codegen.gen2Address(TRNG, reg, ((RangeType) expression.type()).getLowBoundOffset());
+		if (expression.type() instanceof RangeType) {
+			int reg = codegen.loadRegister(expression);
+			codegen.gen2Address(TRNG, reg,
+					((RangeType) expression.type()).getLowBoundOffset());
 		}
 		terminateArray(expression);
 	}
@@ -1695,11 +1866,11 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	void writeStringConstant(StringConstant message) {
 		if (message instanceof GeneralError) {
 			return;
-			}
-			//KEITH - This probably should be commented out
-			//codegen.reserveGlobalAddress(message.size());
-			Codegen.Location stringLocation = codegen.buildOperands(message);
-			codegen.gen1Address(WRST, stringLocation);
+		}
+		// KEITH - This probably should be commented out
+		// codegen.reserveGlobalAddress(message.size());
+		Codegen.Location stringLocation = codegen.buildOperands(message);
+		codegen.gen1Address(WRST, stringLocation);
 	}
 
 	/***************************************************************************
@@ -1848,7 +2019,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			terminateArray(left);
 		if (right.type() instanceof ArrayType)
 			terminateArray(right);
-		
+
 		codegen.freeTemp(DREG, resultreg);
 		codegen.freeTemp(rightLocation);
 		return new VariableExpression(BOOLEAN_TYPE, booleanreg, DIRECT); // temporary
@@ -1869,7 +2040,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		return new GCRecord(record, 0);
 	}
 
-	
 	int startFor(Expression exp) {
 		if (!(exp.type() instanceof RangeType)) {
 			err.semanticError(GCLError.RANGE_REQUIRED);
@@ -1877,7 +2047,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		}
 		int reg = codegen.getTemp(1);
 		int startLabel = codegen.getLabel();
-		codegen.gen2Address(LD, reg, IMMED, UNUSED, ((RangeType) exp.type()).getLowBound());
+		codegen.gen2Address(LD, reg, IMMED, UNUSED,
+				((RangeType) exp.type()).getLowBound());
 		Codegen.Location expressionLocation = codegen.buildOperands(exp);
 		codegen.gen2Address(STO, reg, expressionLocation);
 		codegen.genLabel('F', startLabel);
@@ -1890,14 +2061,15 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			err.semanticError(GCLError.RANGE_REQUIRED);
 			return;
 		}
-		if (exp.type() instanceof ArrayType){
+		if (exp.type() instanceof ArrayType) {
 			Codegen.Location arrayLocation = codegen.buildOperands(exp);
-			codegen.freeTemp(arrayLocation); 
+			codegen.freeTemp(arrayLocation);
 		}
 		int reg = codegen.loadRegister(exp);
 		Codegen.Location expressionLocation = codegen.buildOperands(exp);
 		int endLabel = codegen.getLabel();
-		codegen.gen2Address(IC, reg, IMMED, UNUSED, ((RangeType) exp.type()).getHighBound());
+		codegen.gen2Address(IC, reg, IMMED, UNUSED,
+				((RangeType) exp.type()).getHighBound());
 		codegen.genJumpLabel(JEQ, 'F', endLabel);
 		codegen.gen2Address(IA, reg, IMMED, UNUSED, 1);
 		codegen.gen2Address(STO, reg, expressionLocation);
@@ -1905,8 +2077,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		codegen.genLabel('F', endLabel);
 		codegen.freeTemp(DREG, reg);
 
-		
 	}
+
 	/***************************************************************************
 	 * Generate the final label for an IF. (Halt of we fall through to here).
 	 * 
@@ -1927,9 +2099,9 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 *            GCRecord with the associated labels. This is updated
 	 **************************************************************************/
 	void ifTest(final Expression expression, final GCRecord entry) {
-		if (expression.type() instanceof ArrayType){
+		if (expression.type() instanceof ArrayType) {
 			Codegen.Location arrayLocation = codegen.buildOperands(expression);
-			codegen.freeTemp(arrayLocation); 
+			codegen.freeTemp(arrayLocation);
 		}
 		int resultreg = codegen.loadRegister(expression);
 		int nextElse = codegen.getLabel();
@@ -1950,18 +2122,21 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		codegen.genLabel('J', entry.nextLabel());
 	}
 
-	void terminateArray(final Expression exp){
-		
-		if (exp.type() instanceof ArrayType){
-			if (((RangeType) ((ArrayType) exp.type()).getSubscriptType().expectType(err)).baseType() instanceof ErrorType){
+	void terminateArray(final Expression exp) {
+
+		if (exp.type() instanceof ArrayType) {
+			if (((RangeType) ((ArrayType) exp.type()).getSubscriptType()
+					.expectType(err)).baseType() instanceof ErrorType) {
 				System.out.println("test");
 				return;
 			}
-			terminateArray(new VariableExpression(((ArrayType) exp.type()).getComponentType(), ((VariableExpression) exp).offset()-1, INDIRECT));
+			terminateArray(new VariableExpression(
+					((ArrayType) exp.type()).getComponentType(),
+					((VariableExpression) exp).offset() - 1, INDIRECT));
 			codegen.freeTemp(DREG, ((VariableExpression) exp).offset());
 		}
 	}
-	
+
 	/***************************************************************************
 	 * Create a tuple from a list of expressions Both the type and the value
 	 * must be created.
@@ -1988,204 +2163,244 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		TupleType tupleType = new TupleType(items);
 		return new VariableExpression(tupleType, GLOBAL_LEVEL, address, DIRECT);
 	}
-	
-	public RangeType buildRange(TypeDescriptor baseType, ConstantExpression lowBound, ConstantExpression highBound) {
+
+	public RangeType buildRange(TypeDescriptor baseType,
+			ConstantExpression lowBound, ConstantExpression highBound) {
 		Codegen.Location lowBoundOffset = codegen.buildOperands(lowBound);
 		codegen.buildOperands(highBound);
-		return new RangeType(baseType, lowBound.value(), highBound.value(), lowBoundOffset);
+		return new RangeType(baseType, lowBound.value(), highBound.value(),
+				lowBoundOffset);
 	}
-	
-	public ArrayType buildArray(TypeDescriptor baseType, ArrayCarrier carrier, final SemanticActions.GCLErrorStream err) {
-		if (carrier.getSize() == 0){
-			return new ArrayType(baseType, new RangeType(NO_TYPE, 0, 0, null), err);
+
+	public ArrayType buildArray(TypeDescriptor baseType, ArrayCarrier carrier,
+			final SemanticActions.GCLErrorStream err) {
+		if (carrier.getSize() == 0) {
+			return new ArrayType(baseType, new RangeType(NO_TYPE, 0, 0, null),
+					err);
 		}
-		if (carrier.getSize() > 1){
+		if (carrier.getSize() > 1) {
 			ArrayType temp = new ArrayType(baseType, carrier.pop(), err);
 			return buildArray(temp, carrier, err);
 		}
 
 		return new ArrayType(baseType, carrier.pop(), err);
 	}
-	
+
 	public void declareModule(final SymbolTable scope, final Identifier id) {
 		ModuleRecord tempModule = new ModuleRecord(scope, id, codegen);
 		codegen.genJumpLabel(JMP, 'M', tempModule.getLabel());
 		scope.newEntry("module", id, tempModule, currentModule);
 		currentModule = tempModule;
 	}
-	
+
 	public void declarePrivateScope(final SymbolTable scope) {
 		currentModule.setPrivateScope(scope);
 	}
 
-	public Procedure declareProcedure(SymbolTable scope, Identifier id){
-		//KEITH - again with the levels
+	public Procedure declareProcedure(SymbolTable scope, Identifier id) {
+		// KEITH - again with the levels
 		currentLevel().increment();
 		SymbolTable newScope = scope.openScope(true);
-		currentProcedure = new Procedure(currentProcedure, id, newScope, codegen);
+		currentProcedure = new Procedure(currentProcedure, id, newScope,
+				codegen);
 		return currentProcedure;
 	}
-	
-	public void endDeclareProcedure(){
+
+	public void endDeclareProcedure() {
 		currentLevel().decrement();
 		currentProcedure = currentProcedure.getParentProcedure();
 	}
-	
-	public Procedure defineProcedure(Identifier procName, SemanticItem tupleObject){
+
+	public Procedure defineProcedure(Identifier procName,
+			SemanticItem tupleObject) {
 		Procedure proc = null;
 		TupleType procsTuple = null;
 
-
-		if(tupleObject instanceof Expression) {
-			tupleObject = ((Expression)tupleObject).type();
+		if (tupleObject instanceof Expression) {
+			tupleObject = ((Expression) tupleObject).type();
 		}
-		
-		if(tupleObject instanceof TupleType) {
+
+		if (tupleObject instanceof TupleType) {
 			procsTuple = ((TupleType) tupleObject);
-			} else {
+		} else {
 			err.semanticError(GCLError.TYPE_REQUIRED, "TupleType required");
 		}
-		
+
 		proc = procsTuple.getProcedure(procName);
-		
-		if(proc == null){
+
+		if (proc == null) {
 			err.semanticError(GCLError.PROCEDURE_REQUIRED);
 			return null;
 		}
-		if(proc.alreadyDefined()){
-			err.semanticError(GCLError.ALREADY_DEFINED, "This procedure has already been defined for this tuple.");
+		if (proc.alreadyDefined()) {
+			err.semanticError(GCLError.ALREADY_DEFINED,
+					"This procedure has already been defined for this tuple.");
 			return null;
 		}
-		
-		//KEITH - make sure you know where to mess with the level
+
+		// KEITH - make sure you know where to mess with the level
 		currentLevel().increment();
 		currentProcedure = proc;
-		
+
 		return proc;
 	}
-	
-	public void endDefineProcedure(Procedure proc){
+
+	public void endDefineProcedure(Procedure proc) {
 		proc.genUnlink(codegen);
 		proc.getScope().closeScope();
 		currentProcedure = proc.getParentProcedure();
 		currentLevel().decrement();
 	}
-	
-	void doLink(){
-		if(currentLevel().isGlobal()){
+
+	void doLink() {
+		if (currentLevel().isGlobal()) {
 			codegen.genLabel('M', currentModule.getLabel());
 		} else {
 			currentProcedure.genLink(codegen);
 		}
 	}
-	
 
-	void callProcedure(Expression tupleExpression, Identifier procedureName){
-	TupleType tuple = null;
-	if(tupleExpression.type() instanceof TupleType){
-		tuple = (TupleType)tupleExpression.type();
+	void callProcedure(Expression tupleExpression, Identifier procedureName) {
+		TupleType tuple = null;
+		if (tupleExpression.type() instanceof TupleType) {
+			tuple = (TupleType) tupleExpression.type();
 
-		Procedure procedure = tuple.getProcedure(procedureName);
-		if(procedure != null){ 
+			Procedure procedure = tuple.getProcedure(procedureName);
+			if (procedure != null) {
 
 				int thisRegister = codegen.loadAddress(tupleExpression);
-				//KEITH - make that number more meaningful (initial size of proc)
-				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, 8);
-				codegen.gen2Address(STO, thisRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +6));
+				// KEITH - make that number more meaningful (initial size of
+				// proc)
+				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED,
+						Codegen.UNUSED, 8);
+				codegen.gen2Address(STO, thisRegister, new Codegen.Location(
+						Codegen.INDXD, Codegen.STACK_POINTER, +6));
 				codegen.freeTemp(DREG, thisRegister);
 
 				int diff = currentLevel().value() - procedure.semanticLevel();
-				Codegen.Location persistedStaticInNewFrame = new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +2);
-				if(diff <= 0){ 
-					codegen.gen2Address(STO,Codegen.FRAME_POINTER, persistedStaticInNewFrame);
-				}else if(diff == 1){
-					codegen.gen2Address(STO,Codegen.STATIC_POINTER, persistedStaticInNewFrame);
-				}else if(diff > 1){
-					for(int i = 0; i < diff-1; i++){
-						codegen.gen2Address(LD,Codegen.STATIC_POINTER, new Codegen.Location(INDXD, Codegen.STATIC_POINTER, +2));
+				Codegen.Location persistedStaticInNewFrame = new Codegen.Location(
+						Codegen.INDXD, Codegen.STACK_POINTER, +2);
+				if (diff <= 0) {
+					codegen.gen2Address(STO, Codegen.FRAME_POINTER,
+							persistedStaticInNewFrame);
+				} else if (diff == 1) {
+					codegen.gen2Address(STO, Codegen.STATIC_POINTER,
+							persistedStaticInNewFrame);
+				} else if (diff > 1) {
+					for (int i = 0; i < diff - 1; i++) {
+						codegen.gen2Address(LD, Codegen.STATIC_POINTER,
+								new Codegen.Location(INDXD,
+										Codegen.STATIC_POINTER, +2));
 					}
-					codegen.gen2Address(STO,Codegen.STATIC_POINTER, persistedStaticInNewFrame);
-				}else{
-					//err.semanticError(GCLError.UNHANDLED_CASE, "Corrupt leveling scheme.");
+					codegen.gen2Address(STO, Codegen.STATIC_POINTER,
+							persistedStaticInNewFrame);
+				} else {
+					// err.semanticError(GCLError.UNHANDLED_CASE,
+					// "Corrupt leveling scheme.");
 				}
 
-				//procedure.call(arguments);
-				codegen.genJumpSubroutine(Codegen.STATIC_POINTER, procedure.getLabel());
-				codegen.gen2Address(LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
-				//KEITH - make that 8 more meaningful (initial size of procs)
-				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, 8);
-		}
+				// procedure.call(arguments);
+				codegen.genJumpSubroutine(Codegen.STATIC_POINTER,
+						procedure.getLabel());
+				codegen.gen2Address(LD, Codegen.STATIC_POINTER,
+						new Codegen.Location(Codegen.INDXD,
+								Codegen.FRAME_POINTER, +2));
+				// KEITH - make that 8 more meaningful (initial size of procs)
+				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED,
+						Codegen.UNUSED, 8);
+			}
 		}
 	}
-	
-	void doReturn(){
-		if(currentLevel().isGlobal()){
-			err.semanticError(GCLError.INVALID_RETURN, "returns cannot exist in a global level");
-		return;
+
+	void doReturn() {
+		if (currentLevel().isGlobal()) {
+			err.semanticError(GCLError.INVALID_RETURN,
+					"returns cannot exist in a global level");
+			return;
 		}
-			int procedureLabel = currentProcedure.getLabel();
-			codegen.genJumpLabel(JMP, 'U', procedureLabel);
-		}
-	
-	public Expression subscriptAction(Expression array, Expression subscript){
-		//LDA R6, +60(R15)
-		//LD R7, +8(R15)
-		//TRNG R7, +0(R14)
-		//IS R7, #1
-		//IM R7, #32
-		//IA R6, R7
-		//#freetemp on R7
-		/*if (!(subscript.type() instanceof )){
-			err.semanticError(GCLError.RANGE_REQUIRED);
-			return new ErrorExpression("RangeType Required");
-		}*/
+		int procedureLabel = currentProcedure.getLabel();
+		codegen.genJumpLabel(JMP, 'U', procedureLabel);
+	}
+
+	public Expression subscriptAction(Expression array, Expression subscript) {
+		// LDA R6, +60(R15)
+		// LD R7, +8(R15)
+		// TRNG R7, +0(R14)
+		// IS R7, #1
+		// IM R7, #32
+		// IA R6, R7
+		// #freetemp on R7
+		/*
+		 * if (!(subscript.type() instanceof )){
+		 * err.semanticError(GCLError.RANGE_REQUIRED); return new
+		 * ErrorExpression("RangeType Required"); }
+		 */
 		int arrayReg = codegen.getTemp(2);
-		int subscriptReg = arrayReg+1;
+		int subscriptReg = arrayReg + 1;
 		Codegen.Location arrayLocation = codegen.buildOperands(array);
 		Codegen.Location subscriptLocation = codegen.buildOperands(subscript);
 
-		//if (!(subscript instanceof ConstantExpression))
-			//codegen.freeTemp(subscriptLocation);
-		
+		// if (!(subscript instanceof ConstantExpression))
+		// codegen.freeTemp(subscriptLocation);
+
 		codegen.gen2Address(LDA, arrayReg, arrayLocation);
 		codegen.gen2Address(LD, subscriptReg, subscriptLocation);
-		codegen.gen2Address(TRNG, subscriptReg, ((RangeType) ((ArrayType) array.type()).getSubscriptType()).getLowBoundOffset());
-		codegen.gen2Address(IS, subscriptReg, IMMED, UNUSED, ((RangeType) ((ArrayType) array.type()).getSubscriptType()).getLowBound());
-		codegen.gen2Address(IM, subscriptReg, IMMED, UNUSED, ((TypeDescriptor) ((ArrayType) array.type()).getComponentType()).size());
+		codegen.gen2Address(TRNG, subscriptReg, ((RangeType) ((ArrayType) array
+				.type()).getSubscriptType()).getLowBoundOffset());
+		codegen.gen2Address(IS, subscriptReg, IMMED, UNUSED,
+				((RangeType) ((ArrayType) array.type()).getSubscriptType())
+						.getLowBound());
+		codegen.gen2Address(
+				IM,
+				subscriptReg,
+				IMMED,
+				UNUSED,
+				((TypeDescriptor) ((ArrayType) array.type()).getComponentType())
+						.size());
 		codegen.gen2Address(IA, arrayReg, DREG, subscriptReg, UNUSED);
 		codegen.freeTemp(DREG, subscriptReg);
-		return new VariableExpression(((ArrayType) array.type()).getComponentType(), arrayReg, INDIRECT);
+		return new VariableExpression(
+				((ArrayType) array.type()).getComponentType(), arrayReg,
+				INDIRECT);
 	}
-	
-	public Expression extractField(Expression exp, Identifier id){
+
+	public Expression extractField(Expression exp, Identifier id) {
 		if (exp instanceof ErrorExpression)
 			return exp;
-		if (!(exp.type() instanceof TupleType)){
+		if (!(exp.type() instanceof TupleType)) {
 			err.semanticError(GCLError.TUPLE_REQUIRED);
 			return new ErrorExpression("TupleType Required");
 		}
-		if (((TupleType) exp.type()).getType(id) == null){
+		if (((TupleType) exp.type()).getType(id) == null) {
 			err.semanticError(GCLError.FIELD_NOT_FOUND);
 			return new ErrorExpression("Tuple field not found");
 		}
-		
+
 		if (exp.semanticLevel() > 0 && ((VariableExpression) exp).isDirect())
-			return new VariableExpression((TypeDescriptor) ((TupleType) exp.type()).getType(id), exp.semanticLevel(), ((VariableExpression) exp).offset() + ((TupleType) exp.type()).getInset(id), DIRECT);
-		if (exp.semanticLevel() > 0 && !((VariableExpression) exp).isDirect()){
+			return new VariableExpression(
+					(TypeDescriptor) ((TupleType) exp.type()).getType(id),
+					exp.semanticLevel(), ((VariableExpression) exp).offset()
+							+ ((TupleType) exp.type()).getInset(id), DIRECT);
+		if (exp.semanticLevel() > 0 && !((VariableExpression) exp).isDirect()) {
 			int reg = codegen.loadPointer(exp);
-			codegen.gen2Address(IA, reg, IMMED, UNUSED, ((VariableExpression) exp).offset());
-			return new VariableExpression((TypeDescriptor) ((TupleType) exp.type()).getType(id), exp.semanticLevel(), reg, INDIRECT);
+			codegen.gen2Address(IA, reg, IMMED, UNUSED,
+					((VariableExpression) exp).offset());
+			return new VariableExpression(
+					(TypeDescriptor) ((TupleType) exp.type()).getType(id),
+					exp.semanticLevel(), reg, INDIRECT);
 		}
-		if (exp.semanticLevel() == 0 && !((VariableExpression) exp).isDirect()){
+		if (exp.semanticLevel() == 0 && !((VariableExpression) exp).isDirect()) {
 			int reg = codegen.loadPointer(exp);
-			codegen.gen2Address(IA, reg, IMMED, UNUSED, ((VariableExpression) exp).offset());
-			return new VariableExpression((TypeDescriptor) ((TupleType) exp.type()).getType(id), exp.semanticLevel(), reg, INDIRECT);
+			codegen.gen2Address(IA, reg, IMMED, UNUSED,
+					((VariableExpression) exp).offset());
+			return new VariableExpression(
+					(TypeDescriptor) ((TupleType) exp.type()).getType(id),
+					exp.semanticLevel(), reg, INDIRECT);
 		}
 		err.semanticError(GCLError.INVALID_CASE);
 		return new ErrorExpression("Invalid case for this tuple");
 	}
-	
-	
+
 	/***************************************************************************
 	 * Enter the identifier into the symbol table, marking it as a variable of
 	 * the given type. This method handles global variables as well as local
@@ -2204,19 +2419,21 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			final Identifier id, final ParameterKind procParam) {
 		complainIfDefinedHere(scope, id);
 		complainIfInvalidName(id);
-		VariableExpression expr = null;
+		//KEITH - changed below from variableExpression to Expression. Might be good or bad
+		Expression expr = null;
 		if (currentLevel().isGlobal()) { // Global variable
 			int addressOffset = codegen.reserveGlobalAddress(type.size());
 			expr = new VariableExpression(type, currentLevel().value(),
 					addressOffset, DIRECT);
 		} else { // may be param or local in a proc
-			if(procParam == ParameterKind.NOT_PARAM){
-				expr =	currentProcedure.reserveLocalAddress(type);
-			}else{
-				expr = currentProcedure.reserveParameterAddress(type, procParam);
+			if (procParam == ParameterKind.NOT_PARAM) {
+				expr = currentProcedure.reserveLocalAddress(type);
+			} else {
+				expr = currentProcedure.reserveParameterAddress(type, procParam, err);
 			}
 		}
-		SymbolTable.Entry variable = scope.newEntry("variable", id, expr, currentModule);
+		SymbolTable.Entry variable = scope.newEntry("variable", id, expr,
+				currentModule);
 		CompilerOptions.message("Entering: " + variable);
 	}
 
@@ -2228,12 +2445,13 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 				expr, currentModule);
 		CompilerOptions.message("Entering: " + constantVariable);
 	}
-	
-	void declareType(final SymbolTable scope, final Identifier id, TypeDescriptor type) {
+
+	void declareType(final SymbolTable scope, final Identifier id,
+			TypeDescriptor type) {
 		complainIfDefinedHere(scope, id);
 		complainIfInvalidName(id);
-		SymbolTable.Entry constantVariable = scope.newEntry("typedefinition", id,
-				type, currentModule);
+		SymbolTable.Entry constantVariable = scope.newEntry("typedefinition",
+				id, type, currentModule);
 		CompilerOptions.message("Entering: " + constantVariable);
 	}
 
@@ -2317,5 +2535,5 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		currentLevel = new SemanticLevel();
 		codegen.setSemanticLevel(currentLevel());
 	}
-	
+
 }// SemanticActions
