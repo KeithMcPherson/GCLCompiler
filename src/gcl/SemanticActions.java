@@ -1131,9 +1131,9 @@ class Procedure extends SemanticItem {
 		label = codegen.getLabel();
 		//KEITH - these level settings are probably wrong.
 		if(parentProcedure == null){
-				level = CodegenConstants.GLOBAL_LEVEL;
+				level = CodegenConstants.GLOBAL_LEVEL + 1;
 			}else{
-				level = parentProcedure.semanticLevel();
+				level = parentProcedure.semanticLevel() + 1;
 			}
 	}
 	

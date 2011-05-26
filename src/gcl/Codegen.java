@@ -130,7 +130,7 @@ public class Codegen implements Mnemonic, CodegenConstants {
 		Mode mode = DREG;
 		int base = -1, displacement = 0;
 		VariableExpression variable = (VariableExpression) semanticItem;
-		int itsLevel = variable.semanticLevel();
+		int itsLevel = variable.semanticLevel();		
 		boolean isDirect = variable.isDirect();
 		if (itsLevel == CPU_LEVEL) {
 			mode = isDirect ? DREG : IREG;
