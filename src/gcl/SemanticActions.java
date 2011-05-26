@@ -569,7 +569,9 @@ class ParameterKind extends SemanticItem {
 	}
 
 	public static final ParameterKind NOT_PARAM = new ParameterKind();
-	// more later
+	public static final ParameterKind VALUE_PARAM = new ParameterKind();
+	public static final ParameterKind REFERENCE_PARAM = new ParameterKind();
+
 }
 
 /** Used to carry information for guarded commands such as if and do */
@@ -1124,7 +1126,7 @@ class Procedure extends SemanticItem {
 	public Procedure(Procedure parentProcedure, Identifier name, SymbolTable scope, Codegen codegen){
 		this.parentProcedure = parentProcedure;
 		this.name = name;
-		this.scope = scope;
+		this.scope = scope.openScope(true);
 		defined = false;
 		label = codegen.getLabel();
 		//KEITH - these level settings are probably wrong.
@@ -1168,6 +1170,7 @@ class Procedure extends SemanticItem {
 		codegen.gen2Address(Codegen.LDA, Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +0));
 		codegen.gen2Address(Codegen.STO, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
 		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
+		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, this.size - 8);
 		codegen.genPushPopToStack(Codegen.PUSH);
 
 			
@@ -1176,6 +1179,7 @@ class Procedure extends SemanticItem {
 	public void genUnlink(Codegen codegen){
 		codegen.genLabel('U', label);
 		codegen.genPushPopToStack(Codegen.POP);
+		codegen.gen2Address(Codegen.IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, this.size - 8);
 		codegen.gen2Address(Codegen.LD,Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
 		codegen.gen2Address(Codegen.LD,Codegen.FRAME_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +0));
 		codegen.gen1Address(Codegen.JMP, Codegen.IREG, Codegen.STATIC_POINTER, 0);
@@ -1184,9 +1188,15 @@ class Procedure extends SemanticItem {
 	public VariableExpression reserveLocalAddress(TypeDescriptor type) {
 		this.size += type.size();
 		//KEITH - Make the following more meaningful
-		int offset = -1 * (this.size - 8);
-		return new VariableExpression(type, this.level, offset, true);
+		int offset = -1 * (this.size() - 8);
+		return new VariableExpression(type, this.semanticLevel() , offset, Codegen.DIRECT);
 		}
+
+	public VariableExpression reserveParameterAddress(TypeDescriptor type,
+			ParameterKind procParam) {
+		//TODO
+		return null;
+	}
 }
 
 // --------------------- Semantic Error Values ----------------------------
@@ -1346,7 +1356,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 **************************************************************************/
 	private void complainIfDefinedHere(final SymbolTable scope,
 			final Identifier id) {
-		SymbolTable.Entry entry = scope.lookupIdentifier(id);
+		SymbolTable.Entry entry = scope.lookupIdentifierCurrentScope(id);
 		if (!OKToRedefine(entry)) {
 			err.semanticError(GCLError.ALREADY_DEFINED);
 		}
@@ -2079,7 +2089,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		if(procedure != null){ 
 
 				int thisRegister = codegen.loadAddress(tupleExpression);
-				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, procedure.size());
+				//KEITH - make that number more meaningful (initial size of proc)
+				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, 8);
 				codegen.gen2Address(STO, thisRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, +6));
 				codegen.freeTemp(DREG, thisRegister);
 
@@ -2101,7 +2112,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 				//procedure.call(arguments);
 				codegen.genJumpSubroutine(Codegen.STATIC_POINTER, procedure.getLabel());
 				codegen.gen2Address(LD, Codegen.STATIC_POINTER, new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
-				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, procedure.size());
+				//KEITH - make that 8 more meaningful (initial size of procs)
+				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED, Codegen.UNUSED, 8);
 		}
 		}
 	}
@@ -2198,9 +2210,11 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			expr = new VariableExpression(type, currentLevel().value(),
 					addressOffset, DIRECT);
 		} else { // may be param or local in a proc
-			// more later -- for now throw an exception
-			expr =	currentProcedure.reserveLocalAddress(type);
-			//throw new IllegalStateException("Missing code in declareVariable.");
+			if(procParam == ParameterKind.NOT_PARAM){
+				expr =	currentProcedure.reserveLocalAddress(type);
+			}else{
+				expr = currentProcedure.reserveParameterAddress(type, procParam);
+			}
 		}
 		SymbolTable.Entry variable = scope.newEntry("variable", id, expr, currentModule);
 		CompilerOptions.message("Entering: " + variable);

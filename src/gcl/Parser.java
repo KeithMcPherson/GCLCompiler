@@ -266,7 +266,10 @@ public class Parser {
 		tupleID = new Identifier(currentToken().spelling()); 
 		Expect(25);
 		Expect(1);
-		procID = new Identifier(currentToken().spelling()); proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); 
+		procID = new Identifier(currentToken().spelling()); 
+		proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); 
+		scope = proc.getScope();
+		
 		block(scope);
 		semantic.endDefineProcedure(proc); 
 	}
@@ -427,9 +430,11 @@ public class Parser {
 		if (la.kind == 10 || la.kind == 19) {
 			if (la.kind == 10) {
 				Get();
-				type = typeSymbol(scope);
-				Expect(1);
-				id = new Identifier(currentToken().spelling()); carrier.enter(type, id);
+				if (la.kind == 1 || la.kind == 13 || la.kind == 14) {
+					type = typeSymbol(scope);
+					Expect(1);
+					id = new Identifier(currentToken().spelling()); carrier.enter(type, id);
+				}
 				carrier = moreFieldsAndProcs(carrier, scope);
 			} else {
 				if (la.kind == 19) {
@@ -455,10 +460,11 @@ public class Parser {
 	void paramDefinition(SymbolTable scope) {
 		if (la.kind == 22) {
 			Get();
+			variableDefinition(scope, ParameterKind.VALUE_PARAM);
 		} else if (la.kind == 23) {
 			Get();
+			variableDefinition(scope, ParameterKind.REFERENCE_PARAM);
 		} else SynErr(69);
-		variableDefinition(scope, ParameterKind.NOT_PARAM);
 	}
 
 	void callStatement(Expression tupleExpression, SymbolTable scope) {

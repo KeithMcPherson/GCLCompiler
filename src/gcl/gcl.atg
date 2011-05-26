@@ -135,7 +135,7 @@ moreFieldsAndProcs<^carrier, carrier, scope>.
 /*----------------------------------------------------------*/
 moreFieldsAndProcs<^TypeList carrier, TypeList currentCarrier, SymbolTable scope> (. TypeDescriptor type; Identifier id; carrier = currentCarrier; .)
 =
-[ ","  typeSymbol<^type, scope> identifier (.id = new Identifier(currentToken().spelling()); carrier.enter(type, id);.) 
+[ ","  [typeSymbol<^type, scope> identifier (.id = new Identifier(currentToken().spelling()); carrier.enter(type, id);.)] 
 moreFieldsAndProcs<^carrier, carrier, scope> | [justProcs<^carrier, carrier, scope>] ].
 
 /*----------------------------------------------------------*/    
@@ -152,7 +152,8 @@ paramPart<SymbolTable scope>
  /*----------------------------------------------------------*/    
 paramDefinition<SymbolTable scope>
 =
-("value" | "reference") variableDefinition<scope, ParameterKind.NOT_PARAM> .
+("value"  variableDefinition<scope, ParameterKind.VALUE_PARAM>) | 
+("reference" variableDefinition<scope, ParameterKind.REFERENCE_PARAM>) .
  
  /*----------------------------------------------------------*/    
 callStatement<Expression tupleExpression, SymbolTable scope> (. Expression exp; Identifier procID; .)
@@ -175,7 +176,11 @@ variableAccessEtc<^exp, scope> (assignStatement<scope, exp> | callStatement<exp,
  /*----------------------------------------------------------*/    
 procedureDefinition<SymbolTable scope> (. Identifier tupleID; Identifier procID; Procedure proc; .)
 =
-"procedure" identifier (. tupleID = new Identifier(currentToken().spelling()); .) "@" identifier (. procID = new Identifier(currentToken().spelling()); proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); .) block<scope> (. semantic.endDefineProcedure(proc); .).
+"procedure" identifier (. tupleID = new Identifier(currentToken().spelling()); .) 
+"@" identifier (. procID = new Identifier(currentToken().spelling()); 
+                  proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); 
+                  scope = proc.getScope();
+                  .) block<scope> (. semantic.endDefineProcedure(proc); .).
 
  /*----------------------------------------------------------*/    
 returnStatement<>

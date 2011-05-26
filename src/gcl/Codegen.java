@@ -147,8 +147,22 @@ public class Codegen implements Mnemonic, CodegenConstants {
 			displacement = UNUSED;
 		} else // its level > 1;
 		{
-			int currentlevel = currentLevel.value();
-			// more later for function/procedure blocks
+			int diff = currentLevel.value() - itsLevel;
+			if(diff == 0){
+				base = CodegenConstants.FRAME_POINTER;
+			}else if(diff == 1){
+				base = CodegenConstants.STATIC_POINTER;
+			}else{
+				//KEITH - this case is WRONG.  Fix it
+				int pointerWalker = getTemp(1);
+				gen2Address(LD, pointerWalker, new Location(INDXD, STATIC_POINTER, 2));
+				for(int i = 0; i < (diff-2); i++){
+					gen2Address(LD, pointerWalker, new Location(INDXD, pointerWalker, 2));
+			}
+				base = pointerWalker;
+			}
+				mode = isDirect ? INDXD : IINDXD;
+				displacement = variable.offset();
 		}
 		return new Location(mode, base, displacement);
 	}

@@ -9,123 +9,42 @@
      LDA     R12, +0(R13)
      STO     R11, +4(R12)
      LD      R11, +2(R12)
+     IS      R13, #0
      PUSH    R13, 2047
-     LD      R0, +6(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, -2(R15)
-     LD      R0, +0(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, -4(R15)
-     LD      R0, +2(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, -6(R15)
-     LD      R0, +4(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, -8(R15)
-     LD      R1, -2(R15)
-     LD      R0, #1
-     IC      R1, +0(R14)
-     JEQ     &4
-     LD      R0, #0
-     IC      R0, #1
-     JNE     J4
-     JMP     J3
- LABEL J4
-     LD      R1, -2(R15)
-     LD      R0, #1
-     IC      R1, +2(R14)
-     JGT     &4
-     LD      R0, #0
-     IC      R0, #1
-     JNE     J5
-     LD      R0, -2(R15)
-     IS      R0, +4(R14)
-     STO     R0, +6(R15)
-     LD      R0, -4(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, +0(R15)
-     LD      R0, -8(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, +2(R15)
-     LD      R0, -6(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, +4(R15)
-     LDA     R0, +8(R15)
-     IS      R13, #16
-     STO     R0, +6(R13)
-     STO     R11, +2(R13)
-     JSR     R11, P2
-     LD      R11, +2(R12)
-     IA      R13, #16
-     WRST    +6(R14)
-     WRI     -4(R15)
-     WRST    +18(R14)
-     WRI     -6(R15)
-     WRNL    
-     LD      R0, -2(R15)
-     IS      R0, +24(R14)
-     STO     R0, +6(R15)
-     LD      R0, -8(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, +0(R15)
-     LD      R0, -6(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, +2(R15)
-     LD      R0, -4(R15)
-     PUSH    R13, 1
-     POP     R13, 1
-     STO     R0, +4(R15)
-     LDA     R0, +8(R15)
-     IS      R13, #16
-     STO     R0, +6(R13)
-     STO     R11, +2(R13)
-     JSR     R11, P2
-     LD      R11, +2(R12)
-     IA      R13, #16
-     JMP     J3
- LABEL J5
-     HALT    
- LABEL J3
-     JMP     U2
  LABEL U2
      POP     R13, 2047
+     IA      R13, #0
      LD      R11, +4(R12)
      LD      R12, +0(R12)
      JMP     *R11
  LABEL M1
-     RDI     +6(R15)
-     LD      R0, +26(R14)
-     STO     R0, +0(R15)
-     LD      R0, +28(R14)
-     STO     R0, +2(R15)
-     LD      R0, +30(R14)
+     LD      R0, +0(R14)
      STO     R0, +4(R15)
-     LDA     R0, +8(R15)
-     IS      R13, #16
+     LD      R0, +2(R14)
+     STO     R0, +6(R15)
+     IS      R13, #4
+     LDA     R0, +4(R15)
+     LD      R1, #4
+     BKT     R0, *R13
+     LD      R0, R13
+     LD      R1, #4
+     BKT     R0, +0(R15)
+     IA      R13, #4
+     LDA     R0, +4(R15)
+     IS      R13, #8
      STO     R0, +6(R13)
      STO     R12, +2(R13)
      JSR     R11, P2
      LD      R11, +2(R12)
-     IA      R13, #16
+     IA      R13, #8
+     WRI     +0(R15)
+     WRST    +4(R14)
+     WRI     +2(R15)
+     WRNL    
      HALT    
  LABEL C1
      INT      0
      INT      0
-     INT      1
-     STRING   "move from "
-     STRING   "	to "
-     INT      1
-     INT      1
-     INT      2
-     INT      3
+     STRING   " "
  LABEL V1
      SKIP     8
