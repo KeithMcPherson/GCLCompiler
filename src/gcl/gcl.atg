@@ -157,17 +157,19 @@ paramDefinition<SymbolTable scope>
 ("reference" variableDefinition<scope, ParameterKind.REFERENCE_PARAM>) .
  
  /*----------------------------------------------------------*/    
-callStatement<Expression tupleExpression, SymbolTable scope> (. Expression exp; Identifier procID; .)
+callStatement<Expression tupleExpression, SymbolTable scope> (. Identifier procID; ExpressionList arguments; .)
 =
 "!" identifier (. procID = new Identifier(currentToken().spelling()); .)
-argumentList<scope> (. semantic.callProcedure(tupleExpression, procID); .).
+argumentList<^arguments, scope> (. semantic.callProcedure(tupleExpression, procID, arguments); .).
 
  /*----------------------------------------------------------*/    
-argumentList<SymbolTable scope>
+argumentList<^ExpressionList arguments, SymbolTable scope>
 =
-"(" [ (. Expression exp; ExpressionList tupleFields = new ExpressionList(); .)
-		 expression<^exp, scope> { "," expression<^exp, scope> }
-		 ] ")" .
+(. arguments = null; .)
+"(" [ (. Expression exp; ExpressionList argumentList = new ExpressionList(); .)
+		 expression<^exp, scope> (. argumentList.enter(exp); .) 
+		 { "," expression<^exp, scope> (. argumentList.enter(exp); .) }
+		 (. arguments = argumentList; .) ] ")" .
 
  /*----------------------------------------------------------*/    
 assignOrCallStatement<SymbolTable scope> (. Expression exp; .)

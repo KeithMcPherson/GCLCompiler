@@ -469,25 +469,31 @@ public class Parser {
 	}
 
 	void callStatement(Expression tupleExpression, SymbolTable scope) {
-		Expression exp; Identifier procID; 
+		Identifier procID; ExpressionList arguments; 
 		Expect(24);
 		Expect(1);
 		procID = new Identifier(currentToken().spelling()); 
-		argumentList(scope);
-		semantic.callProcedure(tupleExpression, procID); 
+		arguments = argumentList(scope);
+		semantic.callProcedure(tupleExpression, procID, arguments); 
 	}
 
-	void argumentList(SymbolTable scope) {
+	ExpressionList  argumentList(SymbolTable scope) {
+		ExpressionList  arguments;
+		arguments = null; 
 		Expect(20);
 		if (StartOf(8)) {
-			Expression exp; ExpressionList tupleFields = new ExpressionList(); 
+			Expression exp; ExpressionList argumentList = new ExpressionList(); 
 			exp = expression(scope);
+			argumentList.enter(exp); 
 			while (la.kind == 10) {
 				Get();
 				exp = expression(scope);
+				argumentList.enter(exp); 
 			}
+			arguments = argumentList; 
 		}
 		Expect(21);
+		return arguments;
 	}
 
 	void assignOrCallStatement(SymbolTable scope) {

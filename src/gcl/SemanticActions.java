@@ -3,6 +3,7 @@ package gcl;
 import gcl.Codegen.ConstantLike;
 import gcl.SemanticActions.GCLErrorStream;
 
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -1140,13 +1141,15 @@ class ArrayType extends TypeDescriptor { // mutable
 }
 
 class Procedure extends SemanticItem {
+	final static int DEFAULT_FRAME_SIZE = 8;
 	private Procedure parentProcedure;
 	private SymbolTable scope;
 	private Identifier name;
 	private int label;
 	private boolean defined;
 	private int level;
-	private int size = 8;
+	private int localDataSize = 8;
+	private int frameSize = 100;
 	private ArrayList<Loader> params = new ArrayList<Loader>(2);
 
 	public Procedure(Procedure parentProcedure, Identifier name,
@@ -1173,7 +1176,7 @@ class Procedure extends SemanticItem {
 	}
 
 	public int size() {
-		return this.size;
+		return this.localDataSize;
 	}
 
 	public Procedure getParentProcedure() {
@@ -1204,7 +1207,7 @@ class Procedure extends SemanticItem {
 		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER,
 				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
 		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED,
-				Codegen.UNUSED, this.size - 8);
+				Codegen.UNUSED, this.localDataSize - DEFAULT_FRAME_SIZE);
 		codegen.genPushPopToStack(Codegen.PUSH);
 
 	}
@@ -1213,7 +1216,7 @@ class Procedure extends SemanticItem {
 		codegen.genLabel('U', label);
 		codegen.genPushPopToStack(Codegen.POP);
 		codegen.gen2Address(Codegen.IA, Codegen.STACK_POINTER, Codegen.IMMED,
-				Codegen.UNUSED, this.size - 8);
+				Codegen.UNUSED, this.localDataSize - DEFAULT_FRAME_SIZE);
 		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER,
 				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +4));
 		codegen.gen2Address(Codegen.LD, Codegen.FRAME_POINTER,
@@ -1223,16 +1226,16 @@ class Procedure extends SemanticItem {
 	}
 
 	public VariableExpression reserveLocalAddress(TypeDescriptor type) {
-		this.size += type.size();
+		this.localDataSize += type.size();
 		// KEITH - Make the following more meaningful
-		int offset = -1 * (this.size() - 8);
+		int offset = -1 * (this.localDataSize - DEFAULT_FRAME_SIZE);
 		return new VariableExpression(type, this.semanticLevel(), offset,
 				Codegen.DIRECT);
 	}
 
 	public Expression reserveParameterAddress(TypeDescriptor type, ParameterKind paramKind, GCLErrorStream err) {
 		//KEITH - make the following more meaningful (initial frame size)
-		int offset = 8;
+		int offset = frameSize;
 		Loader paramLoader = null;
 		boolean direct = true;
 		if(paramKind == ParameterKind.REFERENCE_PARAM){
@@ -1250,9 +1253,30 @@ class Procedure extends SemanticItem {
 			return new ErrorExpression("Compiler error dealing with parameter types.");
 		}*/
 		//KEITH - above probably not needed - below probably causes issues, combined with the other size effecting methods
-		size += paramLoader.size();
+		frameSize += paramLoader.size();
 		params.add(paramLoader);
 		return new VariableExpression(type, this.level, offset, direct);
+	}
+	
+	//KEITH - rewrite most of the following function to make it your own
+	public void call(ExpressionList arguments, Codegen codegen, GCLErrorStream err){
+		if(arguments != null){
+			Iterator<Expression> argumentIterator = arguments.elements();
+			for(Loader argumentLoader : params){
+				if(argumentIterator.hasNext()){
+					Expression argumentExpression = argumentIterator.next();
+					if(argumentLoader.checkType(argumentExpression, err)){
+						argumentLoader.load(argumentExpression, codegen);
+					}
+				}else{
+					//GCLCompiler.err.semanticError(GCLError.INCORRECT_ARGUMENTS, "This procedure has been invoked with too few arguments.");
+				}
+			}
+
+			if(argumentIterator.hasNext()){
+			//GCLCompiler.err.semanticError(GCLError.INCORRECT_ARGUMENTS, "This procedure has been invoked with too many arguments.");
+			}
+		}
 	}
 }
 
@@ -1281,21 +1305,21 @@ abstract class Loader{
  *
  */
 class ValueLoader extends Loader{
-public ValueLoader(TypeDescriptor type, int offset){
-super(type, offset);
-}
+	public ValueLoader(TypeDescriptor type, int offset){
+		super(type, offset);
+	}
 
-@Override
-public int size() {
-return type.size();
-}
+	@Override
+	public int size() {
+		return type.size();
+	}
 
-@Override
-public void load(Expression parameter, Codegen codegen) {
-int valueRegister = codegen.loadRegister(parameter);
-codegen.gen2Address(Codegen.STO, valueRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
-codegen.freeTemp(Codegen.DREG, valueRegister);
-}
+	@Override
+	public void load(Expression parameter, Codegen codegen) {
+		int valueRegister = codegen.loadRegister(parameter);
+		codegen.gen2Address(Codegen.STO, valueRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
+		codegen.freeTemp(Codegen.DREG, valueRegister);
+	}
 }
 
 /**
@@ -1303,61 +1327,64 @@ codegen.freeTemp(Codegen.DREG, valueRegister);
  *
  */
 class ReferenceLoader extends Loader{
-public ReferenceLoader(TypeDescriptor type, int offset){
-super(type, offset);
-}
-public boolean checkType(Expression potentialParameter, GCLErrorStream err){
-if(potentialParameter instanceof ConstantExpression){
-//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Constants cannot be passed by reference.");
-return false;
-}
-return super.checkType(potentialParameter, err);
-}
-@Override
-public int size() {
-return 2;
-}
+	public ReferenceLoader(TypeDescriptor type, int offset){
+		super(type, offset);
+	}
+	
+	public boolean checkType(Expression potentialParameter, GCLErrorStream err){
+		if(potentialParameter instanceof ConstantExpression){
 
-@Override
-public void load(Expression parameter, Codegen codegen) {
-int referenceRegister = codegen.loadAddress(parameter);
-codegen.gen2Address(Codegen.STO, referenceRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
-codegen.freeTemp(Codegen.DREG, referenceRegister);
-}
+			//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Constants cannot be passed by reference.");
+			return false;
+		}
+		return super.checkType(potentialParameter, err);
+	}
+	
+	@Override
+	public int size() {
+		return 2;
+	}
+
+	@Override
+	public void load(Expression parameter, Codegen codegen) {
+		int referenceRegister = codegen.loadAddress(parameter);
+		codegen.gen2Address(Codegen.STO, referenceRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
+		codegen.freeTemp(Codegen.DREG, referenceRegister);
+	}
 }
 
 /**
  * Loads complex types by value
  */
 class BlockLoader extends Loader{
-public BlockLoader(TypeDescriptor type, int offset){
-super(type, offset);
-}
+	public BlockLoader(TypeDescriptor type, int offset){
+		super(type, offset);
+	}
 
-@Override
-public int size() {
-return type.size();
-}
+	@Override
+	public int size() {
+		return type.size();
+	}
 
-@Override
-public void load(Expression parameter, Codegen codegen) {
-if(!(parameter instanceof VariableExpression)){
-if(!(parameter instanceof ErrorExpression)){
-//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Only variables can be passed by reference");
-}
-return;
-}
+	@Override
+	public void load(Expression parameter, Codegen codegen) {
+		if(!(parameter instanceof VariableExpression)){
+			if(!(parameter instanceof ErrorExpression)){
+				//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Only variables can be passed by reference");
+			}
+			return;
+		}
 
-int blockRegister = codegen.getTemp(2);
-int sizeRegister = blockRegister +1;
-Codegen.Location parameterLocation = codegen.buildOperands(parameter);
-codegen.gen2Address(Codegen.LD, blockRegister, parameterLocation);
-codegen.gen2Address(Codegen.LD, sizeRegister, Codegen.IMMED, Codegen.UNUSED, size());
-codegen.gen2Address(Codegen.BKT, blockRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
-codegen.freeTemp(Codegen.DREG, blockRegister);
-codegen.freeTemp(Codegen.DREG, sizeRegister);
-codegen.freeTemp(parameterLocation);
-}
+		int blockRegister = codegen.getTemp(2);
+		int sizeRegister = blockRegister +1;
+		Codegen.Location parameterLocation = codegen.buildOperands(parameter);
+		codegen.gen2Address(Codegen.LD, blockRegister, parameterLocation);
+		codegen.gen2Address(Codegen.LD, sizeRegister, Codegen.IMMED, Codegen.UNUSED, size());
+		codegen.gen2Address(Codegen.BKT, blockRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
+		codegen.freeTemp(Codegen.DREG, blockRegister);
+		codegen.freeTemp(Codegen.DREG, sizeRegister);
+		codegen.freeTemp(parameterLocation);
+	}
 }
 // --------------------- Semantic Error Values ----------------------------
 
@@ -2260,7 +2287,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		}
 	}
 
-	void callProcedure(Expression tupleExpression, Identifier procedureName) {
+	void callProcedure(Expression tupleExpression, Identifier procedureName, ExpressionList arguments) {
 		TupleType tuple = null;
 		if (tupleExpression.type() instanceof TupleType) {
 			tuple = (TupleType) tupleExpression.type();
@@ -2299,7 +2326,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 					// "Corrupt leveling scheme.");
 				}
 
-				// procedure.call(arguments);
+				procedure.call(arguments, codegen, err);
 				codegen.genJumpSubroutine(Codegen.STATIC_POINTER,
 						procedure.getLabel());
 				codegen.gen2Address(LD, Codegen.STATIC_POINTER,
