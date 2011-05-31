@@ -1,4 +1,4 @@
-Compiled on: Tue May 31 11:22:36 EDT 2011
+Compiled on: Tue May 31 11:38:01 EDT 2011
 module test11_9 { NONSQUARE twoDimensions with assignment
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -35,153 +35,151 @@ $        TRNG    R1, +4(R14)
 $        IS      R1, #0
 $        IM      R1, #6
 $        IA      R0, R1
-$        LDA     R1, *R0
+$        LD      R1, +0(R15)
+$        TRNG    R1, +0(R14)
+$        IS      R1, #0
+$        IM      R1, #2
+$        IA      R0, R1
+$        RDI     *R0
+$        LD      R1, +0(R15)
+$        IA      R1, +14(R14)
+$        STO     R1, +0(R15)
+$        JMP     J2
+$    LABEL J3
+ a[1] := a[0]; { array assignment}
+$        LDA     R1, +4(R15)
+$        LD      R2, +16(R14)
+$        TRNG    R2, +4(R14)
+$        IS      R2, #0
+$        IM      R2, #6
+$        IA      R1, R2
+$        LDA     R2, +4(R15)
+$        LD      R3, +18(R14)
+$        TRNG    R3, +4(R14)
+$        IS      R3, #0
+$        IM      R3, #6
+$        IA      R2, R3
+$        IS      R13, #6
+$        LDA     R3, *R2
+$        LD      R4, #6
+$        BKT     R3, *R13
+$        LD      R2, R13
+$        LD      R3, #6
+$        BKT     R2, *R1
+$        IA      R13, #6
+ a[2] := a[1]; { array assignment}
+$        LDA     R1, +4(R15)
+$        LD      R2, +20(R14)
+$        TRNG    R2, +4(R14)
+$        IS      R2, #0
+$        IM      R2, #6
+$        IA      R1, R2
+$        LDA     R2, +4(R15)
+$        LD      R3, +22(R14)
+$        TRNG    R3, +4(R14)
+$        IS      R3, #0
+$        IM      R3, #6
+$        IA      R2, R3
+$        IS      R13, #6
+$        LDA     R3, *R2
+$        LD      R4, #6
+$        BKT     R3, *R13
+$        LD      R2, R13
+$        LD      R3, #6
+$        BKT     R2, *R1
+$        IA      R13, #6
+ a[3] := a[1]; { array assignment}
+$        LDA     R1, +4(R15)
+$        LD      R2, +24(R14)
+$        TRNG    R2, +4(R14)
+$        IS      R2, #0
+$        IM      R2, #6
+$        IA      R1, R2
+$        LDA     R2, +4(R15)
+$        LD      R3, +26(R14)
+$        TRNG    R3, +4(R14)
+$        IS      R3, #0
+$        IM      R3, #6
+$        IA      R2, R3
+$        IS      R13, #6
+$        LDA     R3, *R2
+$        LD      R4, #6
+$        BKT     R3, *R13
+$        LD      R2, R13
+$        LD      R3, #6
+$        BKT     R2, *R1
+$        IA      R13, #6
+ b := a; { array assignment}
+$        IS      R13, #24
+$        LDA     R1, +4(R15)
+$        LD      R2, #24
+$        BKT     R1, *R13
+$        LD      R1, R13
+$        LD      R2, #24
+$        BKT     R1, +28(R15)
+$        IA      R13, #24
+ i := 0;
+$        LD      R1, +28(R14)
+$        STO     R1, +0(R15)
+ j := 0;
+$        LD      R1, +30(R14)
+$        STO     R1, +2(R15)
+do i <= max & j < max ->
+$    LABEL J4
 $        LD      R2, +0(R15)
+$        LD      R1, #1
+$        IC      R2, +32(R14)
+$        JLE     &4
+$        LD      R1, #0
+$        LD      R3, +2(R15)
+$        LD      R2, #1
+$        IC      R3, +34(R14)
+$        JLT     &4
+$        LD      R2, #0
+$        BA      R1, R2
+$        IC      R1, #1
+$        JNE     J5
+	write b[i][j]; j := j+1;
+$        LDA     R1, +28(R15)
+$        LD      R2, +0(R15)
+$        TRNG    R2, +4(R14)
+$        IS      R2, #0
+$        IM      R2, #6
+$        IA      R1, R2
+$        LD      R2, +2(R15)
 $        TRNG    R2, +0(R14)
 $        IS      R2, #0
 $        IM      R2, #2
 $        IA      R1, R2
-$        RDI     *R1
-$        LD      R2, +0(R15)
-$        IA      R2, +14(R14)
-$        STO     R2, +0(R15)
-$        JMP     J2
-$    LABEL J3
- a[1] := a[0]; { array assignment}
-$        LDA     R2, +4(R15)
-$        LD      R3, +16(R14)
-$        TRNG    R3, +4(R14)
-$        IS      R3, #0
-$        IM      R3, #6
-$        IA      R2, R3
-$        LDA     R3, +4(R15)
-$        LD      R4, +18(R14)
-$        TRNG    R4, +4(R14)
-$        IS      R4, #0
-$        IM      R4, #6
-$        IA      R3, R4
-$        IS      R13, #6
-$        LDA     R4, *R3
-$        LD      R5, #6
-$        BKT     R4, *R13
-$        LD      R3, R13
-$        LD      R4, #6
-$        BKT     R3, *R2
-$        IA      R13, #6
- a[2] := a[1]; { array assignment}
-$        LDA     R2, +4(R15)
-$        LD      R3, +20(R14)
-$        TRNG    R3, +4(R14)
-$        IS      R3, #0
-$        IM      R3, #6
-$        IA      R2, R3
-$        LDA     R3, +4(R15)
-$        LD      R4, +22(R14)
-$        TRNG    R4, +4(R14)
-$        IS      R4, #0
-$        IM      R4, #6
-$        IA      R3, R4
-$        IS      R13, #6
-$        LDA     R4, *R3
-$        LD      R5, #6
-$        BKT     R4, *R13
-$        LD      R3, R13
-$        LD      R4, #6
-$        BKT     R3, *R2
-$        IA      R13, #6
- a[3] := a[1]; { array assignment}
-$        LDA     R2, +4(R15)
-$        LD      R3, +24(R14)
-$        TRNG    R3, +4(R14)
-$        IS      R3, #0
-$        IM      R3, #6
-$        IA      R2, R3
-$        LDA     R3, +4(R15)
-$        LD      R4, +26(R14)
-$        TRNG    R4, +4(R14)
-$        IS      R4, #0
-$        IM      R4, #6
-$        IA      R3, R4
-$        IS      R13, #6
-$        LDA     R4, *R3
-$        LD      R5, #6
-$        BKT     R4, *R13
-$        LD      R3, R13
-$        LD      R4, #6
-$        BKT     R3, *R2
-$        IA      R13, #6
- b := a; { array assignment}
-$        IS      R13, #24
-$        LDA     R2, +4(R15)
-$        LD      R3, #24
-$        BKT     R2, *R13
-$        LD      R2, R13
-$        LD      R3, #24
-$        BKT     R2, +28(R15)
-$        IA      R13, #24
- i := 0;
-$        LD      R2, +28(R14)
-$        STO     R2, +0(R15)
- j := 0;
-$        LD      R2, +30(R14)
-$        STO     R2, +2(R15)
-do i <= max & j < max ->
-$    LABEL J4
-$        LD      R3, +0(R15)
-$        LD      R2, #1
-$        IC      R3, +32(R14)
-$        JLE     &4
-$        LD      R2, #0
-$        LD      R4, +2(R15)
-$        LD      R3, #1
-$        IC      R4, +34(R14)
-$        JLT     &4
-$        LD      R3, #0
-$        BA      R2, R3
-$        IC      R2, #1
-$        JNE     J5
-	write b[i][j]; j := j+1;
-$        LDA     R2, +28(R15)
-$        LD      R3, +0(R15)
-$        TRNG    R3, +4(R14)
-$        IS      R3, #0
-$        IM      R3, #6
-$        IA      R2, R3
-$        LDA     R3, *R2
-$        LD      R4, +2(R15)
-$        TRNG    R4, +0(R14)
-$        IS      R4, #0
-$        IM      R4, #2
-$        IA      R3, R4
-$        WRI     *R3
+$        WRI     *R1
 $        WRNL    
-$        LD      R3, +2(R15)
-$        IA      R3, +36(R14)
-$        STO     R3, +2(R15)
+$        LD      R1, +2(R15)
+$        IA      R1, +36(R14)
+$        STO     R1, +2(R15)
 	if j >= max -> 
-$        LD      R4, +2(R15)
-$        LD      R3, #1
-$        IC      R4, +38(R14)
+$        LD      R2, +2(R15)
+$        LD      R1, #1
+$        IC      R2, +38(R14)
 $        JGE     &4
-$        LD      R3, #0
-$        IC      R3, #1
+$        LD      R1, #0
+$        IC      R1, #1
 $        JNE     J7
 		i := i+1;
-$        LD      R3, +0(R15)
-$        IA      R3, +40(R14)
-$        STO     R3, +0(R15)
+$        LD      R1, +0(R15)
+$        IA      R1, +40(R14)
+$        STO     R1, +0(R15)
 		j := 0;
-$        LD      R3, +42(R14)
-$        STO     R3, +2(R15)
+$        LD      R1, +42(R14)
+$        STO     R1, +2(R15)
 	 [] j < max -> skip;
 $        JMP     J6
 $    LABEL J7
-$        LD      R4, +2(R15)
-$        LD      R3, #1
-$        IC      R4, +44(R14)
+$        LD      R2, +2(R15)
+$        LD      R1, #1
+$        IC      R2, +44(R14)
 $        JLT     &4
-$        LD      R3, #0
-$        IC      R3, #1
+$        LD      R1, #0
+$        IC      R1, #1
 $        JNE     J8
 	fi;
 $        JMP     J6
@@ -222,5 +220,5 @@ $        INT      3
 $    LABEL V1
 $        SKIP     52
   <end of compilation of ..\tests\test11_9>.  There were no errors detected.
-  Allocated Registers: 0 1 2 11 12 13 14 15 
+  Allocated Registers: 0 11 12 13 14 15 
 

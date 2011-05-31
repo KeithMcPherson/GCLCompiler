@@ -1,4 +1,4 @@
-Compiled on: Tue May 31 11:22:36 EDT 2011
+Compiled on: Tue May 31 11:38:01 EDT 2011
 module test11_6 { bounds check twoDimensions
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -33,168 +33,154 @@ $        TRNG    R1, +0(R14)
 $        IS      R1, #0
 $        IM      R1, #4
 $        IA      R0, R1
-$        LDA     R1, *R0
-$        LD      R2, +8(R14)
+$        LD      R1, +8(R14)
+$        TRNG    R1, +0(R14)
+$        IS      R1, #0
+$        IM      R1, #2
+$        IA      R0, R1
+$        RDI     *R0
+$        LD      R1, +0(R15)
+$        IA      R1, +10(R14)
+$        STO     R1, +0(R15)
+$        JMP     J2
+$    LABEL J3
+ a[0][1] := a[0][0];
+$        LDA     R1, +4(R15)
+$        LD      R2, +12(R14)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #4
+$        IA      R1, R2
+$        LD      R2, +14(R14)
 $        TRNG    R2, +0(R14)
 $        IS      R2, #0
 $        IM      R2, #2
 $        IA      R1, R2
-$        RDI     *R1
-$        LD      R2, +0(R15)
-$        IA      R2, +10(R14)
-$        STO     R2, +0(R15)
-$        JMP     J2
-$    LABEL J3
- a[0][1] := a[0][0];
 $        LDA     R2, +4(R15)
-$        LD      R3, +12(R14)
+$        LD      R3, +16(R14)
 $        TRNG    R3, +0(R14)
 $        IS      R3, #0
 $        IM      R3, #4
 $        IA      R2, R3
-$        LDA     R3, *R2
-$        LD      R4, +14(R14)
+$        LD      R3, +18(R14)
+$        TRNG    R3, +0(R14)
+$        IS      R3, #0
+$        IM      R3, #2
+$        IA      R2, R3
+$        LD      R3, *R2
+$        PUSH    R13, 8
+$        POP     R13, 4
+$        STO     R2, *R1
+ i := 1;
+$        LD      R1, +20(R14)
+$        STO     R1, +0(R15)
+ do i <= max -> 
+$    LABEL J4
+$        LD      R2, +0(R15)
+$        LD      R1, #1
+$        IC      R2, +22(R14)
+$        JLE     &4
+$        LD      R1, #0
+$        IC      R1, #1
+$        JNE     J5
+	i := i+1;
+$        LD      R1, +0(R15)
+$        IA      R1, +24(R14)
+$        STO     R1, +0(R15)
+	a[i][1] := a[i-1][1] + a[i][0] ; 
+$        LDA     R1, +4(R15)
+$        LD      R2, +0(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #4
+$        IA      R1, R2
+$        LD      R2, +26(R14)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        LD      R2, +0(R15)
+$        IS      R2, +28(R14)
+$        LDA     R3, +4(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #4
+$        IA      R3, R2
+$        LD      R2, +30(R14)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R3, R2
+$        LDA     R2, +4(R15)
+$        LD      R4, +0(R15)
+$        TRNG    R4, +0(R14)
+$        IS      R4, #0
+$        IM      R4, #4
+$        IA      R2, R4
+$        LD      R4, +32(R14)
 $        TRNG    R4, +0(R14)
 $        IS      R4, #0
 $        IM      R4, #2
-$        IA      R3, R4
-$        LDA     R4, +4(R15)
-$        LD      R5, +16(R14)
-$        TRNG    R5, +0(R14)
-$        IS      R5, #0
-$        IM      R5, #4
-$        IA      R4, R5
-$        LDA     R5, *R4
-$        LD      R6, +18(R14)
-$        TRNG    R6, +0(R14)
-$        IS      R6, #0
-$        IM      R6, #2
-$        IA      R5, R6
-$        LD      R6, *R5
-$        PUSH    R13, 64
-$        POP     R13, 32
-$        STO     R5, *R3
- i := 1;
-$        LD      R3, +20(R14)
-$        STO     R3, +0(R15)
+$        IA      R2, R4
+$        LD      R4, *R3
+$        IA      R4, *R2
+$        STO     R4, *R1
+ od;
+$        JMP     J4
+$    LABEL J5
+ i := 0;
+$        LD      R1, +34(R14)
+$        STO     R1, +0(R15)
  do i <= max -> 
-$    LABEL J4
-$        LD      R4, +0(R15)
-$        LD      R3, #1
-$        IC      R4, +22(R14)
+$    LABEL J6
+$        LD      R2, +0(R15)
+$        LD      R1, #1
+$        IC      R2, +36(R14)
 $        JLE     &4
-$        LD      R3, #0
-$        IC      R3, #1
-$        JNE     J5
+$        LD      R1, #0
+$        IC      R1, #1
+$        JNE     J7
 	i := i+1;
+$        LD      R1, +0(R15)
+$        IA      R1, +38(R14)
+$        STO     R1, +0(R15)
+	a[i][2]:= a[i][0] * a[i][1]; 
+$        LDA     R1, +4(R15)
+$        LD      R2, +0(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #4
+$        IA      R1, R2
+$        LD      R2, +40(R14)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        LDA     R2, +4(R15)
 $        LD      R3, +0(R15)
-$        IA      R3, +24(R14)
-$        STO     R3, +0(R15)
-	a[i][1] := a[i-1][1] + a[i][0] ; 
+$        TRNG    R3, +0(R14)
+$        IS      R3, #0
+$        IM      R3, #4
+$        IA      R2, R3
+$        LD      R3, +42(R14)
+$        TRNG    R3, +0(R14)
+$        IS      R3, #0
+$        IM      R3, #2
+$        IA      R2, R3
 $        LDA     R3, +4(R15)
 $        LD      R4, +0(R15)
 $        TRNG    R4, +0(R14)
 $        IS      R4, #0
 $        IM      R4, #4
 $        IA      R3, R4
-$        LDA     R4, *R3
-$        LD      R5, +26(R14)
-$        TRNG    R5, +0(R14)
-$        IS      R5, #0
-$        IM      R5, #2
-$        IA      R4, R5
-$        LD      R5, +0(R15)
-$        IS      R5, +28(R14)
-$        LDA     R6, +4(R15)
-$        LD      R7, R5
-$        TRNG    R7, +0(R14)
-$        IS      R7, #0
-$        IM      R7, #4
-$        IA      R6, R7
-$        LDA     R7, *R6
-$        LD      R8, +30(R14)
-$        TRNG    R8, +0(R14)
-$        IS      R8, #0
-$        IM      R8, #2
-$        IA      R7, R8
-$        LDA     R8, +4(R15)
-$        LD      R9, +0(R15)
-$        TRNG    R9, +0(R14)
-$        IS      R9, #0
-$        IM      R9, #4
-$        IA      R8, R9
-$        LDA     R9, *R8
-$        LD      R10, +32(R14)
-$        TRNG    R10, +0(R14)
-$        IS      R10, #0
-$        IM      R10, #2
-$        IA      R9, R10
-$        LD      R10, *R7
-$        IA      R10, *R9
-$        STO     R10, *R4
- od;
-$        JMP     J4
-$    LABEL J5
- i := 0;
-$        LD      R4, +34(R14)
-$        STO     R4, +0(R15)
- do i <= max -> 
-$    LABEL J6
-$        LD      R5, +0(R15)
-$        LD      R4, #1
-$        IC      R5, +36(R14)
-$        JLE     &4
-$        LD      R4, #0
-$        IC      R4, #1
-$        JNE     J7
-	i := i+1;
-$        LD      R4, +0(R15)
-$        IA      R4, +38(R14)
-$        STO     R4, +0(R15)
-	a[i][2]:= a[i][0] * a[i][1]; 
-$        LDA     R4, +4(R15)
-$        LD      R5, +0(R15)
-$        TRNG    R5, +0(R14)
-$        IS      R5, #0
-$        IM      R5, #4
-$        IA      R4, R5
-$        LDA     R7, *R4
-$        LD      R8, +40(R14)
-$        TRNG    R8, +0(R14)
-$        IS      R8, #0
-$        IM      R8, #2
-$        IA      R7, R8
-$        LDA     R8, +4(R15)
-$        LD      R9, +0(R15)
-$        TRNG    R9, +0(R14)
-$        IS      R9, #0
-$        IM      R9, #4
-$        IA      R8, R9
-$        LDA     R9, *R8
-$        LD      R10, +42(R14)
-$        TRNG    R10, +0(R14)
-$        IS      R10, #0
-$        IM      R10, #2
-$        IA      R9, R10
-At -- line 22 col 26: error 94
-COMPILER ERROR -> There is no available register. 
-
-$        HALT    
-$        LDA     R0, +4(R15)
-$        LD      R1, +0(R15)
-$        TRNG    R1, +0(R14)
-$        IS      R1, #0
-$        IM      R1, #4
-$        IA      R0, R1
-$        LDA     R1, *R0
-$        LD      R2, +44(R14)
-$        TRNG    R2, +0(R14)
-$        IS      R2, #0
-$        IM      R2, #2
-$        IA      R1, R2
-$        LD      R2, *R9
-$        IM      R2, *R1
-$        STO     R2, *R7
+$        LD      R4, +44(R14)
+$        TRNG    R4, +0(R14)
+$        IS      R4, #0
+$        IM      R4, #2
+$        IA      R3, R4
+$        LD      R4, *R2
+$        IM      R4, *R3
+$        STO     R4, *R1
  od;
 $        JMP     J6
 $    LABEL J7
@@ -226,41 +212,40 @@ $        TRNG    R2, +0(R14)
 $        IS      R2, #0
 $        IM      R2, #4
 $        IA      R1, R2
-$        LDA     R2, *R1
-$        LD      R3, +2(R15)
-$        TRNG    R3, +0(R14)
-$        IS      R3, #0
-$        IM      R3, #2
-$        IA      R2, R3
-$        WRI     *R2
-$        WRNL    
 $        LD      R2, +2(R15)
-$        IA      R2, +54(R14)
-$        STO     R2, +2(R15)
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R1, R2
+$        WRI     *R1
+$        WRNL    
+$        LD      R1, +2(R15)
+$        IA      R1, +54(R14)
+$        STO     R1, +2(R15)
 	if j > max -> 
-$        LD      R3, +2(R15)
-$        LD      R2, #1
-$        IC      R3, +56(R14)
+$        LD      R2, +2(R15)
+$        LD      R1, #1
+$        IC      R2, +56(R14)
 $        JGT     &4
-$        LD      R2, #0
-$        IC      R2, #1
+$        LD      R1, #0
+$        IC      R1, #1
 $        JNE     J11
 		i := i+1;
-$        LD      R2, +0(R15)
-$        IA      R2, +58(R14)
-$        STO     R2, +0(R15)
+$        LD      R1, +0(R15)
+$        IA      R1, +58(R14)
+$        STO     R1, +0(R15)
 		j := 0;
-$        LD      R2, +60(R14)
-$        STO     R2, +2(R15)
+$        LD      R1, +60(R14)
+$        STO     R1, +2(R15)
 	 [] j <= max -> skip;
 $        JMP     J10
 $    LABEL J11
-$        LD      R3, +2(R15)
-$        LD      R2, #1
-$        IC      R3, +62(R14)
+$        LD      R2, +2(R15)
+$        LD      R1, #1
+$        IC      R2, +62(R14)
 $        JLE     &4
-$        LD      R2, #0
-$        IC      R2, #1
+$        LD      R1, #0
+$        IC      R1, #1
 $        JNE     J12
 	fi;
 $        JMP     J10
@@ -310,7 +295,6 @@ $        INT      0
 $        INT      2
 $    LABEL V1
 $        SKIP     12
-  <end of compilation of ..\tests\test11_6>.  There was 1 error detected.
-  Allocated Registers: 0 1 6 11 12 13 14 15 
+  <end of compilation of ..\tests\test11_6>.  There were no errors detected.
+  Allocated Registers: 0 11 12 13 14 15 
 
-$        HALT    

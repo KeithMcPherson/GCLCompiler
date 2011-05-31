@@ -1,4 +1,4 @@
-Compiled on: Tue May 31 11:22:35 EDT 2011
+Compiled on: Tue May 31 11:38:00 EDT 2011
 module test11_3 { semantic arrays
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -65,15 +65,14 @@ $        IA      R1, R2
 $        LD      R2, +16(R14)
 $        IS      R2, +0(R15)
 $        LDA     R3, +2(R15)
-$        LD      R4, R2
-$        TRNG    R4, +0(R14)
-$        IS      R4, #0
-$        IM      R4, #2
-$        IA      R3, R4
-$        LD      R4, *R3
-$        PUSH    R13, 16
-$        POP     R13, 8
-$        STO     R3, *R1
+$        TRNG    R2, +0(R14)
+$        IS      R2, #0
+$        IM      R2, #2
+$        IA      R3, R2
+$        LD      R2, *R3
+$        PUSH    R13, 4
+$        POP     R13, 4
+$        STO     R2, *R1
 $        JMP     J4
 $    LABEL J5
  i := 0;

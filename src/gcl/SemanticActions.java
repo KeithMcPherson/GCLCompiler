@@ -2397,15 +2397,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		ArrayType arrayType = ((ArrayType) array.type());
 		RangeType subscriptType = (RangeType) arrayType.getSubscriptType();
 
-		int arrayReg = codegen.getTemp(2);
-		int subscriptReg = arrayReg + 1;
-		Codegen.Location arrayLocation = codegen.buildOperands(array);
-		Codegen.Location subscriptLocation = codegen.buildOperands(subscript);
+		int arrayReg = codegen.loadAddress(array);
+		int subscriptReg = codegen.loadRegister(subscript);
 
-		// if (!(subscript instanceof ConstantExpression))
-		// codegen.freeTemp(subscriptLocation);
-		codegen.gen2Address(LDA, arrayReg, arrayLocation);
-		codegen.gen2Address(LD, subscriptReg, subscriptLocation);
+		//KEITH - the following works, but you should implement the case of a constant subscript - fix freeing that array reg
 		codegen.gen2Address(TRNG, subscriptReg, subscriptType.getLowBoundOffset());
 		codegen.gen2Address(IS, subscriptReg, IMMED, UNUSED, subscriptType.getLowBound());
 		codegen.gen2Address(IM,subscriptReg,IMMED,UNUSED,((TypeDescriptor) ((ArrayType) array.type()).getComponentType()).size());
