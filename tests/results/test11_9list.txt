@@ -1,4 +1,4 @@
-Compiled on: Sat May 28 16:28:14 EDT 2011
+Compiled on: Tue May 31 11:22:36 EDT 2011
 module test11_9 { NONSQUARE twoDimensions with assignment
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -61,9 +61,9 @@ $        IS      R4, #0
 $        IM      R4, #6
 $        IA      R3, R4
 $        IS      R13, #6
-$        LDA     R3, *R3
-$        LD      R4, #6
-$        BKT     R3, *R13
+$        LDA     R4, *R3
+$        LD      R5, #6
+$        BKT     R4, *R13
 $        LD      R3, R13
 $        LD      R4, #6
 $        BKT     R3, *R2
@@ -82,9 +82,9 @@ $        IS      R4, #0
 $        IM      R4, #6
 $        IA      R3, R4
 $        IS      R13, #6
-$        LDA     R3, *R3
-$        LD      R4, #6
-$        BKT     R3, *R13
+$        LDA     R4, *R3
+$        LD      R5, #6
+$        BKT     R4, *R13
 $        LD      R3, R13
 $        LD      R4, #6
 $        BKT     R3, *R2
@@ -103,9 +103,9 @@ $        IS      R4, #0
 $        IM      R4, #6
 $        IA      R3, R4
 $        IS      R13, #6
-$        LDA     R3, *R3
-$        LD      R4, #6
-$        BKT     R3, *R13
+$        LDA     R4, *R3
+$        LD      R5, #6
+$        BKT     R4, *R13
 $        LD      R3, R13
 $        LD      R4, #6
 $        BKT     R3, *R2

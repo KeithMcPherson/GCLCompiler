@@ -796,7 +796,7 @@ class RangeType extends TypeDescriptor implements CodegenConstants {
 	}
 
 	public boolean isCompatible(final TypeDescriptor other) {
-		return other != null && other.baseType() == this.baseType;
+		return baseType.isCompatible(other);
 	}
 
 	public int getLowBound() {
@@ -976,6 +976,7 @@ class TupleType extends TypeDescriptor { // mutable
 			Procedure t = m.next();
 			Identifier id = n2.next();
 			methods.newEntry("Procedure", id, t, this);
+			t.setParentTuple(this);
 		}
 	}
 
@@ -1122,11 +1123,15 @@ class ArrayType extends TypeDescriptor { // mutable
 	}
 
 	public boolean isCompatible(TypeDescriptor other) {
-		return other.baseType() == this.baseType()
-				&& ((ArrayType) other).componentType == this.getComponentType();
+		if (other instanceof ArrayType){
+			return ((ArrayType) other).getComponentType().isCompatible(this.getComponentType()) 
+			&& ((ArrayType) other).getSubscriptType().isCompatible(this.getSubscriptType());
+		} else {
+			return false;
+		}
 	}
 
-	public SemanticItem getSubscriptType() {
+	public TypeDescriptor getSubscriptType() {
 		return subscriptType;
 	}
 
@@ -1149,8 +1154,9 @@ class Procedure extends SemanticItem {
 	private boolean defined;
 	private int level;
 	private int localDataSize = 8;
-	private int frameSize = 100;
+	private int frameSize = 8;
 	private ArrayList<Loader> params = new ArrayList<Loader>(2);
+	private TupleType parentTuple;
 
 	public Procedure(Procedure parentProcedure, Identifier name,
 			SymbolTable scope, Codegen codegen) {
@@ -1175,7 +1181,11 @@ class Procedure extends SemanticItem {
 		return defined;
 	}
 
-	public int size() {
+	public int frameSize() {
+		return this.frameSize;
+	}
+	
+	public int localDataSize() {
 		return this.localDataSize;
 	}
 
@@ -1207,7 +1217,7 @@ class Procedure extends SemanticItem {
 		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER,
 				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
 		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED,
-				Codegen.UNUSED, this.localDataSize - DEFAULT_FRAME_SIZE);
+				Codegen.UNUSED, this.localDataSize - localDataSize);
 		codegen.genPushPopToStack(Codegen.PUSH);
 
 	}
@@ -1277,6 +1287,18 @@ class Procedure extends SemanticItem {
 			//GCLCompiler.err.semanticError(GCLError.INCORRECT_ARGUMENTS, "This procedure has been invoked with too many arguments.");
 			}
 		}
+	}
+	
+	public void setParentTuple(TupleType parentTuple){
+		this.parentTuple = parentTuple;
+	}
+	
+	public TupleType getParentTuple(){
+		return this.parentTuple;
+	}
+	
+	public int getLevel(){
+		return this.level;
 	}
 }
 
@@ -1428,7 +1450,9 @@ abstract class GCLError {
 	static final GCLError INVALID_RETURN = new Value(15,
 			"ERROR -> Procedure Required. ");
 	static final GCLError INCOMPATIBLE_TYPE = new Value(16,
-	"ERROR -> Incompatible types in a procedure's parameters ");
+			"ERROR -> Incompatible types in a procedure's parameters ");
+	static final GCLError BOOLEAN_REQUIRED = new Value(17,
+			"ERROR -> Boolean type required ");
 
 	// The following are compiler errors. Repair them.
 	static final GCLError ILLEGAL_LOAD = new Value(91,
@@ -1862,7 +1886,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			codegen.gen2Address(TRNG, reg,
 					((RangeType) expression.type()).getLowBoundOffset());
 		}
-		terminateArray(expression);
 	}
 
 	/***************************************************************************
@@ -2042,11 +2065,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		codegen.gen2Address(IC, resultreg, rightLocation);
 		codegen.gen1Address(op.opcode(), PCREL, UNUSED, 4);
 		codegen.gen2Address(LD, booleanreg, IMMED, UNUSED, 0);
-		if (left.type() instanceof ArrayType)
-			terminateArray(left);
-		if (right.type() instanceof ArrayType)
-			terminateArray(right);
-
 		codegen.freeTemp(DREG, resultreg);
 		codegen.freeTemp(rightLocation);
 		return new VariableExpression(BOOLEAN_TYPE, booleanreg, DIRECT); // temporary
@@ -2125,17 +2143,18 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 * @param entry
 	 *            GCRecord with the associated labels. This is updated
 	 **************************************************************************/
-	void ifTest(final Expression expression, final GCRecord entry) {
-		if (expression.type() instanceof ArrayType) {
-			Codegen.Location arrayLocation = codegen.buildOperands(expression);
-			codegen.freeTemp(arrayLocation);
+	void ifTest(final Expression expression, final GCRecord entry, final GCLErrorStream err) {
+		if(expression.type().isCompatible(BOOLEAN_TYPE))
+		{
+			int resultreg = codegen.loadRegister(expression);
+			int nextElse = codegen.getLabel();
+			entry.nextLabel(nextElse);
+			codegen.gen2Address(IC, resultreg, IMMED, UNUSED, 1);
+			codegen.genJumpLabel(JNE, 'J', nextElse);
+			codegen.freeTemp(DREG, resultreg);
+		} else {
+			err.semanticError(GCLError.BOOLEAN_REQUIRED, "if statements must be booleans");
 		}
-		int resultreg = codegen.loadRegister(expression);
-		int nextElse = codegen.getLabel();
-		entry.nextLabel(nextElse);
-		codegen.gen2Address(IC, resultreg, IMMED, UNUSED, 1);
-		codegen.genJumpLabel(JNE, 'J', nextElse);
-		codegen.freeTemp(DREG, resultreg);
 	}
 
 	/***************************************************************************
@@ -2149,12 +2168,11 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		codegen.genLabel('J', entry.nextLabel());
 	}
 
-	void terminateArray(final Expression exp) {
+	/*void terminateArray(final Expression exp) {
 
 		if (exp.type() instanceof ArrayType) {
 			if (((RangeType) ((ArrayType) exp.type()).getSubscriptType()
 					.expectType(err)).baseType() instanceof ErrorType) {
-				System.out.println("test");
 				return;
 			}
 			terminateArray(new VariableExpression(
@@ -2162,7 +2180,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 					((VariableExpression) exp).offset() - 1, INDIRECT));
 			codegen.freeTemp(DREG, ((VariableExpression) exp).offset());
 		}
-	}
+	}*/
 
 	/***************************************************************************
 	 * Create a tuple from a list of expressions Both the type and the value
@@ -2334,10 +2352,15 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 								Codegen.FRAME_POINTER, +2));
 				// KEITH - make that 8 more meaningful (initial size of procs)
 				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED,
-						Codegen.UNUSED, 8);
+						Codegen.UNUSED, procedure.frameSize());
 			}
 		}
 	}
+	
+	Expression resolveThis(){
+		return new VariableExpression(currentProcedure.getParentTuple(), currentProcedure.getLevel(), +6, Codegen.INDIRECT);
+		//return currentProcedure.thisTupleExpression();
+		}
 
 	void doReturn() {
 		if (currentLevel().isGlobal()) {
@@ -2357,11 +2380,23 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		// IM R7, #32
 		// IA R6, R7
 		// #freetemp on R7
-		/*
-		 * if (!(subscript.type() instanceof )){
-		 * err.semanticError(GCLError.RANGE_REQUIRED); return new
-		 * ErrorExpression("RangeType Required"); }
-		 */
+		if((array.type() instanceof ErrorType) || (subscript.type() instanceof ErrorType))
+		{
+			return new ErrorExpression("Either the array or the subscript is an error");
+		}
+		
+		if (!(array.type() instanceof ArrayType)){
+			 err.semanticError(GCLError.TYPE_REQUIRED); 
+			 return new ErrorExpression("ArrayType Required"); }
+		 
+		if (!(((ArrayType) array.type()).getSubscriptType().isCompatible(subscript.type()))){
+			err.semanticError(GCLError.TYPE_REQUIRED, "Expected: " + ((ArrayType) array.type()).getSubscriptType());
+			return new ErrorExpression("Incompatible Types");
+		}
+		
+		ArrayType arrayType = ((ArrayType) array.type());
+		RangeType subscriptType = (RangeType) arrayType.getSubscriptType();
+
 		int arrayReg = codegen.getTemp(2);
 		int subscriptReg = arrayReg + 1;
 		Codegen.Location arrayLocation = codegen.buildOperands(array);
@@ -2369,26 +2404,14 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 
 		// if (!(subscript instanceof ConstantExpression))
 		// codegen.freeTemp(subscriptLocation);
-
 		codegen.gen2Address(LDA, arrayReg, arrayLocation);
 		codegen.gen2Address(LD, subscriptReg, subscriptLocation);
-		codegen.gen2Address(TRNG, subscriptReg, ((RangeType) ((ArrayType) array
-				.type()).getSubscriptType()).getLowBoundOffset());
-		codegen.gen2Address(IS, subscriptReg, IMMED, UNUSED,
-				((RangeType) ((ArrayType) array.type()).getSubscriptType())
-						.getLowBound());
-		codegen.gen2Address(
-				IM,
-				subscriptReg,
-				IMMED,
-				UNUSED,
-				((TypeDescriptor) ((ArrayType) array.type()).getComponentType())
-						.size());
+		codegen.gen2Address(TRNG, subscriptReg, subscriptType.getLowBoundOffset());
+		codegen.gen2Address(IS, subscriptReg, IMMED, UNUSED, subscriptType.getLowBound());
+		codegen.gen2Address(IM,subscriptReg,IMMED,UNUSED,((TypeDescriptor) ((ArrayType) array.type()).getComponentType()).size());
 		codegen.gen2Address(IA, arrayReg, DREG, subscriptReg, UNUSED);
 		codegen.freeTemp(DREG, subscriptReg);
-		return new VariableExpression(
-				((ArrayType) array.type()).getComponentType(), arrayReg,
-				INDIRECT);
+		return new VariableExpression(((ArrayType) array.type()).getComponentType(), arrayReg, INDIRECT);
 	}
 
 	public Expression extractField(Expression exp, Identifier id) {

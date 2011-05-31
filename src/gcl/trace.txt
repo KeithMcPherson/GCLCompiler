@@ -21,7 +21,7 @@ first:   identifier "begin" "constant" "integer" "Boolean" "typedefinition"
 follow:  "." ";" 
 
 statementPart
-first:   identifier "return" "skip" "read" "write" "if" "do" "forall" 
+first:   identifier "return" "skip" "read" "write" "if" "do" "forall" "this" 
 follow:  "end" "fi" "od" "llarof" "[]" 
 
 definition
@@ -30,7 +30,7 @@ first:   identifier "constant" "integer" "Boolean" "typedefinition" "tuple"
 follow:  ";" 
 
 statement
-first:   identifier "return" "skip" "read" "write" "if" "do" "forall" 
+first:   identifier "return" "skip" "read" "write" "if" "do" "forall" "this" 
 follow:  ";" 
 
 variableDefinition
@@ -54,11 +54,11 @@ first:   identifier "integer" "Boolean" "tuple"
 follow:  identifier 
 
 constant
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  ";" "]" ".." 
 
 expression
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  ";" "," "]" ")" ".." "->" 
 
 typeSymbol
@@ -115,11 +115,11 @@ first:   "("
 follow:  ";" 
 
 assignOrCallStatement
-first:   identifier 
+first:   identifier "this" 
 follow:  ";" 
 
 variableAccessEtc
-first:   identifier 
+first:   identifier "this" 
 follow:  ";" "," "=" "]" ")" "!" ".." ":=" "->" "|" "&" "+" "-" "#" "<" "<=" 
          ">" ">=" "*" "/" "\\" 
 
@@ -157,48 +157,49 @@ follow:  ";"
 
 writeItem
 first:   identifier numeral stringConstant "[" "(" "+" "-" "~" "true" "false" 
+         "this" 
 follow:  ";" "," 
 
 guardedCommandList
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  "fi" "od" 
 
 guardedCommand
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  "fi" "od" "[]" 
 
 andExpr
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  ";" "," "]" ")" ".." "->" "|" 
 
 relationalExpr
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  ";" "," "]" ")" ".." "->" "|" "&" 
 
 simpleExpr
-first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+first:   identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 follow:  ";" "," "=" "]" ")" ".." "->" "|" "&" "#" "<" "<=" ">" ">=" 
 
 relationalOperator
 first:   "=" "#" "<" "<=" ">" ">=" 
-follow:  identifier numeral "[" "(" "+" "-" "~" "true" "false" 
+follow:  identifier numeral "[" "(" "+" "-" "~" "true" "false" "this" 
 
 term
-first:   identifier numeral "[" "(" "~" "true" "false" 
+first:   identifier numeral "[" "(" "~" "true" "false" "this" 
 follow:  ";" "," "=" "]" ")" ".." "->" "|" "&" "+" "-" "#" "<" "<=" ">" ">=" 
 
 addOperator
 first:   "+" "-" 
-follow:  identifier numeral "[" "(" "~" "true" "false" 
+follow:  identifier numeral "[" "(" "~" "true" "false" "this" 
 
 factor
-first:   identifier numeral "[" "(" "~" "true" "false" 
+first:   identifier numeral "[" "(" "~" "true" "false" "this" 
 follow:  ";" "," "=" "]" ")" ".." "->" "|" "&" "+" "-" "#" "<" "<=" ">" ">=" 
          "*" "/" "\\" 
 
 multiplyOperator
 first:   "*" "/" "\\" 
-follow:  identifier numeral "[" "(" "~" "true" "false" 
+follow:  identifier numeral "[" "(" "~" "true" "false" "this" 
 
 booleanConstant
 first:   "true" "false" 
@@ -234,12 +235,12 @@ Cross reference list:
   "="            91  339
   ">"           343
   ">="          344
-  "@"           183  374
+  "@"           183  375
   "Boolean"     106
-  "["           120  197  198  203  321  374
+  "["           120  197  198  203  321  375
   "[]"          263
   "\\"          355
-  "]"           120  197  198  205  326  374
+  "]"           120  197  198  205  326  375
   "array"       197
   "begin"        59
   "constant"     90
@@ -260,6 +261,7 @@ Cross reference list:
   "reference"   157
   "return"      191
   "skip"        217
+  "this"        369
   "true"        334
   "tuple"       120
   "typedefinit  115
@@ -282,7 +284,7 @@ Cross reference list:
   definitionPa  -61   54   59
   doStatement  -250  213
   emptyStateme -217  212
-  expression   -270   96  170  171  232  241  242  267  317  321  323  374
+  expression   -270   96  170  171  232  241  242  267  317  321  323  375
   factor       -311  308  308  328
   fieldsAndPro -130  120
   forStatement -255  213
@@ -290,7 +292,7 @@ Cross reference list:
   guardedComma -265  263  263
   guardedComma -261  247  252
   identifier     54   77   81   90  115  132  138  144  162  182  183  359  360
-                374
+                375
   ifStatement  -245  213
   justProcs    -124  120  139
   module        -53   49   50
@@ -311,7 +313,7 @@ Cross reference list:
   statement    -210   65   65
   statementPar  -63   59  258  268
   stringConsta  233
-  subsAndCompo -371  369
+  subsAndCompo -372  370
   term         -305  297  298  301
   tupleType    -118  100
   type          -98   77  115
@@ -324,9 +326,9 @@ Cross reference list:
 
 
 
-58 terminals
-115 symbols
-370 nodes
+59 terminals
+116 symbols
+373 nodes
 11 sets
 Symbol Table:
 ------------
@@ -389,14 +391,15 @@ Symbol Table:
  54 "*"            t    false               353 fixedToken
  55 "/"            t    false               354 fixedToken
  56 "\\"           t    false               355 fixedToken
- 57 ???            t    false                 0 fixedToken
- 58 option1        pr   false                27 fixedToken
- 59 option3        pr   false                29 fixedToken
- 60 option5        pr   false                31 fixedToken
- 61 option6        pr   false                32 fixedToken
- 62 option7        pr   false                33 fixedToken
- 63 option9        pr   false                35 fixedToken
- 64 option10       pr   false                36 fixedToken
+ 57 "this"         t    false               369 litToken
+ 58 ???            t    false                 0 fixedToken
+ 59 option1        pr   false                27 fixedToken
+ 60 option3        pr   false                29 fixedToken
+ 61 option5        pr   false                31 fixedToken
+ 62 option6        pr   false                32 fixedToken
+ 63 option7        pr   false                33 fixedToken
+ 64 option9        pr   false                35 fixedToken
+ 65 option10       pr   false                36 fixedToken
   0 gcl            nt   false     1 false    46 fixedToken
   1 module         nt   true      9 false    53 fixedToken
   2 definitionPa   nt   true     27 true     61 fixedToken
@@ -415,7 +418,7 @@ Symbol Table:
  15 arrayType      nt   true    160 false   194 fixedToken
  16 rangeType      nt   true    172 false   201 fixedToken
  17 tupleType      nt   true     81 false   118 fixedToken
- 18 qualifiedIde   nt   true    351 false   357 fixedToken
+ 18 qualifiedIde   nt   true    350 false   357 fixedToken
  19 justProcs      nt   true     89 false   124 fixedToken
  20 fieldsAndPro   nt   true     95 false   130 fixedToken
  21 procedureDec   nt   true    110 false   142 fixedToken
@@ -425,7 +428,7 @@ Symbol Table:
  25 callStatemen   nt   true    128 false   160 fixedToken
  26 argumentList   nt   true    133 false   166 fixedToken
  27 assignOrCall   nt   true    145 false   175 fixedToken
- 28 variableAcce   nt   true    357 false   365 fixedToken
+ 28 variableAcce   nt   true    360 false   365 fixedToken
  29 assignStatem   nt   true    215 false   235 fixedToken
  30 returnStatem   nt   false   158 false   189 fixedToken
  31 emptyStateme   nt   false   195 false   217 fixedToken
@@ -440,13 +443,13 @@ Symbol Table:
  40 andExpr        nt   true    258 false   278 fixedToken
  41 relationalEx   nt   true    263 false   286 fixedToken
  42 simpleExpr     nt   true    274 false   294 fixedToken
- 43 relationalOp   nt   false   322 false   337 fixedToken
+ 43 relationalOp   nt   false   321 false   337 fixedToken
  44 term           nt   true    280 false   305 fixedToken
- 45 addOperator    nt   false   340 false   346 fixedToken
- 46 factor         nt   true    289 false   311 fixedToken
- 47 multiplyOper   nt   false   346 false   351 fixedToken
- 48 booleanConst   nt   false   316 false   332 fixedToken
- 49 subsAndCompo   nt   true    369 true    371 fixedToken
+ 45 addOperator    nt   false   339 false   346 fixedToken
+ 46 factor         nt   true    288 false   311 fixedToken
+ 47 multiplyOper   nt   false   345 false   351 fixedToken
+ 48 booleanConst   nt   false   315 false   332 fixedToken
+ 49 subsAndCompo   nt   true    372 true    372 fixedToken
 
 Literal Tokens:
 --------------

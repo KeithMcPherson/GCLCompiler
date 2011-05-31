@@ -274,8 +274,8 @@ class StartStates {
 public class Scanner {
 	static final char EOL = '\n';
 	static final int  eofSym = 0;
-	static final int maxT = 57;
-	static final int noSym = 57;
+	static final int maxT = 58;
+	static final int noSym = 58;
 
 
 	private PrintWriter out;
@@ -354,6 +354,7 @@ public class Scanner {
 		literals.put("llarof", new Integer(40));
 		literals.put("true", new Integer(47));
 		literals.put("false", new Integer(48));
+		literals.put("this", new Integer(57));
 
 	}
 	
@@ -500,25 +501,25 @@ public class Scanner {
 					if (ch == '+' || ch == '-') {AddCh(); state = 7; break;}
 					else {t.kind = noSym; break loop;}
 				case 7:
-					{t.kind = 58; break loop;}
+					{t.kind = 59; break loop;}
 				case 8:
 					if (ch == '+' || ch == '-') {AddCh(); state = 9; break;}
 					else {t.kind = noSym; break loop;}
 				case 9:
-					{t.kind = 59; break loop;}
-				case 10:
 					{t.kind = 60; break loop;}
-				case 11:
+				case 10:
 					{t.kind = 61; break loop;}
+				case 11:
+					{t.kind = 62; break loop;}
 				case 12:
 					if (ch == '+' || ch == '-') {AddCh(); state = 13; break;}
 					else {t.kind = noSym; break loop;}
 				case 13:
-					{t.kind = 62; break loop;}
-				case 14:
 					{t.kind = 63; break loop;}
-				case 15:
+				case 14:
 					{t.kind = 64; break loop;}
+				case 15:
+					{t.kind = 65; break loop;}
 				case 16:
 					if (ch == 'C' || ch == 'c') {AddCh(); state = 6; break;}
 					else if (ch == 'O' || ch == 'o') {AddCh(); state = 8; break;}

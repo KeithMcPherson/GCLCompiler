@@ -264,7 +264,7 @@ guardedCommandList<SymbolTable scope, GCRecord ifRecord>
 /*----------------------------------------------------------*/
 guardedCommand<SymbolTable scope, GCRecord  ifRecord >  (.  Expression expr; .)
 =
-	expression<^expr, scope> (. semantic.ifTest(expr, ifRecord); .)  "->"
+	expression<^expr, scope> (. semantic.ifTest(expr, ifRecord, err); .)  "->"
 	statementPart<scope>  (. semantic.elseIf(ifRecord); .).
 /*----------------------------------------------------------*/
 expression<^Expression left, SymbolTable scope>
@@ -310,7 +310,7 @@ term<^Expression left, SymbolTable scope>
 /*----------------------------------------------------------*/
 factor<^Expression result, SymbolTable scope>  (. result = null; .)
 =
-	   variableAccessEtc<^result, scope> (. semantic.terminateArray(result); .)
+	   variableAccessEtc<^result, scope> 
 	|  numeral
 	  (. result = new ConstantExpression (integerType, Integer.parseInt(currentToken().spelling()));
 	  .)
@@ -363,9 +363,10 @@ identifier (. Identifier id = new Identifier(currentToken().spelling()); result 
 			] .
 /*----------------------------------------------------------*/
 variableAccessEtc<^Expression result, SymbolTable scope>  
-      (. SemanticItem workValue; .)   
+      (. SemanticItem workValue; result = null; .)   
 =
-qualifiedIdentifier<^workValue, scope> (. result = workValue.expectExpression(err); .) 
+((qualifiedIdentifier<^workValue, scope> (. result = workValue.expectExpression(err); .)) 
+| ("this" (.result = semantic.resolveThis();.)))
 subsAndCompons<^result, result, scope>.
 
 subsAndCompons<^Expression result, Expression value, SymbolTable scope>

@@ -4,4 +4,59 @@
      LD      R12, R13
      LD      R11, R13
      JMP     M1
+ LABEL P2
+     STO     R12, +0(R13)
+     LDA     R12, +0(R13)
+     STO     R11, +4(R12)
+     LD      R11, +2(R12)
+     IS      R13, #0
+     PUSH    R13, 2047
+     LD      R0, +8(R12)
+     IA      R0, #8
+     LD      R1, +0(R14)
+     STO     R1, *+0(R12)
+     LD      R1, +8(R12)
+     IA      R1, #8
+     LD      R2, +2(R14)
+     STO     R2, *+1(R12)
+ LABEL U2
+     POP     R13, 2047
+     IA      R13, #0
+     LD      R11, +4(R12)
+     LD      R12, +0(R12)
+     JMP     *R11
+ LABEL M1
+     LD      R2, +4(R14)
+     STO     R2, +4(R15)
+     LD      R2, +6(R14)
+     STO     R2, +6(R15)
+     IS      R13, #4
+     LDA     R2, +4(R15)
+     LD      R3, #4
+     BKT     R2, *R13
+     LD      R2, R13
+     LD      R3, #4
+     BKT     R2, +0(R15)
+     IA      R13, #4
+     LDA     R2, +4(R15)
+     IS      R13, #8
+     STO     R2, +6(R13)
+     STO     R12, +2(R13)
+     LDA     R2, +0(R15)
+     STO     R2, +8(R13)
+     JSR     R11, P2
+     LD      R11, +2(R12)
+     IA      R13, #10
+     WRI     +0(R15)
+     WRST    +8(R14)
+     WRI     +2(R15)
+     WRNL    
      HALT    
+ LABEL C1
+     INT      1
+     INT      1
+     INT      0
+     INT      0
+     STRING   " "
+ LABEL V1
+     SKIP     8

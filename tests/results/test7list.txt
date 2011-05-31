@@ -1,4 +1,4 @@
-Compiled on: Sat May 28 16:28:11 EDT 2011
+Compiled on: Tue May 31 11:22:34 EDT 2011
 module test7 { strings}
 $        LDA     R15, V1
 $        LDA     R14, C1
