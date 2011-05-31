@@ -1217,7 +1217,7 @@ class Procedure extends SemanticItem {
 		codegen.gen2Address(Codegen.LD, Codegen.STATIC_POINTER,
 				new Codegen.Location(Codegen.INDXD, Codegen.FRAME_POINTER, +2));
 		codegen.gen2Address(Codegen.IS, Codegen.STACK_POINTER, Codegen.IMMED,
-				Codegen.UNUSED, this.localDataSize - localDataSize);
+				Codegen.UNUSED, this.localDataSize - DEFAULT_FRAME_SIZE);
 		codegen.genPushPopToStack(Codegen.PUSH);
 
 	}
@@ -2314,10 +2314,9 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			if (procedure != null) {
 
 				int thisRegister = codegen.loadAddress(tupleExpression);
-				// KEITH - make that number more meaningful (initial size of
-				// proc)
+				// KEITH - number here may be wrong.
 				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED,
-						Codegen.UNUSED, 8);
+						Codegen.UNUSED, procedure.frameSize());
 				codegen.gen2Address(STO, thisRegister, new Codegen.Location(
 						Codegen.INDXD, Codegen.STACK_POINTER, +6));
 				codegen.freeTemp(DREG, thisRegister);
@@ -2406,7 +2405,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		codegen.gen2Address(IM,subscriptReg,IMMED,UNUSED,((TypeDescriptor) ((ArrayType) array.type()).getComponentType()).size());
 		codegen.gen2Address(IA, arrayReg, DREG, subscriptReg, UNUSED);
 		codegen.freeTemp(DREG, subscriptReg);
-		return new VariableExpression(((ArrayType) array.type()).getComponentType(), arrayReg, INDIRECT);
+		return new VariableExpression(arrayType.getComponentType(), CPU_LEVEL, arrayReg, INDIRECT);
 	}
 
 	public Expression extractField(Expression exp, Identifier id) {
@@ -2420,28 +2419,24 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			err.semanticError(GCLError.FIELD_NOT_FOUND);
 			return new ErrorExpression("Tuple field not found");
 		}
-
+		
+		int inset = ((TupleType) exp.type()).getInset(id);
+		TypeDescriptor type = ((TupleType) exp.type()).getType(id);
+		
 		if (exp.semanticLevel() > 0 && ((VariableExpression) exp).isDirect())
-			return new VariableExpression(
-					(TypeDescriptor) ((TupleType) exp.type()).getType(id),
-					exp.semanticLevel(), ((VariableExpression) exp).offset()
-							+ ((TupleType) exp.type()).getInset(id), DIRECT);
-		if (exp.semanticLevel() > 0 && !((VariableExpression) exp).isDirect()) {
-			int reg = codegen.loadPointer(exp);
-			codegen.gen2Address(IA, reg, IMMED, UNUSED,
-					((VariableExpression) exp).offset());
-			return new VariableExpression(
-					(TypeDescriptor) ((TupleType) exp.type()).getType(id),
-					exp.semanticLevel(), reg, INDIRECT);
-		}
+			return new VariableExpression(type, GLOBAL_LEVEL, ((VariableExpression) exp).offset() + inset, DIRECT);
 		if (exp.semanticLevel() == 0 && !((VariableExpression) exp).isDirect()) {
 			int reg = codegen.loadPointer(exp);
-			codegen.gen2Address(IA, reg, IMMED, UNUSED,
-					((VariableExpression) exp).offset());
-			return new VariableExpression(
-					(TypeDescriptor) ((TupleType) exp.type()).getType(id),
-					exp.semanticLevel(), reg, INDIRECT);
+			codegen.gen2Address(IA, reg, IMMED, UNUSED, inset);
+			return new VariableExpression(type, exp.semanticLevel(), reg, INDIRECT);
 		}
+		
+		if (exp.semanticLevel() > 0 && !((VariableExpression) exp).isDirect()) {
+			int reg = codegen.loadPointer(exp);
+			codegen.gen2Address(IA, reg, IMMED, UNUSED, inset);
+			return new VariableExpression(type, CPU_LEVEL, reg, INDIRECT);
+		}
+		
 		err.semanticError(GCLError.INVALID_CASE);
 		return new ErrorExpression("Invalid case for this tuple");
 	}

@@ -1,4 +1,4 @@
-Compiled on: Tue May 31 11:38:01 EDT 2011
+Compiled on: Tue May 31 13:03:40 EDT 2011
 module test11_6 { bounds check twoDimensions
 $        LDA     R15, V1
 $        LDA     R14, C1

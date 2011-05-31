@@ -151,16 +151,16 @@ java -cp . gcl.GCLCompiler ..\tests\test18_2 ..\tests\results\test18_2list.txt
 java -cp . gcl.GCLCompiler ..\tests\test18_3 ..\tests\results\test18_3list.txt 
 ..\sam3-pc.exe
 ..\macc3-pc.exe  >..\tests\results\test18_3.result
-::java -cp . gcl.GCLCompiler ..\tests\test19 ..\tests\results\test19list.txt 
-::..\sam3-pc.exe
-::..\macc3-pc.exe  >..\tests\results\test19.result
-::java -cp . gcl.GCLCompiler ..\tests\test19_1 ..\tests\results\test19_1list.txt 
-::..\sam3-pc.exe
-::java -cp . gcl.GCLCompiler ..\tests\test19_2 ..\tests\results\test19_2list.txt 
-::java -cp . gcl.GCLCompiler ..\tests\test20 ..\tests\results\test20list.txt 
-::java -cp . gcl.GCLCompiler ..\tests\test20_1 ..\tests\results\test20_1list.txt 
-::..\sam3-pc.exe
-::..\macc3-pc.exe  >..\tests\results\test20_1.result
-::java -cp . gcl.GCLCompiler ..\tests\test20_2 ..\tests\results\test20_2list.txt 
-::..\sam3-pc.exe
+java -cp . gcl.GCLCompiler ..\tests\test19 ..\tests\results\test19list.txt 
+..\sam3-pc.exe
+..\macc3-pc.exe  >..\tests\results\test19.result
+java -cp . gcl.GCLCompiler ..\tests\test19_1 ..\tests\results\test19_1list.txt 
+..\sam3-pc.exe
+java -cp . gcl.GCLCompiler ..\tests\test19_2 ..\tests\results\test19_2list.txt 
+java -cp . gcl.GCLCompiler ..\tests\test20 ..\tests\results\test20list.txt 
+java -cp . gcl.GCLCompiler ..\tests\test20_1 ..\tests\results\test20_1list.txt 
+..\sam3-pc.exe
+..\macc3-pc.exe  >..\tests\results\test20_1.result
+java -cp . gcl.GCLCompiler ..\tests\test20_2 ..\tests\results\test20_2list.txt 
+..\sam3-pc.exe
 pause
