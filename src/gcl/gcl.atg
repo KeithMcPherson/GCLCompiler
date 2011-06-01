@@ -142,7 +142,7 @@ moreFieldsAndProcs<^carrier, carrier, scope> | [justProcs<^carrier, carrier, sco
 procedureDeclaration<^Procedure proc, SymbolTable scope> (. Identifier id;.)
 =
 "procedure" identifier (. id = new Identifier(currentToken().spelling());  
-                          proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); .) 
+                          proc = semantic.declareProcedure(scope, id); if (proc!= null) {scope = proc.getScope();} .) 
 paramPart<scope> (. semantic.endDeclareProcedure(); .).
 	
 /*----------------------------------------------------------*/    
@@ -182,7 +182,7 @@ procedureDefinition<SymbolTable scope> (. Identifier tupleID; Identifier procID;
 "procedure" identifier (. tupleID = new Identifier(currentToken().spelling()); .) 
 "@" identifier (. procID = new Identifier(currentToken().spelling()); 
                   proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); 
-                  scope = proc.getScope();
+                  if(proc!=null) {scope = proc.getScope();}
                   .) block<scope> (. semantic.endDefineProcedure(proc); .).
 
  /*----------------------------------------------------------*/    

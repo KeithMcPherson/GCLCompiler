@@ -154,12 +154,11 @@ public class Codegen implements Mnemonic, CodegenConstants {
 				base = CodegenConstants.STATIC_POINTER;
 			}else{
 				//KEITH - this case is WRONG.  Fix it
-				System.out.println("If you see this, s*** bricks");
 				int pointerWalker = getTemp(1);
 				gen2Address(LD, pointerWalker, new Location(INDXD, STATIC_POINTER, 2));
 				for(int i = 0; i < (diff-2); i++){
 					gen2Address(LD, pointerWalker, new Location(INDXD, pointerWalker, 2));
-			}
+				}
 				base = pointerWalker;
 			}
 				mode = isDirect ? INDXD : IINDXD;

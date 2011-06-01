@@ -268,7 +268,7 @@ public class Parser {
 		Expect(1);
 		procID = new Identifier(currentToken().spelling()); 
 		proc = semantic.defineProcedure(procID, scope.lookupIdentifier(tupleID).semanticRecord()); 
-		scope = proc.getScope();
+		if(proc!=null) {scope = proc.getScope();}
 		
 		block(scope);
 		semantic.endDefineProcedure(proc); 
@@ -419,7 +419,7 @@ public class Parser {
 		Expect(19);
 		Expect(1);
 		id = new Identifier(currentToken().spelling());  
-		proc = semantic.declareProcedure(scope, id); scope = proc.getScope(); 
+		proc = semantic.declareProcedure(scope, id); if (proc!= null) {scope = proc.getScope();} 
 		paramPart(scope);
 		semantic.endDeclareProcedure(); 
 		return proc;

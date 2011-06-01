@@ -1,4 +1,4 @@
-Compiled on: Tue May 31 13:03:40 EDT 2011
+Compiled on: Wed Jun 01 10:19:39 EDT 2011
 module test11_3 { semantic arrays
 $        LDA     R15, V1
 $        LDA     R14, C1

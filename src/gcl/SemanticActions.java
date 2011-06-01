@@ -1036,6 +1036,10 @@ class TupleType extends TypeDescriptor { // mutable
 	}
 
 	public Procedure getProcedure(final Identifier procName) {
+		SemanticItem proc = methods.lookupIdentifier(procName).semanticRecord();
+		if (proc instanceof SemanticError) {
+			return null;
+		}
 		return (Procedure) methods.lookupIdentifier(procName).semanticRecord();
 	}
 
@@ -1165,7 +1169,6 @@ class Procedure extends SemanticItem {
 		this.scope = scope.openScope(true);
 		defined = false;
 		label = codegen.getLabel();
-		// KEITH - these level settings are probably wrong.
 		if (parentProcedure == null) {
 			level = CodegenConstants.GLOBAL_LEVEL + 1;
 		} else {
@@ -1237,14 +1240,12 @@ class Procedure extends SemanticItem {
 
 	public VariableExpression reserveLocalAddress(TypeDescriptor type) {
 		this.localDataSize += type.size();
-		// KEITH - Make the following more meaningful
 		int offset = -1 * (this.localDataSize - DEFAULT_FRAME_SIZE);
 		return new VariableExpression(type, this.semanticLevel(), offset,
 				Codegen.DIRECT);
 	}
 
 	public Expression reserveParameterAddress(TypeDescriptor type, ParameterKind paramKind, GCLErrorStream err) {
-		//KEITH - make the following more meaningful (initial frame size)
 		int offset = frameSize;
 		Loader paramLoader = null;
 		boolean direct = true;
@@ -1262,7 +1263,6 @@ class Procedure extends SemanticItem {
 			GCLCompiler.err.semanticError(GCLError.UNHANDLED_CASE, "A parameter-type has incorrectly been handled.");
 			return new ErrorExpression("Compiler error dealing with parameter types.");
 		}*/
-		//KEITH - above probably not needed - below probably causes issues, combined with the other size effecting methods
 		frameSize += paramLoader.size();
 		params.add(paramLoader);
 		return new VariableExpression(type, this.level, offset, direct);
@@ -1453,6 +1453,7 @@ abstract class GCLError {
 			"ERROR -> Incompatible types in a procedure's parameters ");
 	static final GCLError BOOLEAN_REQUIRED = new Value(17,
 			"ERROR -> Boolean type required ");
+
 
 	// The following are compiler errors. Repair them.
 	static final GCLError ILLEGAL_LOAD = new Value(91,
@@ -1917,8 +1918,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		if (message instanceof GeneralError) {
 			return;
 		}
-		// KEITH - This probably should be commented out
-		// codegen.reserveGlobalAddress(message.size());
 		Codegen.Location stringLocation = codegen.buildOperands(message);
 		codegen.gen1Address(WRST, stringLocation);
 	}
@@ -2243,7 +2242,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 
 	public Procedure declareProcedure(SymbolTable scope, Identifier id) {
-		// KEITH - again with the levels
 		currentLevel().increment();
 		SymbolTable newScope = scope.openScope(true);
 		currentProcedure = new Procedure(currentProcedure, id, newScope,
@@ -2270,9 +2268,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		} else {
 			err.semanticError(GCLError.TYPE_REQUIRED, "TupleType required");
 		}
-
+		
 		proc = procsTuple.getProcedure(procName);
-
 		if (proc == null) {
 			err.semanticError(GCLError.PROCEDURE_REQUIRED);
 			return null;
@@ -2283,7 +2280,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			return null;
 		}
 
-		// KEITH - make sure you know where to mess with the level
+
 		currentLevel().increment();
 		currentProcedure = proc;
 
@@ -2291,6 +2288,8 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 
 	public void endDefineProcedure(Procedure proc) {
+		if (proc == null)
+			return;
 		proc.genUnlink(codegen);
 		proc.getScope().closeScope();
 		currentProcedure = proc.getParentProcedure();
@@ -2314,7 +2313,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			if (procedure != null) {
 
 				int thisRegister = codegen.loadAddress(tupleExpression);
-				// KEITH - number here may be wrong.
 				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED,
 						Codegen.UNUSED, procedure.frameSize());
 				codegen.gen2Address(STO, thisRegister, new Codegen.Location(
@@ -2349,7 +2347,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 				codegen.gen2Address(LD, Codegen.STATIC_POINTER,
 						new Codegen.Location(Codegen.INDXD,
 								Codegen.FRAME_POINTER, +2));
-				// KEITH - make that 8 more meaningful (initial size of procs)
 				codegen.gen2Address(IA, Codegen.STACK_POINTER, Codegen.IMMED,
 						Codegen.UNUSED, procedure.frameSize());
 			}
@@ -2459,7 +2456,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			final Identifier id, final ParameterKind procParam) {
 		complainIfDefinedHere(scope, id);
 		complainIfInvalidName(id);
-		//KEITH - changed below from variableExpression to Expression. Might be good or bad
 		Expression expr = null;
 		if (currentLevel().isGlobal()) { // Global variable
 			int addressOffset = codegen.reserveGlobalAddress(type.size());
