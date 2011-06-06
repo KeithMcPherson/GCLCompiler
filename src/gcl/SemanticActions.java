@@ -1450,9 +1450,15 @@ abstract class GCLError {
 	static final GCLError INVALID_RETURN = new Value(15,
 			"ERROR -> Procedure Required. ");
 	static final GCLError INCOMPATIBLE_TYPE = new Value(16,
-			"ERROR -> Incompatible types in a procedure's parameters ");
+			"ERROR -> Incompatible types ");
 	static final GCLError BOOLEAN_REQUIRED = new Value(17,
 			"ERROR -> Boolean type required ");
+	static final GCLError INVALID_RANGE = new Value(18,
+	"ERROR -> Invalid range for the RangeType ");
+	static final GCLError CONSTANT_EXPRESSION = new Value(19,
+	"ERROR -> Cannot assign to constant expressions ");
+	static final GCLError PROCEDURE_NOT_DEFINED = new Value(20,
+	"ERROR -> This procedure was declared but never defined ");
 
 
 	// The following are compiler errors. Repair them.
@@ -1819,6 +1825,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	void parallelAssign(final AssignRecord expressions) {
 		int i;
 		// part 1. checks and optimizations
+		// Shouldn't put checks here otherwise it wouldn't recover from errors
 		if (!expressions.verify(err)) {
 			return;
 		}
@@ -1837,7 +1844,18 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 			Expression rightExpression = expressions.right(i);
 			Expression leftExpression = expressions.left(i);
 
+			//Error checks
+			if (!(leftExpression.type().isCompatible(rightExpression.type()))) {
+				err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+			}
+			
+			if (leftExpression instanceof ConstantExpression){
+				err.semanticError(GCLError.CONSTANT_EXPRESSION);
+			}
+				
 			if (leftExpression.type() instanceof RangeType) {
+			
+			
 				if (rightExpression instanceof ConstantExpression)
 					if (((RangeType) leftExpression.type()).getLowBound() <= ((ConstantExpression) rightExpression)
 							.value()
@@ -1854,12 +1872,12 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 							.type()).getLowBoundOffset());
 				}
 			}
-
+	
 			if (rightExpression.needsToBePushed()) {
 				popExpression(leftExpression);
 			} else { // the item wasn't pushed, so normal copy
 				simpleMove(rightExpression, leftExpression);
-
+	
 			}
 		}
 	}
@@ -1942,6 +1960,11 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 **************************************************************************/
 	Expression addExpression(final Expression left, final AddOperator op,
 			final Expression right) {
+		//Error Check
+		if (!(left.type().isCompatible(right.type()))) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
+		
 		if (left instanceof ConstantExpression
 				&& right instanceof ConstantExpression)
 			return op.foldConstant((ConstantExpression) left,
@@ -1961,6 +1984,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 * @return result expression -integer (in register)
 	 **************************************************************************/
 	Expression negateExpression(final Expression expression) {
+		//Error Check
+		if (!(expression.type() instanceof IntegerType)) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
 		if (expression instanceof ConstantExpression)
 			return negateConstant((ConstantExpression) expression);
 		Codegen.Location expressionLocation = codegen.buildOperands(expression);
@@ -1971,6 +1998,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 
 	Expression booleanNegate(final Expression expression) {
+		//Error Check
+		if (!(expression.type() instanceof BooleanType)) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
 		Codegen.Location expressionLocation = codegen.buildOperands(expression);
 		int bnreg = codegen.getTemp(1);
 		codegen.gen2Address(LD, bnreg, IMMED, UNUSED, 1);
@@ -1984,6 +2015,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 
 	Expression modulusExpression(final Expression left, final Expression right) {
+		//Error Check
+		if (!(left.type().isCompatible(right.type()))) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
 		int reg1 = codegen.loadRegister(left);
 		Codegen.Location rightLocation = codegen.buildOperands(right);
 		codegen.buildOperands(left);
@@ -2011,6 +2046,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 **************************************************************************/
 	Expression multiplyExpression(final Expression left,
 			final MultiplyOperator op, final Expression right) {
+		//Error Check
+		if (!(left.type().isCompatible(right.type()))) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
 		if (left instanceof ConstantExpression
 				&& right instanceof ConstantExpression)
 			return op.foldConstant((ConstantExpression) left,
@@ -2029,6 +2068,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 
 	Expression booleanExpression(final Expression left,
 			final BooleanOperator op, final Expression right) {
+		//Error Check
+		if (!(left.type().isCompatible(right.type()))) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
 		if (left instanceof ConstantExpression
 				&& right instanceof ConstantExpression)
 			return op.foldConstant((ConstantExpression) left,
@@ -2053,6 +2096,10 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	 **************************************************************************/
 	Expression compareExpression(final Expression left,
 			final RelationalOperator op, final Expression right) {
+		//Error Check
+		if (!(left.type().isCompatible(right.type()))) {
+			err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+		}
 		if (left instanceof ConstantExpression
 				&& right instanceof ConstantExpression)
 			return op.foldConstant((ConstantExpression) left,
@@ -2208,8 +2255,12 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		return new VariableExpression(tupleType, GLOBAL_LEVEL, address, DIRECT);
 	}
 
-	public RangeType buildRange(TypeDescriptor baseType,
+	public TypeDescriptor buildRange(TypeDescriptor baseType,
 			ConstantExpression lowBound, ConstantExpression highBound) {
+		if(lowBound.value() < 0 || lowBound.value() > highBound.value()) {
+			err.semanticError(GCLError.INVALID_RANGE, "Ranges cannot be negative and the highBound must be larger than the lowBound");
+			return NO_TYPE;
+		}
 		Codegen.Location lowBoundOffset = codegen.buildOperands(lowBound);
 		codegen.buildOperands(highBound);
 		return new RangeType(baseType, lowBound.value(), highBound.value(),
@@ -2311,7 +2362,11 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 
 			Procedure procedure = tuple.getProcedure(procedureName);
 			if (procedure != null) {
-
+				if (!(procedure.alreadyDefined())){
+					err.semanticError(GCLError.PROCEDURE_NOT_DEFINED); 
+					return;
+				}
+				
 				int thisRegister = codegen.loadAddress(tupleExpression);
 				codegen.gen2Address(IS, Codegen.STACK_POINTER, Codegen.IMMED,
 						Codegen.UNUSED, procedure.frameSize());

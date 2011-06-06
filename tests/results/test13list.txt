@@ -1,4 +1,4 @@
-Compiled on: Wed Jun 01 10:19:41 EDT 2011
+Compiled on: Mon Jun 06 12:13:21 EDT 2011
 module test13
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -33,6 +33,10 @@ $        IS      R13, #4
 $        LDA     R0, +10(R15)
 $        LD      R1, #4
 $        BKT     R0, *R13
+At -- line 13 col 22: error 16
+ERROR -> Incompatible types 
+
+$        HALT    
 $        LD      R0, R13
 $        LD      R1, #4
 $        BKT     R0, +6(R15)
@@ -126,7 +130,7 @@ $        INT      2
 $        INT      1
 $    LABEL V1
 $        SKIP     14
-  <end of compilation of ..\tests\test13>.  There was 1 error detected.
+  <end of compilation of ..\tests\test13>.  There were 2 errors detected.
   Allocated Registers: 11 12 13 14 15 
 
 $        HALT    

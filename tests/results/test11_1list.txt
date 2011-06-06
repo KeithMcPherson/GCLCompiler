@@ -1,4 +1,4 @@
-Compiled on: Wed Jun 01 10:19:39 EDT 2011
+Compiled on: Mon Jun 06 12:13:19 EDT 2011
 module test11_1
 $        LDA     R15, V1
 $        LDA     R14, C1
@@ -41,6 +41,10 @@ $        TRNG    R2, +0(R14)
 $        IS      R2, #0
 $        IM      R2, #2
 $        IA      R1, R2
+At -- line 10 col 26: error 16
+ERROR -> Incompatible types 
+
+$        HALT    
 $        LD      R2, #1
 $        IS      R2, +8(R15)
 $        LDA     R3, +0(R15)
@@ -86,6 +90,7 @@ $        INT      0
 $        INT      1
 $    LABEL V1
 $        SKIP     10
-  <end of compilation of ..\tests\test11_1>.  There were no errors detected.
+  <end of compilation of ..\tests\test11_1>.  There was 1 error detected.
   Allocated Registers: 0 11 12 13 14 15 
 
+$        HALT    
