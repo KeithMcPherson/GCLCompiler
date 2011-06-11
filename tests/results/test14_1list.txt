@@ -1,4 +1,4 @@
-Compiled on: Sat Jun 11 17:02:53 EDT 2011
+Compiled on: Sat Jun 11 17:11:30 EDT 2011
 module test14_1 { factorial
 $        LDA     R15, V1
 $        LDA     R14, C1

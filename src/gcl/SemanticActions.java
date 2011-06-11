@@ -1006,7 +1006,7 @@ class TupleType extends TypeDescriptor { // mutable
 		if (other instanceof TupleType && ((TupleType) other).fieldCount() == this.fieldCount()) {
 			for (int i = 0; i < fieldCount(); i++) {
 				TupleType otherTuple = (TupleType) other;
-				if (!(otherTuple.getType(otherTuple.getName(i)) == this.getType(this.getName(i))))
+				if (!(otherTuple.getType(otherTuple.getName(i)).isCompatible(this.getType(this.getName(i)))))
 					return false;
 			}
 			return true;

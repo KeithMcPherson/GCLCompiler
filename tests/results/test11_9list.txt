@@ -1,4 +1,4 @@
-Compiled on: Sat Jun 11 17:02:52 EDT 2011
+Compiled on: Sat Jun 11 17:11:29 EDT 2011
 module test11_9 { NONSQUARE twoDimensions with assignment
 $        LDA     R15, V1
 $        LDA     R14, C1
