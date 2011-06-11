@@ -830,9 +830,9 @@ class StringConstant extends SemanticItem implements ConstantLike {
 		else {
 			size = message.length() + 1;
 		}
-		message = message.replace(":", "::");
-		message = message.replace("'", ":'");
-		message = message.replace("\"", ":\"");
+		message = message.replaceAll(":", "::");
+		message = message.replaceAll("'", ":'");
+		message = message.replaceAll("\"", ":\"");
 		message = '"' + message + '"';
 		this.size = size;
 		this.message = message;
@@ -1003,11 +1003,10 @@ class TupleType extends TypeDescriptor { // mutable
 	}
 
 	public boolean isCompatible(TypeDescriptor other) {
-		if (other.baseType() == this.baseType()
-				&& ((TupleType) other).fieldCount() == this.fieldCount()) {
+		if (other instanceof TupleType && ((TupleType) other).fieldCount() == this.fieldCount()) {
 			for (int i = 0; i < fieldCount(); i++) {
-				if (!(((TupleType) other).getType(((TupleType) other)
-						.getName(i)) == this.getType(this.getName(i))))
+				TupleType otherTuple = (TupleType) other;
+				if (!(otherTuple.getType(otherTuple.getName(i)) == this.getType(this.getName(i))))
 					return false;
 			}
 			return true;
@@ -1259,32 +1258,30 @@ class Procedure extends SemanticItem {
 			}else{
 				paramLoader = new ValueLoader(type, offset);
 			}
-		} /*else{
-			GCLCompiler.err.semanticError(GCLError.UNHANDLED_CASE, "A parameter-type has incorrectly been handled.");
-			return new ErrorExpression("Compiler error dealing with parameter types.");
-		}*/
+		} 
 		frameSize += paramLoader.size();
 		params.add(paramLoader);
 		return new VariableExpression(type, this.level, offset, direct);
 	}
 	
-	//KEITH - rewrite most of the following function to make it your own
 	public void call(ExpressionList arguments, Codegen codegen, GCLErrorStream err){
 		if(arguments != null){
 			Iterator<Expression> argumentIterator = arguments.elements();
 			for(Loader argumentLoader : params){
+				
 				if(argumentIterator.hasNext()){
 					Expression argumentExpression = argumentIterator.next();
 					if(argumentLoader.checkType(argumentExpression, err)){
-						argumentLoader.load(argumentExpression, codegen);
+						argumentLoader.load(argumentExpression, codegen, err);
 					}
 				}else{
-					//GCLCompiler.err.semanticError(GCLError.INCORRECT_ARGUMENTS, "This procedure has been invoked with too few arguments.");
+					err.semanticError(GCLError.INVALID_ARGUMENT, "Not enough arguments");
 				}
+				
 			}
 
 			if(argumentIterator.hasNext()){
-			//GCLCompiler.err.semanticError(GCLError.INCORRECT_ARGUMENTS, "This procedure has been invoked with too many arguments.");
+			err.semanticError(GCLError.INVALID_ARGUMENT, "Too many arguments");
 			}
 		}
 	}
@@ -1319,13 +1316,10 @@ abstract class Loader{
 			return true;
 		}
 
-	public abstract void load(Expression param, Codegen codegen);
+	public abstract void load(Expression param, Codegen codegen, GCLErrorStream err);
 	public abstract int size();
 	}
-/**
- * loads simple types by value
- *
- */
+
 class ValueLoader extends Loader{
 	public ValueLoader(TypeDescriptor type, int offset){
 		super(type, offset);
@@ -1337,29 +1331,25 @@ class ValueLoader extends Loader{
 	}
 
 	@Override
-	public void load(Expression parameter, Codegen codegen) {
-		int valueRegister = codegen.loadRegister(parameter);
+	public void load(Expression param, Codegen codegen, GCLErrorStream err) {
+		int valueRegister = codegen.loadRegister(param);
 		codegen.gen2Address(Codegen.STO, valueRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
 		codegen.freeTemp(Codegen.DREG, valueRegister);
 	}
 }
 
-/**
- * loads complex and simple types be reference
- *
- */
+
 class ReferenceLoader extends Loader{
 	public ReferenceLoader(TypeDescriptor type, int offset){
 		super(type, offset);
 	}
 	
-	public boolean checkType(Expression potentialParameter, GCLErrorStream err){
-		if(potentialParameter instanceof ConstantExpression){
-
-			//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Constants cannot be passed by reference.");
+	public boolean checkType(Expression param, GCLErrorStream err){
+		if(param instanceof ConstantExpression){
+			err.semanticError(GCLError.INVALID_LOAD, "Cannot pass constants by reference");
 			return false;
 		}
-		return super.checkType(potentialParameter, err);
+		return super.checkType(param, err);
 	}
 	
 	@Override
@@ -1368,16 +1358,14 @@ class ReferenceLoader extends Loader{
 	}
 
 	@Override
-	public void load(Expression parameter, Codegen codegen) {
-		int referenceRegister = codegen.loadAddress(parameter);
+	public void load(Expression param, Codegen codegen, GCLErrorStream err) {
+		int referenceRegister = codegen.loadAddress(param);
 		codegen.gen2Address(Codegen.STO, referenceRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
 		codegen.freeTemp(Codegen.DREG, referenceRegister);
 	}
 }
 
-/**
- * Loads complex types by value
- */
+
 class BlockLoader extends Loader{
 	public BlockLoader(TypeDescriptor type, int offset){
 		super(type, offset);
@@ -1389,17 +1377,17 @@ class BlockLoader extends Loader{
 	}
 
 	@Override
-	public void load(Expression parameter, Codegen codegen) {
-		if(!(parameter instanceof VariableExpression)){
-			if(!(parameter instanceof ErrorExpression)){
-				//GCLCompiler.err.semanticError(GCLError.ILLEGAL_ARGUMENT, "Only variables can be passed by reference");
+	public void load(Expression param, Codegen codegen, GCLErrorStream err) {
+		if(!(param instanceof VariableExpression)){
+			if(!(param instanceof ErrorExpression)){
+				err.semanticError(GCLError.INVALID_ARGUMENT, "Only variables can be passed by reference");
 			}
 			return;
 		}
 
 		int blockRegister = codegen.getTemp(2);
 		int sizeRegister = blockRegister +1;
-		Codegen.Location parameterLocation = codegen.buildOperands(parameter);
+		Codegen.Location parameterLocation = codegen.buildOperands(param);
 		codegen.gen2Address(Codegen.LD, blockRegister, parameterLocation);
 		codegen.gen2Address(Codegen.LD, sizeRegister, Codegen.IMMED, Codegen.UNUSED, size());
 		codegen.gen2Address(Codegen.BKT, blockRegister, new Codegen.Location(Codegen.INDXD, Codegen.STACK_POINTER, offset));
@@ -1459,6 +1447,10 @@ abstract class GCLError {
 	"ERROR -> Cannot assign to constant expressions ");
 	static final GCLError PROCEDURE_NOT_DEFINED = new Value(20,
 	"ERROR -> This procedure was declared but never defined ");
+	static final GCLError INVALID_ARGUMENT = new Value(21,
+	"ERROR -> Procedure got invalid arguments ");
+	static final GCLError INVALID_LOAD = new Value(22,
+	"ERROR -> Procedure attempted to load an invalid value");
 
 
 	// The following are compiler errors. Repair them.
@@ -1846,7 +1838,7 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 
 			//Error checks
 			if (!(leftExpression.type().isCompatible(rightExpression.type()))) {
-				err.semanticError(GCLError.INCOMPATIBLE_TYPE);
+				err.semanticError(GCLError.INCOMPATIBLE_TYPE, "Got: " + leftExpression.type() + " Expected: " + rightExpression.type());
 			}
 			
 			if (leftExpression instanceof ConstantExpression){
@@ -2424,13 +2416,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 	}
 
 	public Expression subscriptAction(Expression array, Expression subscript) {
-		// LDA R6, +60(R15)
-		// LD R7, +8(R15)
-		// TRNG R7, +0(R14)
-		// IS R7, #1
-		// IM R7, #32
-		// IA R6, R7
-		// #freetemp on R7
 		if((array.type() instanceof ErrorType) || (subscript.type() instanceof ErrorType))
 		{
 			return new ErrorExpression("Either the array or the subscript is an error");
@@ -2451,7 +2436,6 @@ public class SemanticActions implements Mnemonic, CodegenConstants {
 		int arrayReg = codegen.loadAddress(array);
 		int subscriptReg = codegen.loadRegister(subscript);
 
-		//KEITH - the following works, but you should implement the case of a constant subscript - fix freeing that array reg
 		codegen.gen2Address(TRNG, subscriptReg, subscriptType.getLowBoundOffset());
 		codegen.gen2Address(IS, subscriptReg, IMMED, UNUSED, subscriptType.getLowBound());
 		codegen.gen2Address(IM,subscriptReg,IMMED,UNUSED,((TypeDescriptor) ((ArrayType) array.type()).getComponentType()).size());

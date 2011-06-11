@@ -35,6 +35,7 @@ java -cp . gcl.GCLCompiler ..\tests\test6 ..\tests\results\test6list.txt
 java -cp . gcl.GCLCompiler ..\tests\test7 ..\tests\results\test7list.txt 
 ..\sam3-pc.exe
 ..\macc3-pc.exe  >..\tests\results\test7.result
+pause
 java -cp . gcl.GCLCompiler ..\tests\test8 ..\tests\results\test8list.txt 
 ..\sam3-pc.exe
 ..\macc3-pc.exe  >..\tests\results\test8.result
