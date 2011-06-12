@@ -153,13 +153,10 @@ public class Codegen implements Mnemonic, CodegenConstants {
 			}else if(diff == 1){
 				base = CodegenConstants.STATIC_POINTER;
 			}else{
-				//KEITH - this case is WRONG.  Fix it
-				int pointerWalker = getTemp(1);
-				gen2Address(LD, pointerWalker, new Location(INDXD, STATIC_POINTER, 2));
-				for(int i = 0; i < (diff-2); i++){
-					gen2Address(LD, pointerWalker, new Location(INDXD, pointerWalker, 2));
-				}
-				base = pointerWalker;
+				int reg = getTemp(1);
+				gen2Address(LD, reg, new Location(INDXD, STATIC_POINTER, 2));
+				gen2Address(LD, reg, new Location(INDXD, reg, 2));
+				base = reg;
 			}
 				mode = isDirect ? INDXD : IINDXD;
 				displacement = variable.offset();

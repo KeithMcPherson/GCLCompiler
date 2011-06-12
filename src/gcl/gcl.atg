@@ -83,14 +83,14 @@ variableDefinition<SymbolTable scope, ParameterKind kindOfParam>
 			semantic.declareVariable(scope, type, id, kindOfParam);
 		.)
 	}.
-	/*----------------------------------------------------------*/
+/*----------------------------------------------------------*/
 constantDefinition<SymbolTable scope> 
  (. Expression expr; Identifier id; .)
 =
 	 "constant" identifier 	(. 	id = new Identifier(currentToken().spelling()); .)
 		"=" constant<^expr, scope>
 			(. semantic.declareConstant(scope, id, expr); .).
-			
+/*----------------------------------------------------------*/		
 constant<^ConstantExpression result, SymbolTable scope> (. Expression expr; .)
 =
 	expression<^expr, scope> (. result = expr.expectConstant(expr, err); .).

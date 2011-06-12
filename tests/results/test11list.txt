@@ -1,4 +1,4 @@
-Compiled on: Sat Jun 11 17:11:27 EDT 2011
+Compiled on: Sun Jun 12 15:46:11 EDT 2011
 module test11
 $        LDA     R15, V1
 $        LDA     R14, C1
